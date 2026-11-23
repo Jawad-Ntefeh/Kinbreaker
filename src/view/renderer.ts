@@ -119,8 +119,8 @@ export class Renderer {
     ctx.fillStyle = color;
     const left = c.sx(sim.arenaLeft);
     const right = c.sx(sim.arenaRight);
-    if (left >= 0 && !(leftHasArt && !sim.wallBroken)) ctx.fillRect(left - 6, 0, 6, FLOOR_Y + 1);
-    if (right <= BASE_WIDTH) ctx.fillRect(right, 0, 6, FLOOR_Y + 1);
+    if (left >= 0 && !(leftHasArt && !sim.wallBroken)) ctx.fillRect(left - 12, 0, 12, FLOOR_Y + 1);
+    if (right <= BASE_WIDTH) ctx.fillRect(right, 0, 12, FLOOR_Y + 1);
   }
 
   /** Screen rect for a world box. */

@@ -3,9 +3,7 @@
  */
 import { DummyController } from './ai/dummy';
 import { CombatSim } from './combat/combat_sim';
-import { ALL_LIMBS } from './combat/fighter';
-import { getMoveSet } from './combat/move_data';
-import { SYSTEM } from './combat/system';
+import { fighterConfig } from './combat/character_data';
 import { keyLabel, type DebugAction } from './input/bindings';
 import { InputManager } from './input/input_manager';
 import { DebugOverlay, FONT } from './view/debug_overlay';
@@ -50,10 +48,9 @@ export class TrainingScene {
   }
 
   static newSim(): CombatSim {
-    const moves = getMoveSet('rook');
     return new CombatSim({
-      p1: { name: 'Rook', moves, ...SYSTEM.fighters.rook!, limbs: { ...ALL_LIMBS, right_arm: false } },
-      p2: { name: 'Dummy', moves, ...SYSTEM.fighters.dummy!, limbs: { ...ALL_LIMBS } },
+      p1: fighterConfig('rook'),
+      p2: fighterConfig('dummy'),
       p1X: 420,
       p2X: 540,
       trainingRefill: true,

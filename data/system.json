@@ -1,20 +1,7 @@
 {
   "arena_width": 960,
   "body": {
-    "width": 24,
-    "height": 80,
-    "crouch_height": 50,
     "knockdown_height": 16
-  },
-  "walk_forward_speed": 2.5,
-  "walk_back_speed": 2,
-  "dash_forward": {
-    "frames": 16,
-    "speed": 5
-  },
-  "backdash": {
-    "frames": 20,
-    "speed": 4
   },
   "phase_step": {
     "frames": 20,
@@ -68,14 +55,8 @@
   "button_buffer": 6,
   "together_window": 2,
   "training_refill_delay": 60,
-  "fighters": {
-    "rook": {
-      "health": 170,
-      "poise": 100
-    },
-    "dummy": {
-      "health": 170,
-      "poise": 100
-    }
+  "glint": {
+    "from_startup_minus": 14,
+    "to_startup_minus": 6
   }
 }

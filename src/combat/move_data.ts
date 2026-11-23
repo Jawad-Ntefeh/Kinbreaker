@@ -6,6 +6,8 @@
 import type { Button } from './types';
 
 export const SUBPX = 100;
+/** A glint shows from frame startup-14; a glinted move needs a startup longer than this to show it. */
+const SYSTEM_GLINT_MIN_STARTUP = 6;
 
 export const LIMBS = ['left_arm', 'right_arm', 'left_leg', 'right_leg', 'core', 'none'] as const;
 export const HEIGHTS = ['high', 'mid', 'low', 'throw'] as const;
@@ -80,6 +82,17 @@ export interface Move {
   cancelOn: readonly CancelOn[];
   /** Only reachable as a cancel from another move (e.g. the second hit of a string). */
   cancelOnly: boolean;
+  /** Telegraphed attack: shows a glint before it becomes active. */
+  glint: boolean;
+  /** Frames during which hits don't interrupt the move. */
+  armorFrames: readonly [number, number] | null;
+  /** Extra recovery when the move hits nothing. */
+  whiffRecovery: number;
+  /**
+   * Linked part of a multi-hit move: starts automatically (no input) at the first frame of the
+   * previous part's cancel window, but only if the previous part connected in one of these ways.
+   */
+  continueOn: readonly CancelOn[];
   throwBreak: Button | null;
   /** Throw range in subpixels, measured from the thrower's origin to the target's front edge. */
   throwRange: number;
@@ -101,7 +114,7 @@ const KNOWN_FIELDS = new Set([
   'id', 'name', 'limb', 'input', 'startup', 'active', 'recovery', 'damage', 'poise_damage',
   'height', 'path', 'on_block', 'on_hit', 'on_counter_hit', 'properties', 'hitboxes',
   'hurtbox_overrides', 'movement', 'cancel_into', 'cancel_window', 'cancel_on', 'cancel_only',
-  'break', 'range',
+  'break', 'range', 'glint', 'armor_frames', 'whiff_recovery', 'continue_on',
 ]);
 
 /**
@@ -328,6 +341,17 @@ export function validateMove(file: string, character: string, raw: unknown): { m
     else cancelOnly = o.cancel_only;
   }
 
+  let glint = false;
+  if (o.glint !== undefined) {
+    if (typeof o.glint !== 'boolean') err('glint', 'must be true or false');
+    else glint = o.glint;
+    if (glint && startup <= SYSTEM_GLINT_MIN_STARTUP) err('glint', `glinted moves need startup > ${SYSTEM_GLINT_MIN_STARTUP} so the glint can show`);
+  }
+  let armorFrames: [number, number] | null = null;
+  if (o.armor_frames !== undefined && o.armor_frames !== null) armorFrames = frames('armor_frames', o.armor_frames, 1, total, 'move');
+  const whiffRecovery = int('whiff_recovery', 0, false);
+  const continueOn = list('continue_on', CANCEL_ON, false);
+
   let throwBreak: Button | null = null;
   let throwRange = 0;
   if (isThrow) {
@@ -346,7 +370,8 @@ export function validateMove(file: string, character: string, raw: unknown): { m
     move: {
       id, name, character, limb, inputText, input, startup, active, recovery, total, lastActive,
       damage, poiseDamage, height, path, onBlock, onHit, onCounterHit, properties, hitboxes,
-      hurtboxOverrides, movement, cancelInto, cancelWindow, cancelOn, cancelOnly, throwBreak, throwRange,
+      hurtboxOverrides, movement, cancelInto, cancelWindow, cancelOn, cancelOnly, glint, armorFrames,
+      whiffRecovery, continueOn, throwBreak, throwRange,
     },
     errors,
   };

@@ -91,8 +91,16 @@ Keyboard is the primary input; every feature must be fully playable on keyboard,
 - Throws additionally have `"break": "1"` or `"break": "2"` and `"range": px` (measured from the thrower's origin to the target's front edge), and `"on_block": null`.
 - `on_hit` / `on_counter_hit` are a number, or `"knockdown"` / `"launch"` for moves that don't leave the opponent standing. `on_counter_hit` defaults to `on_hit`.
 - `cancel_only: true` marks a move that can only be reached as a cancel (e.g. the second hit of a string), never from neutral.
+- `glint: true` marks a big telegraphed attack: the fighter shows a glint from frame `startup - 14` to `startup - 6`, white for `linear`, red for `sweeping` (`fighter.glint` in the sim; the view draws it).
+- `armor_frames: [first, last]`: hits landing in those frames deal damage and poise damage but cause no hitstun, no hitstop for the armored fighter and don't interrupt the move. Throws, launchers and poise breaks still beat armor.
+- `whiff_recovery`: extra recovery frames added when the move hits nothing.
+- `continue_on` (e.g. `["hit", "block"]`): marks a linked part of a multi-hit move. The previous part lists it in `cancel_into`; it starts automatically (no input) on the first frame of the previous part's `cancel_window`, only if the previous part connected in one of the listed ways.
 - Hitboxes may have a `"group"` (default 0); a move hits the same target at most once per group.
-- System-wide combat values (walk speeds, hitstop, knockdown/stagger lengths, juggle physics, damage scaling, fighter health/poise) live in `data/system.json`, not in code.
+- System-wide combat values (hitstop, knockdown/stagger lengths, juggle physics, damage scaling) live in `data/system.json`, not in code.
+
+## Character files (`data/characters/<id>.json`)
+
+Health, poise, walk speeds (px/frame), dash and backdash (`frames`, `speed`), hurtbox (`width`, `height`, `crouch_height` in px), limbs, and the `moveset` folder in `data/moves/` the character uses (the training dummy uses `rook`). Bosses add a `boss` section: `phase2_health_percent`, `transition_frames`, `wall_break_frame`, `transition_pushback` (px), `phase2_moves` and `once_per_fight`. Validated on load like move files.
 
 The move loader validates every file (a TypeScript type plus runtime checks) and reports clear errors: file, field, problem. Invalid data fails the tests.
 
@@ -105,6 +113,8 @@ CLAUDE.md
 .github/workflows/deploy.yml
 data/moves/<character>/*.json
 data/system.json      # system-wide combat constants
+data/characters/*.json
+data/arenas/*.json
 src/main.ts           # boot, game loop
 src/combat/           # CombatSim, fighters, InputBuffer, move data, hit resolution (pure logic, no DOM)
 src/ai/               # AI controllers (produce input snapshots)

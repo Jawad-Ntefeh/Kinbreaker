@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CombatSim } from '../src/combat/combat_sim';
 import type { Move, MoveSet } from '../src/combat/move_data';
 import { SYSTEM } from '../src/combat/system';
-import { dummyConfig, inp, N, pointBlank, rookConfig, rookMoves, run, runUntil } from './helpers';
+import { dummyConfig, inp, N, pointBlank, rookConfig, rookMoves, runUntil } from './helpers';
 
 describe('move priority: more buttons first', () => {
   it('holding forward and pressing U + J gives the throw, not Lunging Palm', () => {

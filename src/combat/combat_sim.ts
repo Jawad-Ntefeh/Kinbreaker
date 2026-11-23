@@ -33,7 +33,8 @@ export interface CombatEvent {
     | 'launch'
     | 'wall_splat'
     | 'knockdown'
-    | 'ground_hit';
+    | 'ground_hit'
+    | 'armor';
   attacker: number;
   defender: number;
   moveId: string;
@@ -57,6 +58,8 @@ export interface SimOptions {
   p2X?: number;
   /** Refill health after a fighter has been neutral for a while (training mode). */
   trainingRefill?: boolean;
+  /** Arena width in px (default from data/system.json). */
+  arenaWidth?: number;
 }
 
 interface Contact {
@@ -87,11 +90,15 @@ export class CombatSim {
   /** Fighters frozen by hitstop on the current step. */
   private readonly frozen = [false, false];
   private readonly trainingRefill: boolean;
+  /** Arena walls in subpixels. */
+  arenaLeft = 0;
+  arenaRight: number;
   /** Moves of each fighter sorted by input specificity (motion > held direction > plain button). */
   private readonly moveOrder: readonly [Move[], Move[]];
 
   constructor(opts: SimOptions) {
-    const mid = SYSTEM.arenaWidth / 2;
+    this.arenaRight = (opts.arenaWidth ?? SYSTEM.arenaWidth / 100) * 100;
+    const mid = this.arenaRight / 2;
     const x1 = opts.p1X !== undefined ? opts.p1X * 100 : mid - 6000;
     const x2 = opts.p2X !== undefined ? opts.p2X * 100 : mid + 6000;
     const a = new Fighter(0, opts.p1, x1, x1 <= x2 ? 1 : -1);
@@ -130,10 +137,18 @@ export class CombatSim {
       return;
     }
     switch (f.state) {
-      case 'attack':
+      case 'attack': {
         f.moveFrame++;
-        if (!f.move || f.moveFrame > f.move.total) this.toNeutral(f);
+        const m = f.move;
+        if (!m) {
+          this.toNeutral(f);
+          break;
+        }
+        if (m.cancelWindow && f.moveFrame === m.cancelWindow[0] && this.tryContinue(f, m)) break;
+        if (f.moveFrame === m.lastActive + 1 && f.connected === 0) f.extraRecovery = m.whiffRecovery;
+        if (f.moveFrame > f.moveTotal) this.toNeutral(f);
         break;
+      }
       case 'airborne':
         break; // ends on landing (movement phase)
       case 'thrown':
@@ -155,6 +170,19 @@ export class CombatSim {
         }
         if (f.stateFrame > f.stateLength) this.endTimedState(f);
     }
+  }
+
+  /** Linked parts of multi-hit moves start automatically if the previous part connected as required. */
+  private tryContinue(f: Fighter, m: Move): boolean {
+    const how = f.connected === 1 ? 'hit' : f.connected === 2 ? 'block' : 'whiff';
+    for (const id of m.cancelInto) {
+      const next = f.moves.get(id);
+      if (next && next.continueOn.length > 0 && next.continueOn.includes(how)) {
+        this.startMove(f, next, false, true);
+        return true;
+      }
+    }
+    return false;
   }
 
   private endTimedState(f: Fighter): void {
@@ -246,20 +274,20 @@ export class CombatSim {
     // Whatever a wall blocked goes to the other fighter.
     const now = right.x - left.x;
     if (now < distance) {
-      if (left.x <= this.minX) this.shift(right, distance - now);
+      if (left.x <= this.minX(left)) this.shift(right, distance - now);
       else this.shift(left, -(distance - now));
     }
   }
 
-  private get minX(): number {
-    return SYSTEM.halfWidth;
+  minX(f: Fighter): number {
+    return this.arenaLeft + f.halfWidth;
   }
-  private get maxX(): number {
-    return SYSTEM.arenaWidth - SYSTEM.halfWidth;
+  maxX(f: Fighter): number {
+    return this.arenaRight - f.halfWidth;
   }
 
   private shift(f: Fighter, dx: number): void {
-    f.x = Math.min(this.maxX, Math.max(this.minX, f.x + dx));
+    f.x = Math.min(this.maxX(f), Math.max(this.minX(f), f.x + dx));
   }
 
   // ---------------------------------------------------------------- frame advantage
@@ -297,7 +325,7 @@ export class CombatSim {
 
   /** Does the buffer hold the input for this move right now? */
   private matches(f: Fighter, m: Move, pressWindow: number): boolean {
-    if (!f.hasLimb(m.limb)) return false;
+    if (!f.hasLimb(m.limb) || f.lockedMoves.has(m.id) || m.continueOn.length > 0) return false;
     const buf = f.buffer;
     const btns = m.input.buttons;
     let age: number;
@@ -327,9 +355,14 @@ export class CombatSim {
     return false;
   }
 
-  private startMove(f: Fighter, m: Move, keepFrame = false): void {
-    for (const b of m.input.buttons) f.buffer.consume(b);
-    if (m.input.motion) f.buffer.consumeMotions();
+  private startMove(f: Fighter, m: Move, keepFrame = false, automatic = false): void {
+    if (!automatic) {
+      for (const b of m.input.buttons) f.buffer.consume(b);
+      if (m.input.motion) f.buffer.consumeMotions();
+    }
+    const once = f.config.boss?.oncePerFight;
+    if (once && once.includes(m.id)) f.lockedMoves.add(m.id);
+    f.extraRecovery = 0;
     f.state = 'attack';
     f.move = m;
     if (!keepFrame) {
@@ -369,7 +402,7 @@ export class CombatSim {
     const first = m.input.buttons[0]!;
     for (const c of this.moveOrder[f.index]!) {
       if (c.input.buttons.length !== 2 || !c.input.buttons.includes(first) || c.cancelOnly) continue;
-      if (!f.hasLimb(c.limb) || c.input.motion) continue;
+      if (!f.hasLimb(c.limb) || c.input.motion || f.lockedMoves.has(c.id) || c.continueOn.length > 0) continue;
       if (c.input.dir !== null && f.buffer.heldDir(f.facing) !== c.input.dir) continue;
       const second = c.input.buttons[0] === first ? c.input.buttons[1]! : c.input.buttons[0]!;
       const a = f.buffer.pressAge(first, SYSTEM.buttonBuffer, true);
@@ -396,14 +429,14 @@ export class CombatSim {
   private tryDash(f: Fighter): boolean {
     if (f.buffer.motion('66', f.facing)) {
       f.buffer.consumeMotions();
-      this.setTimed(f, 'dash_forward', SYSTEM.dashFrames, 1);
-      f.vx = SYSTEM.dashSpeed * f.facing;
+      this.setTimed(f, 'dash_forward', f.config.dash.frames, 1);
+      f.vx = f.config.dash.speed * f.facing;
       return true;
     }
     if (f.buffer.motion('44', f.facing)) {
       f.buffer.consumeMotions();
-      this.setTimed(f, 'backdash', SYSTEM.backdashFrames, 1);
-      f.vx = -SYSTEM.backdashSpeed * f.facing;
+      this.setTimed(f, 'backdash', f.config.backdash.frames, 1);
+      f.vx = -f.config.backdash.speed * f.facing;
       return true;
     }
     return false;
@@ -418,11 +451,11 @@ export class CombatSim {
       if (opp.isThreatening) f.state = 'block_stand';
       else {
         f.state = 'walk_back';
-        f.vx = -SYSTEM.walkBack * f.facing;
+        f.vx = -f.config.walkBack * f.facing;
       }
     } else if (d === 6 || d === 9) {
       f.state = 'walk_forward';
-      f.vx = SYSTEM.walkForward * f.facing;
+      f.vx = f.config.walkForward * f.facing;
     } else f.state = 'idle';
   }
 
@@ -471,7 +504,7 @@ export class CombatSim {
     const [a, b] = this.fighters;
     const left = a.x < b.x || (a.x === b.x && a.facing === 1) ? a : b;
     const right = left === a ? b : a;
-    this.separate(left, right, SYSTEM.bodyWidth);
+    this.separate(left, right, left.halfWidth + right.halfWidth);
   }
 
   // ---------------------------------------------------------------- hits
@@ -609,8 +642,28 @@ export class CombatSim {
       return;
     }
 
-    // Hit or counter hit.
     const counter = c.kind === 'counter';
+    const launchesNow = m.properties.includes('launcher') || (counter && m.properties.includes('counter_hit_launch')) || (counter ? m.onCounterHit : m.onHit) === 'launch';
+    if (def.isArmored && !launchesNow) {
+      // Armor: damage and poise damage, but no hitstun, no hitstop for the defender, no interruption.
+      atk.connected = 1;
+      atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
+      const dmg = this.applyDamage(def, m.damage);
+      this.event('armor', atk, def, m.id, dmg);
+      if (m.poiseDamage > 0) {
+        def.poise -= m.poiseDamage;
+        def.poiseIdle = 0;
+        if (def.poise <= 0) {
+          // A poise break still beats armor.
+          def.poise = 0;
+          this.setTimed(def, 'stagger', SYSTEM.staggerFrames);
+          this.event('stagger', atk, def, m.id, 0);
+        }
+      }
+      return;
+    }
+
+    // Hit or counter hit.
     atk.connected = 1;
     atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
     def.hitstop = Math.max(def.hitstop, SYSTEM.hitstopHit);
@@ -674,7 +727,7 @@ export class CombatSim {
   }
 
   private atWall(f: Fighter): boolean {
-    return f.x <= this.minX || f.x >= this.maxX;
+    return f.x <= this.minX(f) || f.x >= this.maxX(f);
   }
 
   /** Push the defender back; whatever a wall blocks moves the attacker instead. */

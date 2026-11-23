@@ -7,24 +7,11 @@ import { SUBPX } from './move_data';
 
 const px = (v: number): number => Math.round(v * SUBPX);
 
-export interface FighterStats {
-  health: number;
-  poise: number;
-}
-
 export const SYSTEM = {
   arenaWidth: px(raw.arena_width),
-  bodyWidth: px(raw.body.width),
-  halfWidth: px(raw.body.width / 2),
-  bodyHeight: px(raw.body.height),
-  crouchHeight: px(raw.body.crouch_height),
   knockdownHeight: px(raw.body.knockdown_height),
-  walkForward: px(raw.walk_forward_speed),
-  walkBack: px(raw.walk_back_speed),
-  dashFrames: raw.dash_forward.frames,
-  dashSpeed: px(raw.dash_forward.speed),
-  backdashFrames: raw.backdash.frames,
-  backdashSpeed: px(raw.backdash.speed),
+  glintStart: raw.glint.from_startup_minus,
+  glintEnd: raw.glint.to_startup_minus,
   phaseFrames: raw.phase_step.frames,
   phaseDrift: px(raw.phase_step.drift),
   phaseInvuln: raw.phase_step.invuln as [number, number],
@@ -54,7 +41,6 @@ export const SYSTEM = {
   buttonBuffer: raw.button_buffer,
   togetherWindow: raw.together_window,
   trainingRefillDelay: raw.training_refill_delay,
-  fighters: raw.fighters as Record<string, FighterStats>,
 } as const;
 
 /** Damage percent for the n-th hit of a combo (1-based). */

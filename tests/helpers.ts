@@ -1,21 +1,23 @@
 import { CombatSim, type SimOptions } from '../src/combat/combat_sim';
-import { ALL_LIMBS, type FighterConfig } from '../src/combat/fighter';
+import type { FighterConfig } from '../src/combat/fighter';
+import { fighterConfig } from '../src/combat/character_data';
 import { getMoveSet, type MoveSet } from '../src/combat/move_data';
-import { SYSTEM } from '../src/combat/system';
 import { toAbsolute, type Button, type InputSnapshot } from '../src/combat/types';
 
 export const rookMoves = (): MoveSet => getMoveSet('rook');
 
 export function rookConfig(moves: MoveSet = rookMoves()): FighterConfig {
-  return { name: 'Rook', moves, ...SYSTEM.fighters.rook!, limbs: { ...ALL_LIMBS, right_arm: false } };
+  return { ...fighterConfig('rook'), moves };
 }
 export function dummyConfig(moves: MoveSet = rookMoves()): FighterConfig {
-  return { name: 'Dummy', moves, ...SYSTEM.fighters.dummy!, limbs: { ...ALL_LIMBS } };
+  return { ...fighterConfig('dummy'), moves };
 }
+/** Rook's body width in px. */
+export const ROOK_W = 24;
 
 /** Rook at x, dummy at point-blank range (pushboxes touching) to her right. */
 export function pointBlank(opts: Partial<SimOptions> = {}, x = 400): CombatSim {
-  return new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: x, p2X: x + SYSTEM.bodyWidth / 100, ...opts });
+  return new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: x, p2X: x + ROOK_W, ...opts });
 }
 
 export const N: InputSnapshot = { dir: 5, held: new Set() };

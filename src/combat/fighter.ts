@@ -4,6 +4,7 @@
  */
 import { InputBuffer } from './input_buffer';
 import type { Box, Limb, Move, MoveSet } from './move_data';
+import type { BossConfig } from './character_data';
 import { SYSTEM } from './system';
 import { hashInt, hashString } from './hash';
 
@@ -29,6 +30,8 @@ export const FIGHTER_STATES = [
   'wall_splat',
   'stagger',
   'guard_break',
+  'phase_transition',
+  'defeated',
 ] as const;
 export type FighterState = (typeof FIGHTER_STATES)[number];
 
@@ -51,6 +54,13 @@ export interface FighterConfig {
   health: number;
   poise: number;
   limbs: Limbs;
+  /** Subpixels. */
+  body: { halfWidth: number; height: number; crouchHeight: number };
+  walkForward: number;
+  walkBack: number;
+  dash: { frames: number; speed: number };
+  backdash: { frames: number; speed: number };
+  boss: BossConfig | null;
 }
 
 /** World-space box in subpixels: x0..x1 horizontally, y0..y1 vertically (up positive). */
@@ -61,11 +71,17 @@ export interface WorldBox {
   y1: number;
 }
 
+export type Glint = 'white' | 'red' | null;
+
 export class Fighter {
   readonly index: number;
   readonly name: string;
   readonly moves: MoveSet;
   readonly limbs: Limbs;
+  readonly config: FighterConfig;
+  readonly halfWidth: number;
+  readonly height: number;
+  readonly crouchHeight: number;
   readonly buffer = new InputBuffer();
 
   x = 0;
@@ -89,6 +105,8 @@ export class Fighter {
   hitGroups = 0;
   /** The current move connected: 0 = no, 1 = hit, 2 = block. */
   connected = 0;
+  /** Extra recovery added to the current move (whiff_recovery). */
+  extraRecovery = 0;
 
   /** Crouching stance kept through hitstun/blockstun. */
   crouchStun = false;
@@ -115,17 +133,29 @@ export class Fighter {
   /** Frames spent in a neutral state (training refill). */
   neutralFrames = 0;
 
+  /** Boss phase (1 or 2). */
+  phase = 1;
+  /** Phase 2 is due and starts once the fighter is back on their feet. */
+  phase2Pending = false;
+  /** Moves that cannot be started right now (phase-locked or already used once). */
+  readonly lockedMoves = new Set<string>();
+
   constructor(index: number, config: FighterConfig, x: number, facing: 1 | -1) {
     this.index = index;
+    this.config = config;
     this.name = config.name;
     this.moves = config.moves;
     this.limbs = { ...config.limbs };
+    this.halfWidth = config.body.halfWidth;
+    this.height = config.body.height;
+    this.crouchHeight = config.body.crouchHeight;
     this.maxHealth = config.health;
     this.health = config.health;
     this.maxPoise = config.poise;
     this.poise = config.poise;
     this.x = x;
     this.facing = facing;
+    if (config.boss) for (const m of config.boss.phase2Moves) this.lockedMoves.add(m);
   }
 
   get isNeutral(): boolean {
@@ -155,7 +185,7 @@ export class Fighter {
 
   /** Can this fighter be hit by attacks at all? (Knocked-down fighters only by ground hits.) */
   get isHittable(): boolean {
-    return this.state !== 'wake_up';
+    return this.state !== 'wake_up' && this.state !== 'phase_transition' && this.state !== 'defeated';
   }
 
   /** In startup frames of an attack (counter-hit window). */
@@ -166,6 +196,25 @@ export class Fighter {
   /** In startup or active frames of an attack (used by "block when attacked" logic). */
   get isThreatening(): boolean {
     return this.state === 'attack' && !!this.move && this.moveFrame <= this.move.lastActive;
+  }
+
+  /** Total frames of the current move, including whiff recovery if it applies. */
+  get moveTotal(): number {
+    return this.move ? this.move.total + this.extraRecovery : 0;
+  }
+
+  /** Telegraph flash on big attacks: from frame startup-14 to startup-6. White = linear, red = sweeping. */
+  get glint(): Glint {
+    const m = this.move;
+    if (this.state !== 'attack' || !m || !m.glint) return null;
+    if (this.moveFrame < m.startup - SYSTEM.glintStart || this.moveFrame > m.startup - SYSTEM.glintEnd) return null;
+    return m.path === 'sweeping' ? 'red' : 'white';
+  }
+
+  /** Armor: hits deal damage but don't interrupt the move. */
+  get isArmored(): boolean {
+    const a = this.move?.armorFrames;
+    return this.state === 'attack' && !!a && this.moveFrame >= a[0] && this.moveFrame <= a[1];
   }
 
   /** Converts a facing-right local box to world space. */
@@ -181,20 +230,19 @@ export class Fighter {
         if (this.moveFrame >= o.frames[0] && this.moveFrame <= o.frames[1]) return this.toWorld(o);
       }
     }
-    const h = SYSTEM.halfWidth;
-    let height = SYSTEM.bodyHeight;
-    if (this.isCrouching) height = SYSTEM.crouchHeight;
-    if (this.state === 'knockdown' || this.state === 'wake_up') {
+    const h = this.halfWidth;
+    if (this.state === 'knockdown' || this.state === 'wake_up' || this.state === 'defeated') {
       // Lying flat: as wide as the fighter is tall.
-      const half = Math.trunc(SYSTEM.bodyHeight / 2);
+      const half = Math.trunc(this.height / 2);
       return { x0: this.x - half, x1: this.x + half, y0: this.y, y1: this.y + SYSTEM.knockdownHeight };
     }
+    const height = this.isCrouching ? this.crouchHeight : this.height;
     return { x0: this.x - h, x1: this.x + h, y0: this.y, y1: this.y + height };
   }
 
   pushbox(): WorldBox {
-    const h = SYSTEM.halfWidth;
-    return { x0: this.x - h, x1: this.x + h, y0: this.y, y1: this.y + SYSTEM.bodyHeight };
+    const h = this.halfWidth;
+    return { x0: this.x - h, x1: this.x + h, y0: this.y, y1: this.y + this.height };
   }
 
   /** Hitboxes active on the current frame (world space), with their group. */
@@ -211,19 +259,21 @@ export class Fighter {
   throwZone(): WorldBox | null {
     if (this.state !== 'attack' || !this.move || this.move.height !== 'throw') return null;
     if (this.moveFrame < this.move.startup || this.moveFrame > this.move.lastActive) return null;
-    return this.toWorld({ x: 0, y: 0, w: this.move.throwRange, h: SYSTEM.bodyHeight });
+    return this.toWorld({ x: 0, y: 0, w: this.move.throwRange, h: this.height });
   }
 
   hashInto(h: number): number {
     const ints = [
       this.x, this.y, this.vx, this.vy, this.facing, FIGHTER_STATES.indexOf(this.state), this.stateFrame,
       this.stateLength, this.moveFrame, this.moveStartInputFrame, this.hitGroups, this.connected,
-      this.crouchStun ? 1 : 0, this.hitstop, this.health, this.poise, this.poiseIdle, this.stamina,
-      this.comboActive ? 1 : 0, this.comboHits, this.comboDamage, this.juggleCount, this.gravity,
-      this.wallHits, this.neutralFrames, this.splatY0, this.groundHitTaken ? 1 : 0,
+      this.extraRecovery, this.crouchStun ? 1 : 0, this.hitstop, this.health, this.poise, this.poiseIdle,
+      this.stamina, this.comboActive ? 1 : 0, this.comboHits, this.comboDamage, this.juggleCount, this.gravity,
+      this.wallHits, this.neutralFrames, this.splatY0, this.groundHitTaken ? 1 : 0, this.phase,
+      this.phase2Pending ? 1 : 0,
     ];
     for (const n of ints) h = hashInt(h, n);
     h = hashString(h, this.move ? this.move.id : '');
+    h = hashString(h, [...this.lockedMoves].sort().join(','));
     return this.buffer.hashInto(h);
   }
 }

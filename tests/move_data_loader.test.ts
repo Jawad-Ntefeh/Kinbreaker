@@ -98,3 +98,45 @@ describe('loadMoveFiles', () => {
     expect(sets.get('x')!.get('x_jab')!.name).toBe('Jab');
   });
 });
+
+describe('new move fields', () => {
+  it('accepts glint, armor_frames, whiff_recovery and continue_on', () => {
+    const { move, errors } = validateMove('data/moves/x/x_jab.json', 'x', {
+      ...base(), startup: 20, hitboxes: [{ frames: [20, 21], x: 0, y: 0, w: 1, h: 1 }],
+      glint: true, armor_frames: [1, 19], whiff_recovery: 40, continue_on: ['hit', 'block'],
+    });
+    expect(errors).toEqual([]);
+    expect(move).toMatchObject({ glint: true, armorFrames: [1, 19], whiffRecovery: 40, continueOn: ['hit', 'block'] });
+  });
+  it('defaults: no glint, no armor, no whiff recovery, not a continuation', () => {
+    const { move } = validateMove('data/moves/x/x_jab.json', 'x', base());
+    expect(move).toMatchObject({ glint: false, armorFrames: null, whiffRecovery: 0, continueOn: [] });
+  });
+  it('reports bad values', () => {
+    const p = problems({ ...base(), glint: 'yes', armor_frames: [5, 99], whiff_recovery: -1, continue_on: ['always'] }).join('\n');
+    expect(p).toMatch(/glint: must be true or false/);
+    expect(p).toMatch(/armor_frames: frames \[5, 99\] are outside the move/);
+    expect(p).toMatch(/whiff_recovery: must be >= 0/);
+    expect(p).toMatch(/continue_on\[0\]: unknown value "always"/);
+  });
+});
+
+describe('character files', () => {
+  it('every file in data/characters/ loads and validates', async () => {
+    const { loadAllCharacters } = await import('../src/combat/character_data');
+    const { defs, errors } = loadAllCharacters();
+    expect(errors).toEqual([]);
+    expect(defs.get('rook')!.limbs.right_arm).toBe(false);
+    expect(defs.get('dummy')!.limbs.right_arm).toBe(true);
+    expect(defs.get('rook')!.body).toEqual({ halfWidth: 1200, height: 8000, crouchHeight: 5000 });
+  });
+  it('reports missing and invalid fields', async () => {
+    const { validateCharacter } = await import('../src/combat/character_data');
+    const { errors } = validateCharacter('data/characters/x.json', { id: 'x', name: 'X', moveset: 'rook', health: -5, limbs: {} });
+    const p = errors.map((e) => `${e.field}: ${e.problem}`).join('\n');
+    expect(p).toMatch(/health: must be >= 1/);
+    expect(p).toMatch(/poise: missing/);
+    expect(p).toMatch(/hurtbox.width: missing/);
+    expect(p).toMatch(/limbs.left_arm: must be true or false/);
+  });
+});

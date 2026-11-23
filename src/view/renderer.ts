@@ -72,7 +72,7 @@ export class Renderer {
       // Lying flat.
       body = { x0: f.x - 3000, x1: f.x + 3000, y0: 0, y1: 1200 };
     } else if (f.state === 'wake_up') {
-      body = { x0: f.x - SYSTEM.halfWidth, x1: f.x + SYSTEM.halfWidth, y0: 0, y1: 4000 };
+      body = { x0: f.x - f.halfWidth, x1: f.x + f.halfWidth, y0: 0, y1: Math.trunc(f.height / 2) };
     }
     const [x, y, w, h] = this.rect(body);
     ctx.fillStyle = look.body;

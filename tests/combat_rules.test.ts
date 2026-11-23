@@ -284,11 +284,11 @@ describe('walls', () => {
   it('fighters cannot leave the arena', () => {
     const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: 60, p2X: 900 });
     run(sim, 300, inp(4, 1), inp(4, -1));
-    expect(sim.fighters[0].x).toBe(SYSTEM.halfWidth);
-    expect(sim.fighters[1].x).toBe(SYSTEM.arenaWidth - SYSTEM.halfWidth);
+    expect(sim.fighters[0].x).toBe(1200);
+    expect(sim.fighters[1].x).toBe(SYSTEM.arenaWidth - 1200);
     // And walking into each other never overlaps.
     run(sim, 600, inp(6, 1), inp(6, -1));
-    expect(Math.abs(sim.fighters[1].x - sim.fighters[0].x)).toBeGreaterThanOrEqual(SYSTEM.bodyWidth);
+    expect(Math.abs(sim.fighters[1].x - sim.fighters[0].x)).toBeGreaterThanOrEqual(2400);
   });
   it('a launched dummy hitting a wall enters wall_splat', () => {
     const wall = SYSTEM.arenaWidth / 100;
@@ -296,7 +296,7 @@ describe('walls', () => {
     const d = sim.fighters[1];
     sim.step(inp(3, 1, '4'), N);
     runUntil(sim, () => d.state === 'wall_splat', N, N, 120);
-    expect(d.x).toBe(SYSTEM.arenaWidth - SYSTEM.halfWidth);
+    expect(d.x).toBe(SYSTEM.arenaWidth - 1200);
     expect(d.y).toBeGreaterThan(0);
   });
   it('wall splat: the 3rd hit drops the dummy into a knockdown', () => {

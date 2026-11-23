@@ -12,7 +12,7 @@ import type { CombatSim } from '../combat/combat_sim';
 import type { Fighter, FighterState } from '../combat/fighter';
 import { toAbsolute, type Button, type InputSnapshot } from '../combat/types';
 
-export type Opener = 'jab' | 'cross' | 'body_hook' | 'liver_shot' | 'haymaker' | 'bell_ringer' | 'iron_wall' | 'last_bell';
+export type Opener = 'jab' | 'cross' | 'body_hook' | 'liver_shot' | 'haymaker' | 'bell_ringer' | 'iron_wall' | 'last_bell' | 'grave_punch';
 export type Range = 'close' | 'mid' | 'far';
 export type Behaviour = 'footwork' | 'guard' | 'attack' | 'punish' | 'wake_up' | 'idle';
 
@@ -25,6 +25,7 @@ export const OPENER_MOVE: Readonly<Record<Opener, string>> = {
   bell_ringer: 'corvane_bell_ringer',
   iron_wall: 'corvane_iron_wall',
   last_bell: 'corvane_last_bell_1',
+  grave_punch: 'corvane_grave_punch',
 };
 
 /** AI tuning. Frame counts here are behaviour timings, not move frame data. */
@@ -45,12 +46,15 @@ export const AI = {
   phaseReadWindow: 240,
   phaseReadOpeners: 2,
   emberMinHealthPercent: 30,
+  /** Grave Punch on a downed Rook: needs this many knockdown frames left; chance by phase. */
+  graveMinFramesLeft: 14,
+  graveChance: [70, 100] as const,
   /** Chance to break a throw once he has seen it. */
   throwBreakChance: 50,
   /** Give up approaching after this many frames. */
   approachLimit: 60,
   /** Largest gap (px between hurtboxes) at which each opener is thrown. */
-  reach: { jab: 24, cross: 34, body_hook: 18, liver_shot: 26, haymaker: 50, bell_ringer: 12, iron_wall: 38, last_bell: 60 } as Record<Opener, number>,
+  reach: { jab: 24, cross: 34, body_hook: 18, liver_shot: 26, haymaker: 50, bell_ringer: 12, iron_wall: 38, last_bell: 60, grave_punch: 60 } as Record<Opener, number>,
 } as const;
 
 export const SWEEPING: ReadonlySet<Opener> = new Set<Opener>(['body_hook', 'haymaker', 'iron_wall']);
@@ -134,6 +138,7 @@ export class CorvaneAI {
   }
 
   private now = 0;
+  private graveRolledFor = -1;
   private throwBreak: boolean | null = null;
 
   update(sim: CombatSim): InputSnapshot {
@@ -308,6 +313,20 @@ export class CorvaneAI {
     // A plan whose move has run its course (or never came out) is finished.
     if (this.plan && (this.plan.started || this.plan.frames > AI.approachLimit + 10)) this.plan = null;
     if (this.plan) return this.runPlan(me, gap);
+
+    // Grave Punch: Rook lying in reach with enough knockdown left (a fall is plain to see).
+    if (rook.state === 'knockdown' && !rook.groundHitTaken && rook.stateLength - rook.stateFrame >= AI.graveMinFramesLeft && gap <= AI.reach.grave_punch) {
+      const knockdownId = sim.frame - rook.stateFrame;
+      if (this.graveRolledFor !== knockdownId) {
+        this.graveRolledFor = knockdownId;
+        if (sim.rng.chance(AI.graveChance[me.phase >= 2 ? 1 : 0])) {
+          this.plan = this.makePlan(sim, 'grave_punch', true);
+          this.plan.stage = 'execute';
+          this.log.push({ frame: sim.frame, type: 'ground_hit', move: OPENER_MOVE.grave_punch });
+          return this.runPlan(me, gap);
+        }
+      }
+    }
 
     // Wake-up: Rook down or invulnerable → walk to mid range and wait; ground hit if possible.
     const down = p.state === 'knockdown' || p.state === 'wake_up' || p.state === 'defeated' || rook.state === 'wake_up';

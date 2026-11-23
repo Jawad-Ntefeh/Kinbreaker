@@ -140,3 +140,10 @@ describe('character files', () => {
     expect(p).toMatch(/limbs.left_arm: must be true or false/);
   });
 });
+
+describe('derived stun', () => {
+  it('rejects a recovery too short for the authored advantage', () => {
+    const p = problems({ ...base(), on_block: -18, recovery: 12 }).join('\n');
+    expect(p).toMatch(/on_block: -18 needs at least 18 recovery frames/);
+  });
+});

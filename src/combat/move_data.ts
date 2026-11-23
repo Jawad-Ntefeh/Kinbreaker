@@ -341,6 +341,13 @@ export function validateMove(file: string, character: string, raw: unknown): { m
     else cancelOnly = o.cancel_only;
   }
 
+  // Derived stun must be at least 1 frame, or the authored advantage can't happen.
+  const remainingAfterFirstActive = active - 1 + recovery;
+  for (const [field, v] of [['on_block', onBlock], ['on_hit', onHit], ['on_counter_hit', onCounterHit]] as const) {
+    if (typeof v === 'number' && v + remainingAfterFirstActive < 1) {
+      err(field, `${v} needs at least ${1 - v - (active - 1)} recovery frames (stun = ${field} + active - 1 + recovery must be >= 1), recovery is ${recovery}`);
+    }
+  }
   let glint = false;
   if (o.glint !== undefined) {
     if (typeof o.glint !== 'boolean') err('glint', 'must be true or false');

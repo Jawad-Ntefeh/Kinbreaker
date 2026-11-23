@@ -24,10 +24,11 @@ export interface CharacterSprites {
 
 /** Placeholder palettes: ramps from outline to light. Red is never a character colour. */
 const PALETTES: Record<string, Record<Shade, string>> = {
-  rook: { outline: '#1c160c', dark: '#6e5a2a', base: '#a8873a', light: '#d8b867' }, // tarnished gold
-  corvane: { outline: '#1a120b', dark: '#4e3824', base: '#7a5a3a', light: '#a8825a' }, // bronze-brown
+  // Tarnished gold.
+  rook: { outline: '#1c160c', dark: '#6e5a2a', base: '#a8873a', light: '#d8b867', cloth: '#a8873a', clothDark: '#6e5a2a', band: '#6e5a2a' },
+  // Iron grey skin and wrist bands; rust-brown leather.
+  corvane: { outline: '#15171a', dark: '#5f666e', base: '#7d848c', light: '#9aa1a8', cloth: '#7a4a2e', clothDark: '#4f2f1d', band: '#3e444b' },
 };
-
 const ART = new Set(artFiles.filter((f) => f.endsWith('.png') || f.endsWith('.json')));
 
 function canvas(w: number, h: number): HTMLCanvasElement {

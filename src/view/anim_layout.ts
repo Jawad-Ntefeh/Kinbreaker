@@ -16,6 +16,28 @@ export interface SheetSpec {
   color: string;
 }
 
+/** Cell layout rule: this much room behind the pivot, and this much past the furthest hitbox. */
+export const CELL_BEHIND = 40;
+export const CELL_MARGIN = 8;
+/** Cell widths are rounded up to a multiple of this. */
+export const CELL_ROUND = 8;
+
+/** Furthest hitbox reach in front of the pivot, in px, over all of a move set. */
+export function maxReach(moves: MoveSet): number {
+  let r = 0;
+  for (const m of moves.values()) for (const h of m.hitboxes) r = Math.max(r, Math.ceil((h.x + h.w) / 100));
+  return r;
+}
+
+/**
+ * Cell size from the data: front of the cell = furthest hitbox reach + 8 px, behind the pivot = 40 px,
+ * width rounded up to a multiple of 8. Height and the pivot's height are kept from data/art_spec.json.
+ */
+export function computeCell(moves: MoveSet, height: number, pivotY: number): { cell: [number, number]; pivot: [number, number] } {
+  const width = Math.ceil((CELL_BEHIND + maxReach(moves) + CELL_MARGIN) / CELL_ROUND) * CELL_ROUND;
+  return { cell: [width, height], pivot: [CELL_BEHIND, pivotY] };
+}
+
 /** Sheet layout for a character; characters listed in "shared" use another character's sheet. */
 export function sheetSpec(id: string): { spec: SheetSpec; sheetOf: string } | null {
   const shared = (artSpec.shared as Record<string, string>)[id];
@@ -55,17 +77,17 @@ export const STATE_SPECS: readonly StateSpec[] = [
   { name: 'knockdown', poses: 2, dur: 6, loop: false, required: true, note: 'second pose (lying) is held' },
   { name: 'wake_up', poses: 3, dur: 7, loop: false, required: true, note: '20 frames, invulnerable' },
   { name: 'thrown', poses: 2, dur: 10, loop: false, required: false, note: '' },
-  { name: 'throw_break', poses: 2, dur: 10, loop: false, required: false, note: '' },
+  { name: 'throw_break', poses: 2, dur: 10, loop: false, required: true, note: '' },
   { name: 'wall_splat', poses: 2, dur: 10, loop: false, required: true, note: 'pinned to the wall while sliding down' },
-  { name: 'stagger', poses: 4, dur: 8, loop: true, required: false, note: 'poise broken' },
-  { name: 'guard_break', poses: 3, dur: 8, loop: false, required: false, note: '' },
+  { name: 'stagger', poses: 4, dur: 8, loop: true, required: true, note: 'poise broken' },
+  { name: 'guard_break', poses: 3, dur: 8, loop: false, required: true, note: '' },
   { name: 'ko', poses: 3, dur: 8, loop: false, required: true, note: 'last pose is held' },
-  { name: 'intro', poses: 6, dur: 10, loop: false, required: false, note: 'boss intro banner' },
+  { name: 'intro', poses: 6, dur: 10, loop: false, required: true, note: 'boss intro banner' },
   { name: 'victory', poses: 6, dur: 10, loop: false, required: false, note: '' },
   { name: 'phase_transition', poses: 6, dur: 15, loop: false, required: true, bossOnly: true, note: '90 frames, invulnerable' },
 ];
 
-export type MovePhase = 'startup' | 'impact' | 'recovery';
+export type MovePhase = 'startup' | 'smear' | 'impact' | 'recovery';
 
 export interface PoseKey {
   anim: string;
@@ -90,14 +112,35 @@ function split(total: number, n: number): number[] {
   return Array.from({ length: n }, (_, i) => base + (i < extra ? 1 : 0));
 }
 
-/** Key poses for a move: wind-up poses, one impact pose (held for the active frames), recovery poses. */
+export const MIN_MOVE_POSES = 3;
+export const MAX_MOVE_POSES = 7;
+
+/** Heavy moves get a smear frame right before the impact frame. */
+export function hasSmear(m: Move): boolean {
+  return m.damage >= 20 || m.properties.includes('launcher');
+}
+
+/**
+ * Key poses for a move: wind-up poses, a smear frame for heavy moves (damage >= 20 or launcher),
+ * one impact pose (held for the active frames), recovery poses. 3 to 7 poses in total.
+ */
 export function movePoses(m: Move): { phase: MovePhase; dur: number }[] {
   const s = m.startup - 1;
-  const startupPoses = s <= 0 ? 0 : s <= 6 ? 1 : s <= 14 ? 2 : 3;
+  const smear = hasSmear(m) && s >= 2;
+  const smearDur = smear ? (s >= 6 ? 2 : 1) : 0;
+  const wind = s - smearDur;
+  let startupPoses = wind <= 0 ? 0 : wind <= 6 ? 1 : wind <= 14 ? 2 : 3;
   const r = m.recovery;
-  const recoveryPoses = r <= 0 ? 0 : r <= 8 ? 1 : r <= 20 ? 2 : 3;
+  let recoveryPoses = r <= 0 ? 0 : r <= 8 ? 1 : r <= 20 ? 2 : 3;
+  // Keep within 7 poses: drop recovery poses first, then wind-up poses (never below one).
+  while (startupPoses + (smear ? 1 : 0) + 1 + recoveryPoses > MAX_MOVE_POSES) {
+    if (recoveryPoses > 1) recoveryPoses--;
+    else if (startupPoses > 1) startupPoses--;
+    else break;
+  }
   return [
-    ...split(s, startupPoses).map((dur) => ({ phase: 'startup' as const, dur })),
+    ...split(wind, startupPoses).map((dur) => ({ phase: 'startup' as const, dur })),
+    ...(smear ? [{ phase: 'smear' as const, dur: smearDur }] : []),
     { phase: 'impact', dur: m.active },
     ...split(r, recoveryPoses).map((dur) => ({ phase: 'recovery' as const, dur })),
   ];

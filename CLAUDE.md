@@ -132,6 +132,9 @@ public/art/           # sprites (later, from Pixelwright exports)
 ## Art pipeline (sprites, animation, effects)
 
 - Sprite sheets: `public/art/characters/<id>.png`, a grid of equal cells (cell 0 = top left). Animation files: `data/anims/<id>.json` (`sheet`, `cell`, `pivot`, optional `sheet_cells`, `anims`). Sheet layouts per character (cell size, pivot, columns, colour) live in `data/art_spec.json`; the dummy shares Rook's sheet (shifted to greys).
+- **Cell size comes from the data:** 40 px behind the pivot; in front of it, the character's furthest hitbox reach + 8 px; width rounded up to a multiple of 8; height fixed per character. `npm run art-spec` computes it into `data/art_spec.json` (currently Rook 104x96, pivot 40,92; Corvane 104x104, pivot 40,100). The animation validator fails if any hitbox of a move reaches outside its cell, so after changing hitboxes, rerun `npm run art-spec`.
+- **Poses per move:** 3 to 7 held key poses. Moves with damage ≥ 20 or the `launcher` property get one extra "smear" frame immediately before the impact frame (taken from the wind-up, so the impact frame never moves).
+- **Required state animations** include `intro`, `stagger`, `guard_break` and `throw_break`; `victory` is optional (see `STATE_SPECS` in `src/view/anim_layout.ts`).
 - `dur` is in sim frames. A move animation (`"move": "<id>"`) has exactly one `"impact": true` frame that starts on the move's first active frame, and its durations add up to the move's total; the loader rejects anything else. Its playhead is the sim's move frame (never a separate timer), so it freezes during hitstop and can't drift.
 - Animation choice is a pure function (`src/view/anim_select.ts`): current move id → state animation → fallback chain → idle. Without an animation file the game generates posed placeholder silhouettes (`src/view/placeholder.ts`).
 - The game only requests art files that exist (`virtual:art-manifest`, generated from `public/art/`), so missing art never causes 404s.
@@ -162,7 +165,7 @@ public/art/           # sprites (later, from Pixelwright exports)
 ## Game facts to keep consistent
 
 - Rook starts missing her **right arm**: button `2` does nothing until the Iron Wrist relic is equipped.
-- Attack glints: white = linear, red = sweeping. Red is never used as a character accent colour; Rook's accent is tarnished gold.
+- Attack glints: white = linear, red = sweeping. Red is never used as a character accent colour; Rook's accent is tarnished gold. Corvane is iron grey (skin and wrist bands) with rust-brown leather as his secondary colour.
 - Phase step passes through `linear` attacks only; `sweeping` attacks hit it.
 - Stamina is spent only by phase steps and blocking; attacks are free. Empty stamina while blocking = guard break.
 - Move priority when several moves match: more buttons first, then a motion input, then a held direction, then a plain button (forward + U + J = throw).

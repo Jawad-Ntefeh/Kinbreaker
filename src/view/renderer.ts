@@ -20,7 +20,7 @@ export interface FighterLook {
 export const LOOKS: Readonly<Record<string, FighterLook>> = {
   rook: { body: '#a8873a', limb: '#d8b867' }, // tarnished gold
   dummy: { body: '#77777f', limb: '#a5a5ad' },
-  corvane: { body: '#4d5966', limb: '#8fa3b5' }, // iron
+  corvane: { body: '#5f666e', limb: '#9aa1a8' }, // iron grey (rust-brown leather is secondary)
 };
 const DEFAULT_LOOK: FighterLook = { body: '#777', limb: '#aaa' };
 

@@ -107,6 +107,16 @@ export function validateAnimFile(
             if (frames[idx]!.dur < m.active) err(name, `impact lasts ${frames[idx]!.dur} frames, the move is active for ${m.active}`);
           }
           if (total !== m.total) err(name, `durations add up to ${total} frames, the move lasts ${m.total}`);
+          // Every hitbox must fit in the cell: in front of the pivot, and below the cell's top.
+          if (pair(o.cell) && pair(o.pivot)) {
+            const front = o.cell[0] - o.pivot[0];
+            for (const h of m.hitboxes) {
+              const reach = Math.ceil((h.x + h.w) / 100);
+              const top = Math.ceil((h.y + h.h) / 100);
+              if (reach > front) err(name, `hitbox reaches ${reach} px in front of the pivot, the cell has ${front} px (widen the cell: reach + 8, rounded up to a multiple of 8)`);
+              if (top > o.pivot[1]) err(name, `hitbox reaches ${top} px above the floor, the cell has ${o.pivot[1]} px above the pivot`);
+            }
+          }
         }
       } else if (frames.some((f) => f.impact)) err(name, '"impact" is only for move animations');
       anims.set(name, { name, loop: ar.loop === true, move, frames, total });

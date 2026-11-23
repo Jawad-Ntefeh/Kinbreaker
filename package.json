@@ -9,7 +9,7 @@
     "test": "vitest run",
     "preview": "vite preview",
     "stats": "FIGHT_STATS=1 vitest run tests/fight_stats.test.ts",
-    "art-spec": "ART_SPEC_WRITE=1 vitest run tests/art_spec.test.ts"
+    "art-spec": "ART_SPEC_WRITE=cells vitest run tests/art_spec.test.ts && ART_SPEC_WRITE=docs vitest run tests/art_spec.test.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

@@ -13,25 +13,27 @@
   2. all durations add up to the move's total (`startup + active - 1 + recovery`);
   3. the impact frame lasts at least as long as the active frames;
   4. every cell exists in the sheet.
-- **Reach:** the impact pose should reach the hitbox (the "reach" column, in px in front of the pivot). Where the reach is wider than the space in front of the pivot, the limb will touch the cell edge: see the notes per character.
+- **Reach:** the impact pose should reach the hitbox (the "reach" column, in px in front of the pivot).
+- **Cell size comes from the data:** 40 px behind the pivot, and in front of it the character's furthest hitbox reach + 8 px; the width is rounded up to a multiple of 8. The height is fixed per character. The game refuses an animation file whose cell doesn't contain every hitbox of its moves.
+- **Poses:** 3 to 7 per move. Heavy moves (damage 20 or more, or launchers) get one extra **smear** frame immediately before the impact frame: the limb mid-swing, stretched or blurred, so the hit reads at speed. It is part of the wind-up, so it never moves the impact frame.
 - **Missing animations** fall back (`hitstun_high` → `hitstun_mid` → `idle`; `blockstun_crouch` → `blockstun_stand` → `block_stand`; anything else → `idle`), so the game runs with a partial sheet. Characters without a sheet use generated placeholder silhouettes.
 - **Check your work:** `npm run dev`, open `/sprites.html` to see each sheet with cell numbers, then the game with the debug overlay (`` ` ``): it shows cell bounds, the pivot and `anim  cell  frame  IMPACT`; **H** fades or hides the sprites to compare them with the hitboxes.
 
 ## Palette rules
 
-- Rook's accent is **tarnished gold**. Corvane is **bronze-brown** iron. The training dummy is Rook's sheet shifted to greys by the game (no separate art).
+- Rook's accent is **tarnished gold**. Corvane is **iron grey** (skin and wrist bands) with **rust-brown leather** as the secondary colour. The training dummy is Rook's sheet shifted to greys by the game (no separate art).
 - **Red is reserved for sweeping-attack glints.** Never use red as a character colour; white glints mean linear attacks. Glints, sparks and other effects are drawn by the game, not on the sprites.
 - The world is desaturated; the action is coloured. Whole pixels, no anti-aliasing, no smooth gradients; a dark outline around each silhouette.
 - Hit flashes (white), phase-step afterimages (gold) and the dummy's grey are made from the sprite's silhouette by the game, so keep a clean transparent background.
 
 ## Rook (`rook`)
 
-- Cell **64x96**, pivot **(32, 92)**, colour: tarnished gold. Hurtbox 24x80 px (crouching 50).
-- Suggested sheet: **8 columns x 16 rows** (128 cells) at `public/art/characters/rook.png`, 512x1536 px.
+- Cell **104x96**, pivot **(40, 92)**, colour: tarnished gold. Hurtbox 24x80 px (crouching 50).
+- Cell width: 40 px behind the pivot + furthest reach 50 px + 8 px = 98, rounded up to 104 (64 px in front of the pivot).
+- Suggested sheet: **8 columns x 17 rows** (130 cells) at `public/art/characters/rook.png`, 832x1632 px.
 - Rook is missing her **right arm** (the back arm when facing right): draw it absent in every pose. `rook_cross` (right arm) is used by the training dummy and later by the Iron Wrist relic.
 - The training dummy (`dummy`) uses this sheet, shifted to greys.
-- **35 animations, 128 drawn frames** (15 required state animations + 10 moves; the rest are optional).
-- Note: only 32 px fit in front of the pivot; these hitboxes reach further, so the impact pose will touch the cell edge: `rook_cross`, `rook_high_kick`, `rook_jab`, `rook_jab_2`, `rook_knee`, `rook_low_jab`, `rook_palm`, `rook_rising_kick`, `rook_sweep`.
+- **35 animations, 130 drawn frames** (19 required state animations + 10 moves; the rest are optional).
 
 ### State animations
 
@@ -55,12 +57,12 @@
 | `knockdown` | yes | 2 | 6 | no | second pose (lying) is held |
 | `wake_up` | yes | 3 | 7 | no | 20 frames, invulnerable |
 | `thrown` | optional | 2 | 10 | no |  |
-| `throw_break` | optional | 2 | 10 | no |  |
+| `throw_break` | yes | 2 | 10 | no |  |
 | `wall_splat` | yes | 2 | 10 | no | pinned to the wall while sliding down |
-| `stagger` | optional | 4 | 8 | yes | poise broken |
-| `guard_break` | optional | 3 | 8 | no |  |
+| `stagger` | yes | 4 | 8 | yes | poise broken |
+| `guard_break` | yes | 3 | 8 | no |  |
 | `ko` | yes | 3 | 8 | no | last pose is held |
-| `intro` | optional | 6 | 10 | no | boss intro banner |
+| `intro` | yes | 6 | 10 | no | boss intro banner |
 | `victory` | optional | 6 | 10 | no |  |
 
 ### Move animations
@@ -76,16 +78,16 @@ The impact pose must start on the frame in **bold** (the first active frame). "P
 | `rook_knee` | Knee | `3` | mid / linear | 13 | 3 | 20 | 35 | **13** | 34 | 5 | startup 6, startup 6, **impact** 3, recovery 10, recovery 10 |  |
 | `rook_low_jab` | Low Jab | `2:1` | low / linear | 10 | 2 | 14 | 25 | **10** | 42 | 5 | startup 5, startup 4, **impact** 2, recovery 7, recovery 7 |  |
 | `rook_palm` | Lunging Palm | `6:1` | mid / linear | 14 | 3 | 22 | 38 | **14** | 44 | 6 | startup 7, startup 6, **impact** 3, recovery 8, recovery 7, recovery 7 |  |
-| `rook_rising_kick` | Rising Kick | `3:4` | mid / linear | 15 | 3 | 18 | 35 | **15** | 36 | 5 | startup 7, startup 7, **impact** 3, recovery 9, recovery 9 |  |
+| `rook_rising_kick` | Rising Kick | `3:4` | mid / linear | 15 | 3 | 18 | 35 | **15** | 36 | 6 | startup 6, startup 6, *smear* 2, **impact** 3, recovery 9, recovery 9 | smear frame before impact |
 | `rook_sweep` | Sweep | `2:4` | low / sweeping | 16 | 3 | 28 | 46 | **16** | 50 | 7 | startup 5, startup 5, startup 5, **impact** 3, recovery 10, recovery 9, recovery 9 |  |
-| `rook_throw` | House Throw | `1+3` | throw / linear | 12 | 2 | 28 | 41 | **12** | range 28 | 6 | startup 6, startup 5, **impact** 2, recovery 10, recovery 9, recovery 9 |  |
+| `rook_throw` | House Throw | `1+3` | throw / linear | 12 | 2 | 28 | 41 | **12** | range 28 | 7 | startup 5, startup 4, *smear* 2, **impact** 2, recovery 10, recovery 9, recovery 9 | smear frame before impact |
 
 ## Corvane, the Iron Wrist (`corvane`)
 
-- Cell **80x104**, pivot **(40, 100)**, colour: bronze-brown. Hurtbox 32x88 px (crouching 55).
-- Suggested sheet: **8 columns x 21 rows** (162 cells) at `public/art/characters/corvane.png`, 640x2184 px.
-- **41 animations, 162 drawn frames** (16 required state animations + 15 moves; the rest are optional).
-- Note: only 40 px fit in front of the pivot; these hitboxes reach further, so the impact pose will touch the cell edge: `corvane_body_hook`, `corvane_cross`, `corvane_grave_punch`, `corvane_haymaker`, `corvane_iron_wall`, `corvane_jab_1`, `corvane_jab_2`, `corvane_jab_3`, `corvane_last_bell_1`, `corvane_last_bell_2`, `corvane_last_bell_3`, `corvane_last_bell_4`, `corvane_last_bell_5`, `corvane_liver_shot`.
+- Cell **104x104**, pivot **(40, 100)**, colour: iron grey (skin and wrist bands), rust-brown leather (secondary). Hurtbox 32x88 px (crouching 55).
+- Cell width: 40 px behind the pivot + furthest reach 56 px + 8 px = 104, rounded up to 104 (64 px in front of the pivot).
+- Suggested sheet: **8 columns x 21 rows** (164 cells) at `public/art/characters/corvane.png`, 832x2184 px.
+- **41 animations, 164 drawn frames** (20 required state animations + 15 moves; the rest are optional).
 
 ### State animations
 
@@ -109,12 +111,12 @@ The impact pose must start on the frame in **bold** (the first active frame). "P
 | `knockdown` | yes | 2 | 6 | no | second pose (lying) is held |
 | `wake_up` | yes | 3 | 7 | no | 20 frames, invulnerable |
 | `thrown` | optional | 2 | 10 | no |  |
-| `throw_break` | optional | 2 | 10 | no |  |
+| `throw_break` | yes | 2 | 10 | no |  |
 | `wall_splat` | yes | 2 | 10 | no | pinned to the wall while sliding down |
-| `stagger` | optional | 4 | 8 | yes | poise broken |
-| `guard_break` | optional | 3 | 8 | no |  |
+| `stagger` | yes | 4 | 8 | yes | poise broken |
+| `guard_break` | yes | 3 | 8 | no |  |
 | `ko` | yes | 3 | 8 | no | last pose is held |
-| `intro` | optional | 6 | 10 | no | boss intro banner |
+| `intro` | yes | 6 | 10 | no | boss intro banner |
 | `victory` | optional | 6 | 10 | no |  |
 | `phase_transition` | yes | 6 | 15 | no | 90 frames, invulnerable |
 
@@ -124,12 +126,12 @@ The impact pose must start on the frame in **bold** (the first active frame). "P
 
 | Move | Name | Input | Height / path | Startup | Active | Recovery | Total | Impact starts on | Reach (px) | Poses | Suggested poses | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `corvane_bell_ringer` | Bell Ringer | `1+2` | throw / linear | 12 | 2 | 30 | 43 | **12** | range 30 | 6 | startup 6, startup 5, **impact** 2, recovery 10, recovery 10, recovery 10 |  |
-| `corvane_body_hook` | Body Hook | `3:2` | mid / sweeping | 16 | 3 | 22 | 40 | **16** | 44 | 7 | startup 5, startup 5, startup 5, **impact** 3, recovery 8, recovery 7, recovery 7 |  |
-| `corvane_cross` | Straight Cross | `6:2` | mid / linear | 14 | 3 | 20 | 36 | **14** | 50 | 5 | startup 7, startup 6, **impact** 3, recovery 10, recovery 10 |  |
+| `corvane_bell_ringer` | Bell Ringer | `1+2` | throw / linear | 12 | 2 | 30 | 43 | **12** | range 30 | 7 | startup 5, startup 4, *smear* 2, **impact** 2, recovery 10, recovery 10, recovery 10 | smear frame before impact |
+| `corvane_body_hook` | Body Hook | `3:2` | mid / sweeping | 16 | 3 | 22 | 40 | **16** | 44 | 7 | startup 7, startup 6, *smear* 2, **impact** 3, recovery 8, recovery 7, recovery 7 | smear frame before impact |
+| `corvane_cross` | Straight Cross | `6:2` | mid / linear | 14 | 3 | 20 | 36 | **14** | 50 | 6 | startup 6, startup 5, *smear* 2, **impact** 3, recovery 10, recovery 10 | smear frame before impact |
 | `corvane_grave_punch` | Grave Punch | `2:1+2` | low / linear | 10 | 2 | 24 | 35 | **10** | 42 | 6 | startup 5, startup 4, **impact** 2, recovery 8, recovery 8, recovery 8 |  |
-| `corvane_haymaker` | Haymaker | `4:2` | high / sweeping | 26 | 3 | 28 | 56 | **26** | 56 | 7 | startup 9, startup 8, startup 8, **impact** 3, recovery 10, recovery 9, recovery 9 | glint (red) frames 12-20 |
-| `corvane_iron_wall` | Iron Wall | `6:1+2` | mid / sweeping | 22 | 3 | 30 | 54 | **22** | 50 | 7 | startup 7, startup 7, startup 7, **impact** 3, recovery 10, recovery 10, recovery 10 | glint (red) frames 8-16; armor 1-21 |
+| `corvane_haymaker` | Haymaker | `4:2` | high / sweeping | 26 | 3 | 28 | 56 | **26** | 56 | 7 | startup 8, startup 8, startup 7, *smear* 2, **impact** 3, recovery 14, recovery 14 | smear frame before impact; glint (red) frames 12-20 |
+| `corvane_iron_wall` | Iron Wall | `6:1+2` | mid / sweeping | 22 | 3 | 30 | 54 | **22** | 50 | 7 | startup 7, startup 6, startup 6, *smear* 2, **impact** 3, recovery 15, recovery 15 | smear frame before impact; glint (red) frames 8-16; armor 1-21 |
 | `corvane_jab_1` | Iron Jab | `1` | high / linear | 10 | 2 | 14 | 25 | **10** | 46 | 5 | startup 5, startup 4, **impact** 2, recovery 7, recovery 7 |  |
 | `corvane_jab_2` | Iron Jab 2 | `1` | high / linear | 10 | 2 | 14 | 25 | **10** | 46 | 5 | startup 5, startup 4, **impact** 2, recovery 7, recovery 7 | cancel-only |
 | `corvane_jab_3` | Iron Jab 3 | `1` | high / linear | 12 | 2 | 18 | 31 | **12** | 48 | 5 | startup 6, startup 5, **impact** 2, recovery 9, recovery 9 | cancel-only |
@@ -138,12 +140,12 @@ The impact pose must start on the frame in **bold** (the first active frame). "P
 | `corvane_last_bell_3` | Last Bell | `236:1+2` | mid / linear | 6 | 2 | 10 | 17 | **6** | 50 | 4 | startup 5, **impact** 2, recovery 5, recovery 5 | cancel-only; automatic part |
 | `corvane_last_bell_4` | Last Bell | `236:1+2` | mid / linear | 6 | 2 | 10 | 17 | **6** | 50 | 4 | startup 5, **impact** 2, recovery 5, recovery 5 | cancel-only; automatic part |
 | `corvane_last_bell_5` | Last Bell | `236:1+2` | mid / linear | 6 | 2 | 22 | 29 | **6** | 50 | 5 | startup 5, **impact** 2, recovery 8, recovery 7, recovery 7 | cancel-only; automatic part |
-| `corvane_liver_shot` | Liver Shot | `2:2` | low / linear | 18 | 3 | 30 | 50 | **18** | 48 | 7 | startup 6, startup 6, startup 5, **impact** 3, recovery 10, recovery 10, recovery 10 |  |
+| `corvane_liver_shot` | Liver Shot | `2:2` | low / linear | 18 | 3 | 30 | 50 | **18** | 48 | 7 | startup 5, startup 5, startup 5, *smear* 2, **impact** 3, recovery 15, recovery 15 | smear frame before impact |
 
 ## Totals
 
 | Character | Animations | Drawn frames | Required animations |
 | --- | --- | --- | --- |
-| rook | 35 | 128 | 25 |
-| corvane | 41 | 162 | 31 |
+| rook | 35 | 130 | 29 |
+| corvane | 41 | 164 | 35 |
 

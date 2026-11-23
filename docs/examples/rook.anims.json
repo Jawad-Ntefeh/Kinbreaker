@@ -1,8 +1,8 @@
 {
   "sheet": "art/characters/rook.png",
-  "cell": [64,96],
-  "pivot": [32,92],
-  "sheet_cells": [8,16],
+  "cell": [104,96],
+  "pivot": [40,92],
+  "sheet_cells": [8,17],
   "anims": {
     "idle": {"loop":true,"frames":[{"cell":0,"dur":10},{"cell":1,"dur":10},{"cell":2,"dur":10},{"cell":3,"dur":10}]},
     "walk_forward": {"loop":true,"frames":[{"cell":4,"dur":6},{"cell":5,"dur":6},{"cell":6,"dur":6},{"cell":7,"dur":6},{"cell":8,"dur":6},{"cell":9,"dur":6}]},
@@ -36,8 +36,8 @@
     "rook_knee": {"move":"rook_knee","frames":[{"cell":94,"dur":6},{"cell":95,"dur":6},{"cell":96,"dur":3,"impact":true},{"cell":97,"dur":10},{"cell":98,"dur":10}]},
     "rook_low_jab": {"move":"rook_low_jab","frames":[{"cell":99,"dur":5},{"cell":100,"dur":4},{"cell":101,"dur":2,"impact":true},{"cell":102,"dur":7},{"cell":103,"dur":7}]},
     "rook_palm": {"move":"rook_palm","frames":[{"cell":104,"dur":7},{"cell":105,"dur":6},{"cell":106,"dur":3,"impact":true},{"cell":107,"dur":8},{"cell":108,"dur":7},{"cell":109,"dur":7}]},
-    "rook_rising_kick": {"move":"rook_rising_kick","frames":[{"cell":110,"dur":7},{"cell":111,"dur":7},{"cell":112,"dur":3,"impact":true},{"cell":113,"dur":9},{"cell":114,"dur":9}]},
-    "rook_sweep": {"move":"rook_sweep","frames":[{"cell":115,"dur":5},{"cell":116,"dur":5},{"cell":117,"dur":5},{"cell":118,"dur":3,"impact":true},{"cell":119,"dur":10},{"cell":120,"dur":9},{"cell":121,"dur":9}]},
-    "rook_throw": {"move":"rook_throw","frames":[{"cell":122,"dur":6},{"cell":123,"dur":5},{"cell":124,"dur":2,"impact":true},{"cell":125,"dur":10},{"cell":126,"dur":9},{"cell":127,"dur":9}]}
+    "rook_rising_kick": {"move":"rook_rising_kick","frames":[{"cell":110,"dur":6},{"cell":111,"dur":6},{"cell":112,"dur":2},{"cell":113,"dur":3,"impact":true},{"cell":114,"dur":9},{"cell":115,"dur":9}]},
+    "rook_sweep": {"move":"rook_sweep","frames":[{"cell":116,"dur":5},{"cell":117,"dur":5},{"cell":118,"dur":5},{"cell":119,"dur":3,"impact":true},{"cell":120,"dur":10},{"cell":121,"dur":9},{"cell":122,"dur":9}]},
+    "rook_throw": {"move":"rook_throw","frames":[{"cell":123,"dur":5},{"cell":124,"dur":4},{"cell":125,"dur":2},{"cell":126,"dur":2,"impact":true},{"cell":127,"dur":10},{"cell":128,"dur":9},{"cell":129,"dur":9}]}
   }
 }

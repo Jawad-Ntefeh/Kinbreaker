@@ -10,7 +10,11 @@ import type { Limbs } from '../combat/fighter';
 import type { Move } from '../combat/move_data';
 import type { PoseKey } from './anim_layout';
 
-export type Shade = 'outline' | 'dark' | 'base' | 'light';
+/**
+ * Two materials per character: skin/metal (`dark`, `base`, `light`, plus `band` for wrist bands)
+ * and clothing/leather (`clothDark`, `cloth`).
+ */
+export type Shade = 'outline' | 'dark' | 'base' | 'light' | 'cloth' | 'clothDark' | 'band';
 
 export interface PoseRect {
   x: number;
@@ -166,7 +170,7 @@ function moveSkeleton(
     tx = Math.min(maxX, Math.round((hb.x + hb.w) / 100));
     ty = Math.round((hb.y + hb.h / 2) / 100);
   }
-  const reach = key.phase === 'impact' ? 1 : key.phase === 'recovery' ? 0.5 : 0;
+  const reach = key.phase === 'impact' ? 1 : key.phase === 'smear' ? 0.75 : key.phase === 'recovery' ? 0.5 : 0;
   const lerp = (a: Pt, bb: Pt): Pt => [Math.round(a[0] + (bb[0] - a[0]) * reach), Math.round(a[1] + (bb[1] - a[1]) * reach)];
   const target: Pt = [tx, ty];
   const limb = m.limb;
@@ -210,12 +214,12 @@ function toRects(sk: Skeleton, b: Body): PoseRect[] {
   if (sk.lying > 0) {
     // Lying flat, centred on the pivot: head, torso, legs.
     const y = sk.lying - 1;
-    const len = Math.min(b.cell[0] - 6, p.leg + p.torso + p.head);
+    const len = Math.min(2 * Math.min(px, b.cell[0] - px) - 6, p.leg + p.torso + p.head);
     const x0 = -(len >> 1);
     const legLen = Math.round(len * 0.45);
     const torsoLen = Math.round(len * 0.38);
-    add(x0 + torsoLen + p.head - 4, y, legLen, p.legW + 1, 'dark');
-    add(x0 + p.head - 2, y, torsoLen, Math.max(8, p.torsoW - 4), 'base');
+    add(x0 + torsoLen + p.head - 4, y, legLen, p.legW + 1, 'clothDark');
+    add(x0 + p.head - 2, y, torsoLen, Math.max(8, p.torsoW - 4), 'cloth');
     add(x0, y + 1, p.head, p.headW - 1, 'light');
     add(x0 + p.head + 2, y + Math.max(8, p.torsoW - 4) - 1, Math.round(torsoLen * 0.6), p.arm, 'light');
     return outline(out);
@@ -234,12 +238,23 @@ function toRects(sk: Skeleton, b: Body): PoseRect[] {
   const backShoulder = sk.lean - (tw >> 1) + 3;
   const frontShoulder = sk.lean + (tw >> 1) - 3;
   // Back limbs first (darker), then torso and head, then front limbs.
-  if (has('right_leg')) limb([backHip, hip], sk.backFoot, knee(backHip, sk.backFoot), p.legW, 'dark');
-  if (has('right_arm')) limb([backShoulder, shoulderY], sk.backHand, elbow(backShoulder, sk.backHand), p.arm, 'dark');
-  add(sk.lean - (tw >> 1), hip, tw, p.torso, 'base');
+  // Wrist band: a short block of the band colour just behind the hand.
+  const band = (hand: Pt, from: number) => {
+    const dir = hand[0] >= from ? -1 : 1;
+    add(hand[0] + (dir < 0 ? -4 : 1) - (p.arm >> 1), hand[1] - (p.arm >> 1), 3, p.arm, 'band');
+  };
+  if (has('right_leg')) limb([backHip, hip], sk.backFoot, knee(backHip, sk.backFoot), p.legW, 'clothDark');
+  if (has('right_arm')) {
+    limb([backShoulder, shoulderY], sk.backHand, elbow(backShoulder, sk.backHand), p.arm, 'dark');
+    band(sk.backHand, backShoulder);
+  }
+  add(sk.lean - (tw >> 1), hip, tw, p.torso, 'cloth');
   add(sk.lean - (p.headW >> 1) + 1, hip + p.torso, p.headW, p.head, 'light');
-  if (has('left_leg')) limb([frontHip, hip], sk.frontFoot, knee(frontHip, sk.frontFoot), p.legW, 'base');
-  if (has('left_arm')) limb([frontShoulder, shoulderY], sk.frontHand, elbow(frontShoulder, sk.frontHand), p.arm, 'light');
+  if (has('left_leg')) limb([frontHip, hip], sk.frontFoot, knee(frontHip, sk.frontFoot), p.legW, 'cloth');
+  if (has('left_arm')) {
+    limb([frontShoulder, shoulderY], sk.frontHand, elbow(frontShoulder, sk.frontHand), p.arm, 'light');
+    band(sk.frontHand, frontShoulder);
+  }
   return outline(out);
 }
 

@@ -1,13 +1,13 @@
 {
-  "_comment": "Sheet layout the art pipeline expects per character (cell size, pivot, columns). The dummy reuses Rook's sheet with a grey palette shift.",
+  "_comment": "Sheet layout per character. cell width and pivot x are computed by `npm run art-spec` from the hitboxes (furthest reach + 8 px in front of the pivot, 40 px behind, rounded up to a multiple of 8); cell height and pivot y are set here. The dummy reuses Rook's sheet with a grey palette shift.",
   "characters": {
     "rook": {
       "cell": [
-        64,
+        104,
         96
       ],
       "pivot": [
-        32,
+        40,
         92
       ],
       "columns": 8,
@@ -15,7 +15,7 @@
     },
     "corvane": {
       "cell": [
-        80,
+        104,
         104
       ],
       "pivot": [
@@ -23,7 +23,7 @@
         100
       ],
       "columns": 8,
-      "color": "bronze-brown"
+      "color": "iron grey (skin and wrist bands), rust-brown leather (secondary)"
     }
   },
   "shared": {

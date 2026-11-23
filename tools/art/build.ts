@@ -136,6 +136,11 @@ function buildCharacter(char: string): void {
     lines.push(`Canonical ${char}: ${canonical.width}x${canonical.height} px; ${TRACKED.map((c) => `${c} ${pct(canonical.shares[c] ?? 0)}`).join(', ')}.`, '');
     for (const sh of sheets) {
       lines.push(`## ${sh.manifest.sheet}`, '');
+      if (sh.waiting) {
+        lines.push('Waiting for the image.', '');
+        notes.push(`${char} ${batch}: waiting for ${sh.manifest.sheet}`);
+        continue;
+      }
       if (!sh.poses.length) {
         lines.push(...sh.errors.map((e) => `- **Not converted:** ${e}`), '');
         notes.push(`${char} ${batch}: ${sh.errors.join('; ')}`);

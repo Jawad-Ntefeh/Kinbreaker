@@ -1,0 +1,96 @@
+{
+  "sheets": [
+    {
+      "sheet": "rook_idle_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "idle",
+          "index": 0
+        },
+        {
+          "anim": "idle",
+          "index": 1
+        },
+        {
+          "anim": "idle",
+          "index": 2
+        },
+        {
+          "anim": "idle",
+          "index": 3
+        }
+      ]
+    },
+    {
+      "sheet": "rook_walk_forward_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "walk_forward",
+          "index": 0
+        },
+        {
+          "anim": "walk_forward",
+          "index": 1
+        },
+        {
+          "anim": "walk_forward",
+          "index": 2
+        },
+        {
+          "anim": "walk_forward",
+          "index": 3
+        },
+        {
+          "anim": "walk_forward",
+          "index": 4
+        }
+      ]
+    },
+    {
+      "sheet": "rook_walk_forward_02.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "walk_forward",
+          "index": 5
+        }
+      ]
+    },
+    {
+      "sheet": "rook_jab_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "rook_jab",
+          "index": 0
+        },
+        {
+          "anim": "rook_jab",
+          "index": 1
+        },
+        {
+          "anim": "rook_jab",
+          "index": 2
+        },
+        {
+          "anim": "rook_jab",
+          "index": 3
+        },
+        {
+          "anim": "rook_jab",
+          "index": 4
+        }
+      ]
+    }
+  ]
+}

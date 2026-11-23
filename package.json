@@ -11,7 +11,8 @@
     "stats": "FIGHT_STATS=1 vitest run tests/fight_stats.test.ts",
     "art-spec": "ART_SPEC_WRITE=cells vitest run tests/art_spec.test.ts && ART_SPEC_WRITE=docs vitest run tests/art_spec.test.ts",
     "art": "tsx tools/art/build.ts",
-    "art:legacy": "tsx tools/art/legacy/build.ts"
+    "art:legacy": "tsx tools/art/legacy/build.ts",
+    "art-requests": "tsx tools/art/prompts.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

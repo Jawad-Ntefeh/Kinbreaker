@@ -1,0 +1,4 @@
+{
+  "_comment": "Which animations each art batch covers (prompts: npm run art-requests).",
+  "batch_01": ["idle", "walk_forward", "rook_jab"]
+}

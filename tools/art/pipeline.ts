@@ -76,6 +76,8 @@ export interface ConvertedSheet {
   scale: number;
   poses: ConvertedPose[];
   errors: string[];
+  /** The image hasn't been added yet. */
+  waiting?: boolean;
 }
 
 function convertFigure(img: Rgba, fig: Parameters<typeof cropFigure>[1], scale: number, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number], entry: PoseEntry): ConvertedPose {
@@ -104,7 +106,7 @@ function convertFigure(img: Rgba, fig: Parameters<typeof cropFigure>[1], scale: 
 export function convertSheet(dir: string, manifest: SheetManifest, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number]): ConvertedSheet {
   const file = join(dir, manifest.sheet);
   const errors: string[] = [];
-  if (!existsSync(file)) return { manifest, file, scale: 0, poses: [], errors: [`${manifest.sheet}: image not found`] };
+  if (!existsSync(file)) return { manifest, file, scale: 0, poses: [], errors: [], waiting: true };
   const img = readPng(file);
   const figs = splitFigures(foregroundMask(img), img.w, img.h);
   if (figs.length !== manifest.poses.length) {

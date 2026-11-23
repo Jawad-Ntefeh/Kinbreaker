@@ -1,0 +1,42 @@
+{
+  "id": "rook_jab",
+  "name": "Jab",
+  "limb": "left_arm",
+  "input": "1",
+  "startup": 10,
+  "active": 2,
+  "recovery": 13,
+  "damage": 7,
+  "poise_damage": 4,
+  "height": "high",
+  "path": "linear",
+  "on_block": 1,
+  "on_hit": 8,
+  "on_counter_hit": 8,
+  "properties": [],
+  "hitboxes": [
+    {
+      "frames": [
+        10,
+        11
+      ],
+      "x": 18,
+      "y": 52,
+      "w": 26,
+      "h": 10
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [],
+  "cancel_into": [
+    "rook_jab_2"
+  ],
+  "cancel_window": [
+    12,
+    20
+  ],
+  "cancel_on": [
+    "hit",
+    "block"
+  ]
+}

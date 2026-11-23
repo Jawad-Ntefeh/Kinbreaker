@@ -6,6 +6,7 @@ import type { CombatSim } from '../combat/combat_sim';
 import type { Fighter, WorldBox } from '../combat/fighter';
 import { frameAtMoveFrame, frameAtTick } from './anim_data';
 import { selectAnim, type ScenePose } from './anim_select';
+import { Backgrounds } from './background';
 import { Camera, FLOOR_Y } from './camera';
 import type { Effects } from './effects';
 import { silhouette, SpriteBank, type CharacterSprites } from './sprites';
@@ -57,6 +58,7 @@ export type SpriteMode = 'normal' | 'faded' | 'hidden';
 export class Renderer {
   readonly camera = new Camera();
   readonly bank = new SpriteBank();
+  readonly backgrounds = new Backgrounds();
   /** Frame counter for simple animation (view-only). */
   private tick = 0;
   spriteMode: SpriteMode = 'normal';
@@ -75,8 +77,8 @@ export class Renderer {
     this.camera.shakeX = shake[0];
     this.camera.shakeY = shake[1];
     this.camera.follow(sim);
-    if (sim.arena.id === 'sunken_colosseum') this.drawColosseum(ctx, sim);
-    else this.drawTrainingGround(ctx, sim);
+    if (!this.backgrounds.draw(ctx, sim.arena, sim, this.camera)) this.drawTrainingGround(ctx, sim);
+    else this.drawWalls(ctx, sim, '#2c2934', !!sim.arena.leftWall);
     fx?.drawBehind(ctx, this.camera, sim);
     for (const f of sim.fighters) this.drawShadow(ctx, f);
     // KO: everything but the fighters fades out.
@@ -113,54 +115,12 @@ export class Renderer {
     this.drawWalls(ctx, sim, '#3a3546');
   }
 
-  private drawColosseum(ctx: CanvasRenderingContext2D, sim: CombatSim): void {
-    const c = this.camera;
-    // Dark stone: back wall in courses of blocks, slower parallax.
-    ctx.fillStyle = '#16141b';
-    ctx.fillRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
-    const px = Math.round(c.x * 0.6);
-    ctx.fillStyle = '#1c1a22';
-    for (let row = 0; row < 12; row++) {
-      const y = 40 + row * 16;
-      const off = row % 2 ? 0 : 24;
-      for (let x = -((px + off) % 48) - 48; x < BASE_WIDTH; x += 48) ctx.fillRect(x, y, 46, 14);
-    }
-    // Broken columns (darker), at fixed arena positions.
-    ctx.fillStyle = '#0f0e13';
-    const cols: [number, number][] = [[-160, 120], [80, 150], [330, 90], [610, 160], [880, 110], [1110, 140]];
-    for (const [x, h] of cols) {
-      const sx = x - c.x;
-      if (sx < -40 || sx > BASE_WIDTH + 40) continue;
-      ctx.fillRect(sx, FLOOR_Y - h, 26, h);
-      ctx.fillRect(sx - 4, FLOOR_Y - h, 34, 6);
-      ctx.fillRect(sx + 18, FLOOR_Y - h - 8, 8, 8); // jagged break
-    }
-    // Floor and a shallow water line.
-    ctx.fillStyle = '#1d1b24';
-    ctx.fillRect(0, FLOOR_Y + 1, BASE_WIDTH, BASE_HEIGHT - FLOOR_Y - 1);
-    ctx.fillStyle = '#4a4656';
-    ctx.fillRect(0, FLOOR_Y, BASE_WIDTH, 1);
-    ctx.fillStyle = '#1f3240';
-    ctx.fillRect(0, FLOOR_Y + 2, BASE_WIDTH, 3);
-    ctx.fillStyle = '#3d6077';
-    for (let x = -((c.x + (this.tick >> 3)) % 32); x < BASE_WIDTH; x += 32) ctx.fillRect(x, FLOOR_Y + 2, 10, 1);
-    this.drawWalls(ctx, sim, '#2c2934');
-    // Rubble where the old left wall stood.
-    if (sim.wallBroken) {
-      const rx = -c.x;
-      ctx.fillStyle = '#2c2934';
-      ctx.fillRect(rx - 10, FLOOR_Y - 6, 8, 6);
-      ctx.fillRect(rx + 2, FLOOR_Y - 4, 6, 4);
-      ctx.fillRect(rx - 4, FLOOR_Y - 10, 5, 4);
-    }
-  }
-
-  private drawWalls(ctx: CanvasRenderingContext2D, sim: CombatSim, color: string): void {
+  private drawWalls(ctx: CanvasRenderingContext2D, sim: CombatSim, color: string, leftHasArt = false): void {
     const c = this.camera;
     ctx.fillStyle = color;
     const left = c.sx(sim.arenaLeft);
     const right = c.sx(sim.arenaRight);
-    if (left >= 0) ctx.fillRect(left - 6, 0, 6, FLOOR_Y + 1);
+    if (left >= 0 && !(leftHasArt && !sim.wallBroken)) ctx.fillRect(left - 6, 0, 6, FLOOR_Y + 1);
     if (right <= BASE_WIDTH) ctx.fillRect(right, 0, 6, FLOOR_Y + 1);
   }
 

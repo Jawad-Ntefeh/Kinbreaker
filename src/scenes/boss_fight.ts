@@ -34,13 +34,13 @@ export class BossFightScene extends SimScene {
 
   constructor(game: Game) {
     super(game);
-    this.sim = createCorvaneFight(newSeed());
+    this.sim = createFight();
     this.ai = new CorvaneAI(1);
     this.overlay.visible = false;
   }
 
   restart(): void {
-    this.sim = createCorvaneFight(newSeed());
+    this.sim = createFight();
     this.ai = new CorvaneAI(1);
     this.fx = new Effects();
     this.renderer.camera.snap();
@@ -173,6 +173,23 @@ export class BossFightScene extends SimScene {
     }
     this.pauseMenu?.draw(o, 'PAUSED');
   }
+}
+
+/**
+ * Dev/test URL parameters for the boss fight (read once when a fight is created):
+ * ?seed=N fixes the fight's seed; ?boss_hp=N starts Corvane at N health (e.g. near phase 2).
+ */
+function devParam(name: string): number | null {
+  if (typeof location === 'undefined') return null;
+  const v = new URLSearchParams(location.search).get(name);
+  return v !== null && /^\d+$/.test(v) ? Number(v) : null;
+}
+
+function createFight(): CombatSim {
+  const sim = createCorvaneFight(devParam('seed') ?? newSeed());
+  const hp = devParam('boss_hp');
+  if (hp !== null) sim.fighters[1].health = Math.max(1, Math.min(sim.fighters[1].maxHealth, hp));
+  return sim;
 }
 
 /** A fresh seed per fight (outside the sim; the sim itself is deterministic given the seed). */

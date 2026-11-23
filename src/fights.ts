@@ -4,8 +4,9 @@ import { fighterConfig } from './combat/character_data';
 import { CombatSim } from './combat/combat_sim';
 
 /** Rook vs Corvane in the Sunken Colosseum. */
-export function createCorvaneFight(seed: number): CombatSim {
+export function createCorvaneFight(seed: number, opts: { ko?: boolean } = {}): CombatSim {
   return new CombatSim({
+    ko: opts.ko ?? true,
     p1: fighterConfig('rook'),
     p2: fighterConfig('corvane'),
     arena: getArena('sunken_colosseum'),

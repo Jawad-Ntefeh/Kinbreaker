@@ -18,7 +18,8 @@ const BOX = {
 export interface OverlayInfo {
   simFps: number;
   dummyMode: string;
-  paused: boolean;
+  /** Pause label to show, or null when running. */
+  paused: string | null;
   controls: string;
 }
 
@@ -60,7 +61,7 @@ export class DebugOverlay {
     text(ctx, p1.name.toUpperCase(), 12, 1, '#d8b867');
     text(ctx, p2.name.toUpperCase(), BASE_WIDTH - 12, 1, '#c8c8d0', 'right');
 
-    if (info.paused) text(ctx, 'PAUSED  (P resume · O step)', BASE_WIDTH / 2, 50, '#fff', 'center');
+    if (info.paused) text(ctx, info.paused, BASE_WIDTH / 2, 50, '#fff', 'center');
 
     if (!this.visible) {
       text(ctx, '` debug overlay', BASE_WIDTH - 4, BASE_HEIGHT - 9, '#777', 'right');

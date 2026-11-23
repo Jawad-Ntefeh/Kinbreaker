@@ -117,7 +117,7 @@ export class TrainingScene {
     this.overlay.drawText(o, this.sim, {
       simFps,
       dummyMode: this.dummy.mode,
-      paused: this.debugPaused || this.menuPaused,
+      paused: this.menuPaused ? 'PAUSED  (Esc / Start to resume)' : this.debugPaused ? 'PAUSED  (P resume · O step one frame)' : null,
       controls: this.controlsLine(),
     });
     if (this.focusPaused) {

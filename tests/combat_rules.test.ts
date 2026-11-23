@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { CombatSim } from '../src/combat/combat_sim';
 import type { Move, MoveSet } from '../src/combat/move_data';
+import { getArena } from '../src/combat/arena_data';
+const TRAINING_W = getArena('training').width;
 import { SYSTEM, scaledDamage } from '../src/combat/system';
 import { dummyConfig, inp, N, pointBlank, rookConfig, rookMoves, run, runUntil } from './helpers';
 
@@ -285,22 +287,22 @@ describe('walls', () => {
     const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: 60, p2X: 900 });
     run(sim, 300, inp(4, 1), inp(4, -1));
     expect(sim.fighters[0].x).toBe(1200);
-    expect(sim.fighters[1].x).toBe(SYSTEM.arenaWidth - 1200);
+    expect(sim.fighters[1].x).toBe(TRAINING_W - 1200);
     // And walking into each other never overlaps.
     run(sim, 600, inp(6, 1), inp(6, -1));
     expect(Math.abs(sim.fighters[1].x - sim.fighters[0].x)).toBeGreaterThanOrEqual(2400);
   });
   it('a launched dummy hitting a wall enters wall_splat', () => {
-    const wall = SYSTEM.arenaWidth / 100;
+    const wall = TRAINING_W / 100;
     const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 44, p2X: wall - 20 });
     const d = sim.fighters[1];
     sim.step(inp(3, 1, '4'), N);
     runUntil(sim, () => d.state === 'wall_splat', N, N, 120);
-    expect(d.x).toBe(SYSTEM.arenaWidth - 1200);
+    expect(d.x).toBe(TRAINING_W - 1200);
     expect(d.y).toBeGreaterThan(0);
   });
   it('wall splat: the 3rd hit drops the dummy into a knockdown', () => {
-    const wall = SYSTEM.arenaWidth / 100;
+    const wall = TRAINING_W / 100;
     const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 44, p2X: wall - 20 });
     const d = sim.fighters[1];
     sim.step(inp(3, 1, '4'), N);

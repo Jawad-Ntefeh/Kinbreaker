@@ -139,6 +139,8 @@ export class Fighter {
   phase2Pending = false;
   /** Moves that cannot be started right now (phase-locked or already used once). */
   readonly lockedMoves = new Set<string>();
+  /** Once-per-fight moves already used. */
+  readonly usedOnce = new Set<string>();
 
   constructor(index: number, config: FighterConfig, x: number, facing: 1 | -1) {
     this.index = index;

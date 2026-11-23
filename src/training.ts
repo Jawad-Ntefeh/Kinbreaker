@@ -2,8 +2,8 @@
  * Training scene: Rook vs the training dummy, with the debug overlay, pause and frame step.
  */
 import { DummyController } from './ai/dummy';
-import { CombatSim } from './combat/combat_sim';
-import { fighterConfig } from './combat/character_data';
+import type { CombatSim } from './combat/combat_sim';
+import { createTraining } from './fights';
 import { keyLabel, type DebugAction } from './input/bindings';
 import { InputManager } from './input/input_manager';
 import { DebugOverlay, FONT } from './view/debug_overlay';
@@ -48,13 +48,7 @@ export class TrainingScene {
   }
 
   static newSim(): CombatSim {
-    return new CombatSim({
-      p1: fighterConfig('rook'),
-      p2: fighterConfig('dummy'),
-      p1X: 420,
-      p2X: 540,
-      trainingRefill: true,
-    });
+    return createTraining();
   }
 
   get paused(): boolean {

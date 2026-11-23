@@ -1,6 +1,5 @@
 /** Camera: follows the midpoint between the fighters, clamped to the arena. View-only. */
 import type { CombatSim } from '../combat/combat_sim';
-import { SYSTEM } from '../combat/system';
 import { BASE_WIDTH } from './screen';
 
 export const FLOOR_Y = 238;
@@ -12,8 +11,9 @@ export class Camera {
   follow(sim: CombatSim): void {
     const [a, b] = sim.fighters;
     const mid = (a.x + b.x) / 2 / 100;
-    const arena = SYSTEM.arenaWidth / 100;
-    this.x = Math.round(Math.min(arena - BASE_WIDTH, Math.max(0, mid - BASE_WIDTH / 2)));
+    const left = sim.arenaLeft / 100;
+    const right = sim.arenaRight / 100;
+    this.x = Math.round(Math.min(right - BASE_WIDTH, Math.max(left, mid - BASE_WIDTH / 2)));
   }
 
   /** Sim subpixel x → screen pixel x. */

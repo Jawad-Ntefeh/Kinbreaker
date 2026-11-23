@@ -16,6 +16,8 @@ import type { Move } from './move_data';
 import { SYSTEM, scaledDamage } from './system';
 import type { InputSnapshot } from './types';
 import { HASH_SEED, hashInt, hashString } from './hash';
+import { getArena, type ArenaDef } from './arena_data';
+import { Rng } from './rng';
 
 export type ContactKind = 'hit' | 'counter' | 'block' | 'throw';
 
@@ -34,7 +36,10 @@ export interface CombatEvent {
     | 'wall_splat'
     | 'knockdown'
     | 'ground_hit'
-    | 'armor';
+    | 'armor'
+    | 'ko'
+    | 'phase2'
+    | 'wall_break';
   attacker: number;
   defender: number;
   moveId: string;
@@ -58,8 +63,14 @@ export interface SimOptions {
   p2X?: number;
   /** Refill health after a fighter has been neutral for a while (training mode). */
   trainingRefill?: boolean;
-  /** Arena width in px (default from data/system.json). */
+  /** Arena (default: the training arena). */
+  arena?: ArenaDef;
+  /** Arena width in px, overriding the arena's (tests). */
   arenaWidth?: number;
+  /** Seed for the sim's RNG (used by AI decisions). */
+  seed?: number;
+  /** A fighter at 0 health is defeated (default true; training turns it off). */
+  ko?: boolean;
 }
 
 interface Contact {
@@ -93,14 +104,25 @@ export class CombatSim {
   /** Arena walls in subpixels. */
   arenaLeft = 0;
   arenaRight: number;
+  readonly arena: ArenaDef;
+  wallBroken = false;
+  /** Seeded RNG owned by the sim; AI controllers draw their random choices from it. */
+  readonly rng: Rng;
+  /** Index of the fighter who won by KO, or null. */
+  winner: number | null = null;
+  private readonly ko: boolean;
   /** Moves of each fighter sorted by input specificity (motion > held direction > plain button). */
   private readonly moveOrder: readonly [Move[], Move[]];
 
   constructor(opts: SimOptions) {
-    this.arenaRight = (opts.arenaWidth ?? SYSTEM.arenaWidth / 100) * 100;
-    const mid = this.arenaRight / 2;
-    const x1 = opts.p1X !== undefined ? opts.p1X * 100 : mid - 6000;
-    const x2 = opts.p2X !== undefined ? opts.p2X * 100 : mid + 6000;
+    this.arena = opts.arena ?? getArena('training');
+    this.arenaRight = opts.arenaWidth !== undefined ? opts.arenaWidth * 100 : this.arena.width;
+    this.rng = new Rng(opts.seed ?? 1);
+    this.ko = opts.ko ?? true;
+    const mid = Math.trunc(this.arenaRight / 2);
+    const half = Math.trunc(this.arena.startGap / 2);
+    const x1 = opts.p1X !== undefined ? opts.p1X * 100 : mid - half;
+    const x2 = opts.p2X !== undefined ? opts.p2X * 100 : mid + half;
     const a = new Fighter(0, opts.p1, x1, x1 <= x2 ? 1 : -1);
     const b = new Fighter(1, opts.p2, x2, x1 <= x2 ? -1 : 1);
     this.fighters = [a, b];
@@ -121,11 +143,49 @@ export class CombatSim {
 
     for (const f of this.fighters) this.advance(f);
     this.updateThrows();
+    this.checkKo();
+    for (const f of this.fighters) this.startPhase2IfDue(f);
     this.measureAdvantage();
     for (const f of this.fighters) if (!this.frozen[f.index]) this.handleInput(f);
     this.move();
     this.resolveHits();
+    this.checkKo();
     for (const f of this.fighters) this.regen(f);
+  }
+
+  // ---------------------------------------------------------------- KO and boss phases
+
+  private checkKo(): void {
+    if (!this.ko) return;
+    for (const f of this.fighters) {
+      if (f.health > 0 || f.state === 'defeated') continue;
+      this.setTimed(f, 'defeated', 0);
+      f.y = 0;
+      f.vy = 0;
+      f.hitstop = 0;
+      if (this.winner === null) this.winner = 1 - f.index;
+      this.event('ko', this.opponent(f), f, '', 0);
+    }
+  }
+
+  /** Phase 2 starts once the boss is back on their feet (never mid-combo). */
+  private startPhase2IfDue(f: Fighter): void {
+    const boss = f.config.boss;
+    if (!boss || !f.phase2Pending || !f.isNeutral || this.frozen[f.index] || f.health <= 0) return;
+    f.phase2Pending = false;
+    f.phase = 2;
+    for (const m of boss.phase2Moves) if (!boss.oncePerFight.includes(m) || !f.usedOnce.has(m)) f.lockedMoves.delete(m);
+    this.setTimed(f, 'phase_transition', boss.transitionFrames, 1);
+    const opp = this.opponent(f);
+    this.shift(opp, (opp.x >= f.x ? 1 : -1) * boss.transitionPushback);
+    this.event('phase2', f, opp, '', 0);
+  }
+
+  private breakWall(by: Fighter): void {
+    if (this.wallBroken || this.arena.breakableLeftWall <= 0) return;
+    this.wallBroken = true;
+    this.arenaLeft -= this.arena.breakableLeftWall;
+    this.event('wall_break', by, this.opponent(by), '', 0);
   }
 
   // ---------------------------------------------------------------- timers
@@ -161,8 +221,11 @@ export class CombatSim {
       case 'block_stand':
       case 'block_crouch':
         break;
+      case 'defeated':
+        break;
       default:
         f.stateFrame++;
+        if (f.state === 'phase_transition' && f.config.boss && f.stateFrame === f.config.boss.wallBreakFrame) this.breakWall(f);
         if (f.state === 'wall_splat') {
           // Slide down the wall, reaching the floor on the last frame.
           const t = Math.min(f.stateFrame, f.stateLength);
@@ -362,7 +425,10 @@ export class CombatSim {
       if (m.input.motion) f.buffer.consumeMotions();
     }
     const once = f.config.boss?.oncePerFight;
-    if (once && once.includes(m.id)) f.lockedMoves.add(m.id);
+    if (once && once.includes(m.id)) {
+      f.lockedMoves.add(m.id);
+      f.usedOnce.add(m.id);
+    }
     f.extraRecovery = 0;
     f.state = 'attack';
     f.move = m;
@@ -576,6 +642,8 @@ export class CombatSim {
       case 'throw_attempt':
       case 'throw_break':
       case 'wall_splat':
+      case 'phase_transition':
+      case 'defeated':
         return false;
       default:
         return def.y === 0;
@@ -750,6 +818,8 @@ export class CombatSim {
     const dmg = Math.trunc((scaledDamage(damage, def.comboHits) * percent) / 100);
     def.health = Math.max(0, def.health - dmg);
     def.comboDamage += dmg;
+    const boss = def.config.boss;
+    if (boss && def.phase === 1 && def.health * 100 <= def.maxHealth * boss.phase2HealthPercent) def.phase2Pending = true;
     return dmg;
   }
 
@@ -779,6 +849,10 @@ export class CombatSim {
 
   stateHash(): number {
     let h = hashInt(HASH_SEED, this.frame);
+    h = hashInt(h, this.arenaLeft);
+    h = hashInt(h, this.arenaRight);
+    h = hashInt(h, this.rng.state);
+    h = hashInt(h, this.winner ?? -1);
     for (const f of this.fighters) h = f.hashInto(h);
     const p = this.pending;
     if (p) {

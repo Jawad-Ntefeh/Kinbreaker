@@ -32,25 +32,25 @@ export class Renderer {
     this.camera.follow(sim);
     ctx.fillStyle = '#15131c';
     ctx.fillRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
-    this.drawArena(ctx);
+    this.drawArena(ctx, sim);
     // Draw the dummy first so the player is on top.
     for (const f of [sim.fighters[1], sim.fighters[0]]) this.drawFighter(ctx, f);
     this.drawBars(ctx, sim);
   }
 
-  private drawArena(ctx: CanvasRenderingContext2D): void {
+  private drawArena(ctx: CanvasRenderingContext2D, sim: CombatSim): void {
     const c = this.camera;
     // Distance markers every 60 px help read spacing.
     ctx.fillStyle = '#211e2b';
-    for (let x = 0; x <= SYSTEM.arenaWidth / 100; x += 60) ctx.fillRect(x - c.x, FLOOR_Y + 1, 1, 4);
+    for (let x = sim.arenaLeft / 100; x <= sim.arenaRight / 100; x += 60) ctx.fillRect(x - c.x, FLOOR_Y + 1, 1, 4);
     ctx.fillStyle = '#1b1824';
     ctx.fillRect(0, FLOOR_Y + 1, BASE_WIDTH, BASE_HEIGHT - FLOOR_Y - 1);
     ctx.fillStyle = '#5a5468';
     ctx.fillRect(0, FLOOR_Y, BASE_WIDTH, 1);
     // Walls.
     ctx.fillStyle = '#3a3546';
-    const left = c.sx(0);
-    const right = c.sx(SYSTEM.arenaWidth);
+    const left = c.sx(sim.arenaLeft);
+    const right = c.sx(sim.arenaRight);
     if (left >= 0) ctx.fillRect(left - 4, 0, 4, FLOOR_Y + 1);
     if (right <= BASE_WIDTH) ctx.fillRect(right, 0, 4, FLOOR_Y + 1);
   }

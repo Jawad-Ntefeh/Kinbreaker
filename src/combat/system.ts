@@ -8,7 +8,6 @@ import { SUBPX } from './move_data';
 const px = (v: number): number => Math.round(v * SUBPX);
 
 export const SYSTEM = {
-  arenaWidth: px(raw.arena_width),
   knockdownHeight: px(raw.body.knockdown_height),
   glintStart: raw.glint.from_startup_minus,
   glintEnd: raw.glint.to_startup_minus,

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { CombatSim } from '../src/combat/combat_sim';
 import type { Move, MoveSet } from '../src/combat/move_data';
+import { getArena } from '../src/combat/arena_data';
+const TRAINING_W = getArena('training').width;
 import { SYSTEM } from '../src/combat/system';
 import { dummyConfig, inp, N, pointBlank, rookConfig, rookMoves, runUntil } from './helpers';
 
@@ -19,7 +21,7 @@ describe('move priority: more buttons first', () => {
 
 /** Launch the dummy into the right wall; return the sim once it is splatted. */
 function splat(): CombatSim {
-  const wall = SYSTEM.arenaWidth / 100;
+  const wall = TRAINING_W / 100;
   const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 44, p2X: wall - 20 });
   sim.step(inp(3, 1, '4'), N);
   runUntil(sim, () => sim.fighters[1].state === 'wall_splat', N, N, 120);

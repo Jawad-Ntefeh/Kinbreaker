@@ -1,11 +1,11 @@
 /** Gamepad device: polls navigator.getGamepads() (standard mapping only). */
-import type { Bindings, MetaAction } from './bindings';
+import type { Bindings, MenuAction, MetaAction } from './bindings';
 import type { Button } from '../combat/types';
 import { BUTTONS } from '../combat/types';
 import { NO_DIRS, orFlags, stickToFlags, type DeviceReading, type DirFlags } from './input_core';
 
 export class GamepadInput {
-  private prevMeta = new Map<MetaAction, boolean>();
+  private prevMeta = new Map<string, boolean>();
   private prevAnyDown = false;
   lastActivity = 0;
   connected = false;
@@ -45,7 +45,16 @@ export class GamepadInput {
 
   /** Edge-triggered meta actions (e.g. Start → pause). Poll once per animation frame. */
   metaPressed(action: MetaAction): boolean {
-    const idx = this.bindings.gamepad.meta[action];
+    return this.edge(`meta:${action}`, this.bindings.gamepad.meta[action]);
+  }
+
+  /** Edge-triggered menu actions. Poll once per animation frame. */
+  menuPressed(action: MenuAction): boolean {
+    return this.edge(`menu:${action}`, this.bindings.gamepad.menu[action]);
+  }
+
+  private edge(key: string, idx: number[]): boolean {
+    const action = key;
     const now = this.pads().some((p) => idx.some((i) => p.buttons[i]?.pressed ?? false));
     const was = this.prevMeta.get(action) ?? false;
     this.prevMeta.set(action, now);

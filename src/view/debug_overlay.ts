@@ -7,6 +7,7 @@ import type { CombatSim } from '../combat/combat_sim';
 import type { Fighter, WorldBox } from '../combat/fighter';
 import type { Renderer } from './renderer';
 import { BASE_HEIGHT, BASE_WIDTH } from './screen';
+import { FONT, text } from './text';
 
 const BOX = {
   hurt: '#3b8bff',
@@ -17,13 +18,16 @@ const BOX = {
 
 export interface OverlayInfo {
   simFps: number;
-  dummyMode: string;
+  /** e.g. "dummy: stand (T)" or "AI: guard · phase 1". */
+  modeLabel: string;
+  /** Boss HUD at the bottom: put the frame-rate line at the top instead. */
+  bossLayout: boolean;
   /** Pause label to show, or null when running. */
   paused: string | null;
   controls: string;
 }
 
-export const FONT = '6px ui-monospace, Menlo, Consolas, monospace';
+export { FONT };
 
 export class DebugOverlay {
   visible = true;
@@ -57,9 +61,6 @@ export class DebugOverlay {
     ctx.font = FONT;
     ctx.textBaseline = 'top';
     const [p1, p2] = sim.fighters;
-    // Names on the health bars are always shown.
-    text(ctx, p1.name.toUpperCase(), 12, 1, '#d8b867');
-    text(ctx, p2.name.toUpperCase(), BASE_WIDTH - 12, 1, '#c8c8d0', 'right');
 
     if (info.paused) text(ctx, info.paused, BASE_WIDTH / 2, 50, '#fff', 'center');
 
@@ -91,8 +92,9 @@ export class DebugOverlay {
       text(ctx, e, 12, 70 + i * 7, i === 0 ? '#fff' : '#aaa');
     });
 
-    text(ctx, `sim ${info.simFps} fps  frame ${sim.frame}`, BASE_WIDTH - 4, 252, '#888', 'right');
-    text(ctx, `dummy: ${info.dummyMode}  (T)`, 4, 252, '#888');
+    const statY = info.bossLayout ? 2 : 252;
+    text(ctx, `sim ${info.simFps} fps  frame ${sim.frame}`, BASE_WIDTH - 4, statY, '#888', 'right');
+    text(ctx, info.modeLabel, info.bossLayout ? BASE_WIDTH - 4 : 4, info.bossLayout ? statY + 7 : statY, '#888', info.bossLayout ? 'right' : 'left');
     text(ctx, info.controls, BASE_WIDTH / 2, BASE_HEIGHT - 9, '#9a9aa8', 'center');
   }
 
@@ -107,12 +109,4 @@ export class DebugOverlay {
 function timed(f: Fighter): string {
   if (f.stateLength > 0) return `${f.stateFrame}/${f.stateLength}`;
   return '';
-}
-
-function text(ctx: CanvasRenderingContext2D, s: string, x: number, y: number, color: string, align: CanvasTextAlign = 'left'): void {
-  ctx.textAlign = align;
-  ctx.fillStyle = '#000';
-  ctx.fillText(s, x + 0.35, y + 0.35);
-  ctx.fillStyle = color;
-  ctx.fillText(s, x, y);
 }

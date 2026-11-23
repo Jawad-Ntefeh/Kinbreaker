@@ -22,6 +22,7 @@ export class Keyboard {
       ...Object.values(k.dirs).flat(),
       ...Object.values(k.buttons).flat(),
       ...Object.values(k.meta).flat(),
+      ...Object.values(k.menu).flat(),
       ...Object.values(k.debug).flat(),
     ]);
     target.addEventListener('keydown', (e) => {

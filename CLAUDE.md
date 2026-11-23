@@ -118,11 +118,19 @@ data/arenas/*.json
 src/main.ts           # boot, game loop
 src/combat/           # CombatSim, fighters, InputBuffer, move data, hit resolution (pure logic, no DOM)
 src/ai/               # AI controllers (produce input snapshots)
+src/scenes/           # title menu, training, boss fights (flow and UI; never change sim rules)
+src/fights.ts         # factories for each fight (shared by scenes and tests)
 src/input/            # keyboard + gamepad → input snapshot; bindings
 src/view/             # canvas renderer, camera, HUD, debug overlay
 tests/                # Vitest tests
 public/art/           # sprites (later, from Pixelwright exports)
 ```
+
+## Bosses and AI
+
+- Boss phases, arena changes (breaking walls) and once-per-fight moves live in the sim, driven by the character's `boss` section and the arena file (`data/arenas/<id>.json`: `width`, `start_gap`, `breakable_left_wall`).
+- Boss AI only uses what a player could see: positions immediately, the player's state and move after a reaction delay. Every random choice uses the sim's seeded RNG (`sim.rng`), so a fight is reproducible from its seed and the player's inputs.
+- `npm run stats` plays scripted fights (a "perfect" bot and a button-masher) and prints win rates, fight length and move usage.
 
 ## Testing
 

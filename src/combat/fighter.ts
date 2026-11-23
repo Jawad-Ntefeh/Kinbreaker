@@ -49,6 +49,8 @@ export type Limbs = Record<'left_arm' | 'right_arm' | 'left_leg' | 'right_leg', 
 export const ALL_LIMBS: Limbs = { left_arm: true, right_arm: true, left_leg: true, right_leg: true };
 
 export interface FighterConfig {
+  /** Character id (data/characters/<id>.json), used by views to pick colours. */
+  id?: string;
   name: string;
   moves: MoveSet;
   health: number;

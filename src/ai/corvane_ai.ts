@@ -193,7 +193,7 @@ export class CorvaneAI {
         const m = sim.opponent(me).moves.get(e.moveId);
         if (m) this.punish = { move: e.moveId, knownAt: sim.frame - (m.startup - 1) + this.reactionDelay(sim), chosen: null };
       }
-      if ((e.type === 'hit' || e.type === 'counter') && e.attacker === me.index && e.moveId === OPENER_MOVE.cross && this.followCrossWithJabs) {
+      if ((e.type === 'hit' || e.type === 'counter_hit') && e.attacker === me.index && e.moveId === OPENER_MOVE.cross && this.followCrossWithJabs) {
         this.followCrossWithJabs = false;
         this.plan = this.makePlan(sim, 'jab', true);
         this.plan.stage = 'execute';

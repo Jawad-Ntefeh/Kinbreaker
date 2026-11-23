@@ -4,6 +4,7 @@ import type { CombatSim } from '../combat/combat_sim';
 import { createTraining } from '../fights';
 import { keyLabel } from '../input/bindings';
 import type { Action } from '../input/input_manager';
+import { Effects } from '../view/effects';
 import { drawVersusHud, drawVersusHudText } from '../view/hud';
 import { type Game, SimScene } from './scene';
 
@@ -22,6 +23,7 @@ export class TrainingScene extends SimScene {
   protected onPauseChoice(choice: string): void {
     if (choice === 'Reset training') {
       this.sim = createTraining();
+      this.fx = new Effects();
       this.dummy.setMode(this.dummy.mode);
     }
     if (choice === 'Quit to title') this.game.goTitle();
@@ -35,6 +37,7 @@ export class TrainingScene extends SimScene {
     const p1 = this.game.input.sample();
     const p2 = this.dummy.update(this.sim);
     this.sim.step(p1, p2);
+    this.fx.onStep(this.sim);
   }
 
   controlsLine(): string {
@@ -45,12 +48,12 @@ export class TrainingScene extends SimScene {
     const l = (codes: string[]) => keyLabel(codes[0]!);
     const move = [k.dirs.up, k.dirs.left, k.dirs.down, k.dirs.right].map(l).join('');
     const attack = [k.buttons['1'], k.buttons['2'], k.buttons['3'], k.buttons['4']].map(l).join(' ');
-    return `${move} move · ${attack} attack · ${l(k.buttons.phase)} phase · ${l(k.debug.debugPause)} pause · ${l(k.debug.frameStep)} step · ${l(k.debug.cycleDummy)} dummy mode`;
+    return `${move} move · ${attack} attack · ${l(k.buttons.phase)} phase · ${l(k.debug.debugPause)} pause · ${l(k.debug.frameStep)} step · ${l(k.debug.cycleDummy)} dummy · ${l(k.debug.cycleSprites)} sprites`;
   }
 
   render(): void {
     const screen = this.game.screen;
-    this.renderer.draw(screen.ctx, this.sim);
+    this.renderer.draw(screen.ctx, this.sim, this.fx);
     drawVersusHud(screen.ctx, this.sim);
     this.overlay.drawBoxes(screen.ctx, this.sim, this.renderer);
     screen.present();
@@ -59,6 +62,7 @@ export class TrainingScene extends SimScene {
     this.overlay.drawText(o, this.sim, {
       simFps: this.game.simFps,
       modeLabel: `dummy: ${this.dummy.mode}  (T)`,
+      sprites: this.renderer.lastDrawn.map((d) => d?.label ?? ''),
       bossLayout: false,
       paused: this.debugPaused ? 'PAUSED  (P resume · O step one frame)' : null,
       controls: this.controlsLine(),

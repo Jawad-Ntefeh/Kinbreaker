@@ -168,7 +168,7 @@ describe('punishes', () => {
     const hits: string[] = [];
     let did = false;
     const { ai } = play(seed, (sim) => {
-      for (const e of sim.events) if (e.attacker === 1 && (e.type === 'hit' || e.type === 'counter')) hits.push(e.moveId);
+      for (const e of sim.events) if (e.attacker === 1 && (e.type === 'hit' || e.type === 'counter_hit')) hits.push(e.moveId);
       if (!did && sim.frame === 5) {
         did = true;
         return rel(sim, input[0], input[1]);

@@ -120,7 +120,7 @@ describe('counter hit', () => {
     sim.step(inp(5, 1, '1'), N);
     const ev = runUntil(sim, () => sim.events.length > 0);
     expect(ev).toBeGreaterThan(0);
-    expect(types(sim)).toEqual(['counter']);
+    expect(types(sim)).toEqual(['counter_hit']);
     runUntil(sim, () => sim.lastAdvantage !== null);
     expect(sim.lastAdvantage).toMatchObject({ kind: 'COUNTER', moveId: 'rook_jab', value: 12 });
   });

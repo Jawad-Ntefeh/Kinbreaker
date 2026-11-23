@@ -5,7 +5,7 @@
  */
 import type { CombatSim } from '../combat/combat_sim';
 import type { Fighter, WorldBox } from '../combat/fighter';
-import type { Renderer } from './renderer';
+import { OUTLINE, type Renderer } from './renderer';
 import { BASE_HEIGHT, BASE_WIDTH } from './screen';
 import { FONT, text } from './text';
 
@@ -22,6 +22,8 @@ export interface OverlayInfo {
   modeLabel: string;
   /** Boss HUD at the bottom: put the frame-rate line at the top instead. */
   bossLayout: boolean;
+  /** Sprite labels per fighter, e.g. "rook_jab  cell 22  f10/24  IMPACT". */
+  sprites?: string[];
   /** Pause label to show, or null when running. */
   paused: string | null;
   controls: string;
@@ -35,7 +37,23 @@ export class DebugOverlay {
   /** Boxes, drawn into the pixel buffer. */
   drawBoxes(ctx: CanvasRenderingContext2D, sim: CombatSim, r: Renderer): void {
     if (!this.visible) return;
+    // Sprite cell bounds (thin grey) and pivot (small cross), for checking art alignment.
+    for (const info of r.lastDrawn) {
+      if (!info || info.cell < 0) continue;
+      const left = info.facing === 1 ? info.x - info.pivot[0] : info.x - (info.cellW - 1 - info.pivot[0]);
+      ctx.strokeStyle = '#8a8a96';
+      ctx.globalAlpha = 0.6;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(left + 0.5, info.y - info.pivot[1] + 0.5, info.cellW - 1, info.cellH - 1);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(info.x - 2, info.y, 5, 1);
+      ctx.fillRect(info.x, info.y - 2, 1, 5);
+    }
     for (const f of sim.fighters) {
+      // State outline (white attacking, red hitstun, blue blockstun, purple invulnerable phase frames).
+      const state = f.isPhaseInvulnerable ? OUTLINE.invuln : f.state === 'attack' ? OUTLINE.attack : f.state === 'hitstun' ? OUTLINE.hitstun : f.state === 'blockstun' ? OUTLINE.blockstun : null;
+      if (state) this.box(ctx, r, f.hurtbox(), state, 0);
       this.box(ctx, r, f.pushbox(), BOX.push, 0.04);
       if (f.isHittable) this.box(ctx, r, f.hurtbox(), BOX.hurt, 0.08);
       for (const { box } of f.activeHitboxes()) this.box(ctx, r, box, BOX.hit, 0.45);
@@ -69,8 +87,8 @@ export class DebugOverlay {
       return;
     }
 
-    this.fighterBlock(ctx, p1, 12, 30, 'left');
-    this.fighterBlock(ctx, p2, BASE_WIDTH - 12, 30, 'right');
+    this.fighterBlock(ctx, p1, 12, 30, 'left', info.sprites?.[0] ?? '');
+    this.fighterBlock(ctx, p2, BASE_WIDTH - 12, 30, 'right', info.sprites?.[1] ?? '');
 
     // Frame advantage (measured by the sim).
     const adv = sim.lastAdvantage;
@@ -98,11 +116,12 @@ export class DebugOverlay {
     text(ctx, info.controls, BASE_WIDTH / 2, BASE_HEIGHT - 9, '#9a9aa8', 'center');
   }
 
-  private fighterBlock(ctx: CanvasRenderingContext2D, f: Fighter, x: number, y: number, align: CanvasTextAlign): void {
+  private fighterBlock(ctx: CanvasRenderingContext2D, f: Fighter, x: number, y: number, align: CanvasTextAlign, sprite: string): void {
     const moveLine = f.move ? `${f.move.id} ${f.moveFrame}/${f.move.total}` : timed(f);
     text(ctx, `${f.state}${f.hitstop ? `  (hitstop ${f.hitstop})` : ''}`, x, y, '#fff', align);
     text(ctx, moveLine, x, y + 7, '#ccc', align);
     text(ctx, `HP ${f.health}/${f.maxHealth}  POISE ${f.poise}  STAM ${f.stamina}`, x, y + 14, '#aaa', align);
+    if (sprite) text(ctx, sprite, x, y + 21, '#8fb8d8', align);
   }
 }
 

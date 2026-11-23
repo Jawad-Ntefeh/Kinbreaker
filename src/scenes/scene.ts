@@ -2,6 +2,7 @@
 import type { CombatSim } from '../combat/combat_sim';
 import type { Action, InputManager } from '../input/input_manager';
 import { DebugOverlay } from '../view/debug_overlay';
+import { Effects } from '../view/effects';
 import { Renderer } from '../view/renderer';
 import type { Screen } from '../view/screen';
 import { BASE_HEIGHT, BASE_WIDTH } from '../view/screen';
@@ -51,6 +52,7 @@ export abstract class SimScene implements Scene {
   abstract sim: CombatSim;
   readonly renderer = new Renderer();
   readonly overlay = new DebugOverlay();
+  fx = new Effects();
   debugPaused = false;
   pauseMenu: Menu | null = null;
 
@@ -85,6 +87,7 @@ export abstract class SimScene implements Scene {
       if (a === 'toggleOverlay') this.overlay.visible = !this.overlay.visible;
       if (a === 'debugPause') this.debugPaused = !this.debugPaused;
       if (a === 'frameStep' && this.debugPaused && this.canStep()) this.stepOnce();
+      if (a === 'cycleSprites') this.renderer.cycleSpriteMode();
       this.handleExtra(a);
     }
     if (this.debugPaused) return;

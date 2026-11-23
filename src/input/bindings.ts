@@ -7,7 +7,7 @@ import type { Button } from '../combat/types';
 export type DirAction = 'up' | 'down' | 'left' | 'right';
 export type MetaAction = 'pause';
 export type MenuAction = 'up' | 'down' | 'confirm' | 'back';
-export type DebugAction = 'toggleOverlay' | 'debugPause' | 'frameStep' | 'cycleDummy';
+export type DebugAction = 'toggleOverlay' | 'debugPause' | 'frameStep' | 'cycleDummy' | 'cycleSprites';
 
 export interface Bindings {
   keyboard: {
@@ -58,6 +58,7 @@ export const DEFAULT_BINDINGS: Bindings = {
       debugPause: ['KeyP'],
       frameStep: ['KeyO'],
       cycleDummy: ['KeyT'],
+      cycleSprites: ['KeyH'],
     },
   },
   gamepad: {

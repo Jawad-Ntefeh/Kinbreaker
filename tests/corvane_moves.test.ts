@@ -172,7 +172,7 @@ describe('armor', () => {
     const c = sim.fighters[0];
     sim.step(inp(6, 1, '1', '2'), inp(5, -1, '1'));
     expect(c.move?.id).toBe('corvane_iron_wall');
-    const ev = runUntil(sim, () => sim.events.some((e) => e.type === 'armor'), N, N, 30);
+    const ev = runUntil(sim, () => sim.events.some((e) => e.type === 'armor_absorb'), N, N, 30);
     expect(ev).toBeGreaterThan(0);
     expect(c.moveFrame).toBeLessThanOrEqual(21);
     expect(c.health).toBe(c.maxHealth - 7);

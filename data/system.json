@@ -1,10 +1,10 @@
 {
   "body": {
-    "knockdown_height": 16
+    "knockdown_height": 21
   },
   "phase_step": {
     "frames": 20,
-    "drift": 1,
+    "drift": 1.33,
     "invuln": [
       4,
       13
@@ -15,7 +15,7 @@
     "hit": 10,
     "block": 8
   },
-  "pushback": 8,
+  "pushback": 11,
   "guard_break_frames": 40,
   "stagger_frames": 45,
   "knockdown_frames": 30,
@@ -27,18 +27,18 @@
   "throw": {
     "break_window": 20,
     "break_frames": 20,
-    "break_separation": 40,
+    "break_separation": 53,
     "hit_recovery": 12
   },
   "launch": {
-    "vy": 7.5,
-    "vx": 0.5,
-    "gravity": 0.45
+    "vy": 10,
+    "vx": 0.67,
+    "gravity": 0.6
   },
   "juggle": {
-    "vy": 5,
-    "vx": 0.5,
-    "gravity_step": 0.05
+    "vy": 6.67,
+    "vx": 0.67,
+    "gravity_step": 0.07
   },
   "damage_scaling": [
     100,
@@ -57,5 +57,9 @@
   "glint": {
     "from_startup_minus": 14,
     "to_startup_minus": 6
-  }
+  },
+  "base_resolution": [
+    640,
+    360
+  ]
 }

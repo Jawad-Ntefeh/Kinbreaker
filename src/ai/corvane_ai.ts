@@ -31,13 +31,13 @@ export const OPENER_MOVE: Readonly<Record<Opener, string>> = {
 /** AI tuning. Frame counts here are behaviour timings, not move frame data. */
 export const AI = {
   reactionDelay: [18, 15] as const,
-  closeRange: 40,
-  farRange: 90,
+  closeRange: 53,
+  farRange: 120,
   footworkFrames: [30, 60] as const,
   guardFrames: [20, 45] as const,
   crouchGuardChance: 30,
   /** Guard holds back only within this gap (px); further away he stands his ground. */
-  guardHoldGap: 30,
+  guardHoldGap: 40,
   punishChance: [70, 90] as const,
   jabDelay: [6, 10] as const,
   throwReadBlocks: 3,
@@ -54,7 +54,7 @@ export const AI = {
   /** Give up approaching after this many frames. */
   approachLimit: 60,
   /** Largest gap (px between hurtboxes) at which each opener is thrown. */
-  reach: { jab: 24, cross: 34, body_hook: 18, liver_shot: 26, haymaker: 50, bell_ringer: 12, iron_wall: 38, last_bell: 60, grave_punch: 60 } as Record<Opener, number>,
+  reach: { jab: 32, cross: 45, body_hook: 24, liver_shot: 35, haymaker: 67, bell_ringer: 16, iron_wall: 51, last_bell: 80, grave_punch: 80 } as Record<Opener, number>,
 } as const;
 
 export const SWEEPING: ReadonlySet<Opener> = new Set<Opener>(['body_hook', 'haymaker', 'iron_wall']);
@@ -337,8 +337,8 @@ export class CorvaneAI {
         this.log.push({ frame: sim.frame, type: 'ground_hit', move: OPENER_MOVE.liver_shot });
         return this.runPlan(me, gap);
       }
-      const target = 60;
-      return this.out(me, gap > target + 8 ? 6 : gap < target - 8 ? 4 : 5, []);
+      const target = 80;
+      return this.out(me, gap > target + 11 ? 6 : gap < target - 11 ? 4 : 5, []);
     }
 
     // Ember: Last Bell once, the first time at mid range with at least 30% health (phase 2).
@@ -406,10 +406,10 @@ export class CorvaneAI {
     if (this.dashSeq.length) return this.out(me, this.dashSeq.shift()!, []);
     if (this.walkTimer <= 0) {
       this.walkTimer = sim.rng.range(6, 14);
-      if (gap > 80) {
+      if (gap > 107) {
         this.walkDir = 6;
         if (sim.rng.chance(25)) this.dashSeq = [5, 6];
-      } else if (gap < 45) this.walkDir = 4;
+      } else if (gap < 60) this.walkDir = 4;
       else this.walkDir = [4, 5, 6][sim.rng.int(3)]!;
     }
     this.walkTimer--;

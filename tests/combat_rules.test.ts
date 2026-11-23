@@ -100,13 +100,13 @@ describe('phase step', () => {
     expect(r.state).toBe('phase_step');
     expect(r.stamina).toBe(30);
   });
-  it('drifts forward or back 1 px/frame with the held direction', () => {
+  it('drifts forward or back 1.33 px/frame with the held direction', () => {
     for (const [dir, sign] of [[6, 1], [4, -1], [5, 0]] as const) {
       const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: 300, p2X: 600 });
       sim.step({ dir, held: new Set(['phase']) }, N);
       const x0 = sim.fighters[0].x;
       run(sim, 10, { dir, held: new Set(['phase']) });
-      expect(sim.fighters[0].x - x0).toBe(sign * 10 * 100);
+      expect(sim.fighters[0].x - x0).toBe(sign * 10 * 133);
     }
   });
 });
@@ -288,24 +288,24 @@ describe('walls', () => {
   it('fighters cannot leave the arena', () => {
     const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: 60, p2X: 900 });
     run(sim, 300, inp(4, 1), inp(4, -1));
-    expect(sim.fighters[0].x).toBe(1200);
-    expect(sim.fighters[1].x).toBe(TRAINING_W - 1200);
+    expect(sim.fighters[0].x).toBe(1600);
+    expect(sim.fighters[1].x).toBe(TRAINING_W - 1600);
     // And walking into each other never overlaps.
     run(sim, 600, inp(6, 1), inp(6, -1));
-    expect(Math.abs(sim.fighters[1].x - sim.fighters[0].x)).toBeGreaterThanOrEqual(2400);
+    expect(Math.abs(sim.fighters[1].x - sim.fighters[0].x)).toBeGreaterThanOrEqual(3200);
   });
   it('a launched dummy hitting a wall enters wall_splat', () => {
     const wall = TRAINING_W / 100;
-    const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 44, p2X: wall - 20 });
+    const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 59, p2X: wall - 27 });
     const d = sim.fighters[1];
     sim.step(inp(3, 1, '4'), N);
     runUntil(sim, () => d.state === 'wall_splat', N, N, 120);
-    expect(d.x).toBe(TRAINING_W - 1200);
+    expect(d.x).toBe(TRAINING_W - 1600);
     expect(d.y).toBeGreaterThan(0);
   });
   it('wall splat: the 3rd hit drops the dummy into a knockdown', () => {
     const wall = TRAINING_W / 100;
-    const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 44, p2X: wall - 20 });
+    const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 59, p2X: wall - 27 });
     const d = sim.fighters[1];
     sim.step(inp(3, 1, '4'), N);
     runUntil(sim, () => d.state === 'wall_splat', N, N, 120);

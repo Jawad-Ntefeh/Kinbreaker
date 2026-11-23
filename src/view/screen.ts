@@ -1,9 +1,9 @@
 /**
- * Screen: owns the 480x270 offscreen canvas the game draws into, and scales it
+ * Screen: owns the 640x360 offscreen canvas the game draws into, and scales it
  * to the visible canvas by the largest whole number that fits, letterboxed in black.
  */
-export const BASE_WIDTH = 480;
-export const BASE_HEIGHT = 270;
+export const BASE_WIDTH = 640;
+export const BASE_HEIGHT = 360;
 
 export class Screen {
   readonly display: HTMLCanvasElement;

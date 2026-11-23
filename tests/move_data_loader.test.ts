@@ -128,7 +128,7 @@ describe('character files', () => {
     expect(errors).toEqual([]);
     expect(defs.get('rook')!.limbs.right_arm).toBe(false);
     expect(defs.get('dummy')!.limbs.right_arm).toBe(true);
-    expect(defs.get('rook')!.body).toEqual({ halfWidth: 1200, height: 8000, crouchHeight: 5000 });
+    expect(defs.get('rook')!.body).toEqual({ halfWidth: 1600, height: 10700, crouchHeight: 6700 });
   });
   it('reports missing and invalid fields', async () => {
     const { validateCharacter } = await import('../src/combat/character_data');

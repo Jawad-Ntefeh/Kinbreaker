@@ -39,11 +39,11 @@ export class Menu {
     return null;
   }
 
-  draw(o: CanvasRenderingContext2D, title: string, y = 100): void {
+  draw(o: CanvasRenderingContext2D, title: string, y = 133): void {
     dim(o, 0.6, BASE_WIDTH, BASE_HEIGHT);
-    o.font = font(10);
+    o.font = font(13);
     text(o, title, BASE_WIDTH / 2, y, '#ffffff', 'center');
-    drawMenu(o, this.options, this.selected, BASE_WIDTH / 2, y + 22);
+    drawMenu(o, this.options, this.selected, BASE_WIDTH / 2, y + 29);
   }
 }
 

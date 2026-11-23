@@ -3,24 +3,24 @@
   "characters": {
     "rook": {
       "cell": [
-        104,
-        96
+        136,
+        128
       ],
       "pivot": [
-        40,
-        92
+        53,
+        123
       ],
       "columns": 8,
       "color": "tarnished gold"
     },
     "corvane": {
       "cell": [
-        104,
-        104
+        144,
+        139
       ],
       "pivot": [
-        40,
-        100
+        53,
+        133
       ],
       "columns": 8,
       "color": "iron grey (skin and wrist bands), rust-brown leather (secondary)"

@@ -61,8 +61,8 @@ function tick(now: number): void {
   if (focusPaused) {
     const o = screen.beginOverlay();
     dim(o, 0.6, BASE_WIDTH, BASE_HEIGHT);
-    o.font = font(10);
-    text(o, 'Click to resume', BASE_WIDTH / 2, BASE_HEIGHT / 2 - 5, '#fff', 'center');
+    o.font = font(13);
+    text(o, 'Click to resume', BASE_WIDTH / 2, BASE_HEIGHT / 2 - 7, '#fff', 'center');
   }
   requestAnimationFrame(tick);
 }

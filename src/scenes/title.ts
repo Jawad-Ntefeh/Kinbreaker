@@ -24,15 +24,15 @@ export class TitleScene implements Scene {
     ctx.fillRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
     // A thin gold line under the title.
     ctx.fillStyle = '#6e5a2a';
-    ctx.fillRect(BASE_WIDTH / 2 - 90, 108, 180, 1);
+    ctx.fillRect(BASE_WIDTH / 2 - 120, 144, 240, 1);
     s.present();
     const o = s.beginOverlay();
-    o.font = font(28);
-    text(o, 'KINBREAKER', BASE_WIDTH / 2, 70, '#d8b867', 'center');
-    drawMenu(o, this.menu.options, this.menu.selected, BASE_WIDTH / 2, 140, 9);
-    o.font = font(6);
+    o.font = font(37);
+    text(o, 'KINBREAKER', BASE_WIDTH / 2, 93, '#d8b867', 'center');
+    drawMenu(o, this.menu.options, this.menu.selected, BASE_WIDTH / 2, 187, 12);
+    o.font = font(8);
     const pad = this.game.input.lastDevice === 'gamepad';
-    text(o, pad ? 'D-pad to choose · A to select' : 'W/S or arrows to choose · U or Enter to select', BASE_WIDTH / 2, 236, '#77778a', 'center');
+    text(o, pad ? 'D-pad to choose · A to select' : 'W/S or arrows to choose · U or Enter to select', BASE_WIDTH / 2, 315, '#77778a', 'center');
     void this.tick;
   }
 }

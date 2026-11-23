@@ -47,8 +47,8 @@ export class DebugOverlay {
       ctx.strokeRect(left + 0.5, info.y - info.pivot[1] + 0.5, info.cellW - 1, info.cellH - 1);
       ctx.globalAlpha = 1;
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(info.x - 2, info.y, 5, 1);
-      ctx.fillRect(info.x, info.y - 2, 1, 5);
+      ctx.fillRect(info.x - 3, info.y, 7, 1);
+      ctx.fillRect(info.x, info.y - 3, 1, 7);
     }
     for (const f of sim.fighters) {
       // State outline (white attacking, red hitstun, blue blockstun, purple invulnerable phase frames).
@@ -83,12 +83,12 @@ export class DebugOverlay {
     if (info.paused) text(ctx, info.paused, BASE_WIDTH / 2, 50, '#fff', 'center');
 
     if (!this.visible) {
-      text(ctx, '` debug overlay', BASE_WIDTH - 4, BASE_HEIGHT - 9, '#777', 'right');
+      text(ctx, '` debug overlay', BASE_WIDTH - 5, BASE_HEIGHT - 12, '#777', 'right');
       return;
     }
 
-    this.fighterBlock(ctx, p1, 12, 30, 'left', info.sprites?.[0] ?? '');
-    this.fighterBlock(ctx, p2, BASE_WIDTH - 12, 30, 'right', info.sprites?.[1] ?? '');
+    this.fighterBlock(ctx, p1, 16, 40, 'left', info.sprites?.[0] ?? '');
+    this.fighterBlock(ctx, p2, BASE_WIDTH - 16, 40, 'right', info.sprites?.[1] ?? '');
 
     // Frame advantage (measured by the sim).
     const adv = sim.lastAdvantage;
@@ -96,32 +96,32 @@ export class DebugOverlay {
       const v = adv.value;
       const sign = v > 0 ? '+' : v < 0 ? '−' : '±';
       const color = v > 0 ? '#7dff9a' : v < 0 ? '#ff8a8a' : '#ffffff';
-      text(ctx, `${adv.kind}  ${adv.moveId}  ${sign}${Math.abs(v)}`, BASE_WIDTH / 2, 30, color, 'center');
+      text(ctx, `${adv.kind}  ${adv.moveId}  ${sign}${Math.abs(v)}`, BASE_WIDTH / 2, 40, color, 'center');
     }
     // Combo counter.
     const d = p2;
     if (d.comboHits > 0) {
-      text(ctx, `${d.comboHits} HIT${d.comboHits > 1 ? 'S' : ''}  ${d.comboDamage} DMG`, BASE_WIDTH / 2, 38, d.comboActive ? '#ffe08a' : '#9a9080', 'center');
+      text(ctx, `${d.comboHits} HIT${d.comboHits > 1 ? 'S' : ''}  ${d.comboDamage} DMG`, BASE_WIDTH / 2, 51, d.comboActive ? '#ffe08a' : '#9a9080', 'center');
     }
 
     // Input history, newest at the top.
-    text(ctx, 'INPUT', 12, 62, '#888');
+    text(ctx, 'INPUT', 16, 83, '#888');
     p1.buffer.historyEntries(12, p1.facing).forEach((e, i) => {
-      text(ctx, e, 12, 70 + i * 7, i === 0 ? '#fff' : '#aaa');
+      text(ctx, e, 16, 93 + i * 9, i === 0 ? '#fff' : '#aaa');
     });
 
-    const statY = info.bossLayout ? 2 : 252;
-    text(ctx, `sim ${info.simFps} fps  frame ${sim.frame}`, BASE_WIDTH - 4, statY, '#888', 'right');
-    text(ctx, info.modeLabel, info.bossLayout ? BASE_WIDTH - 4 : 4, info.bossLayout ? statY + 7 : statY, '#888', info.bossLayout ? 'right' : 'left');
-    text(ctx, info.controls, BASE_WIDTH / 2, BASE_HEIGHT - 9, '#9a9aa8', 'center');
+    const statY = info.bossLayout ? 3 : 336;
+    text(ctx, `sim ${info.simFps} fps  frame ${sim.frame}`, BASE_WIDTH - 5, statY, '#888', 'right');
+    text(ctx, info.modeLabel, info.bossLayout ? BASE_WIDTH - 5 : 5, info.bossLayout ? statY + 9 : statY, '#888', info.bossLayout ? 'right' : 'left');
+    text(ctx, info.controls, BASE_WIDTH / 2, BASE_HEIGHT - 12, '#9a9aa8', 'center');
   }
 
   private fighterBlock(ctx: CanvasRenderingContext2D, f: Fighter, x: number, y: number, align: CanvasTextAlign, sprite: string): void {
     const moveLine = f.move ? `${f.move.id} ${f.moveFrame}/${f.move.total}` : timed(f);
     text(ctx, `${f.state}${f.hitstop ? `  (hitstop ${f.hitstop})` : ''}`, x, y, '#fff', align);
-    text(ctx, moveLine, x, y + 7, '#ccc', align);
-    text(ctx, `HP ${f.health}/${f.maxHealth}  POISE ${f.poise}  STAM ${f.stamina}`, x, y + 14, '#aaa', align);
-    if (sprite) text(ctx, sprite, x, y + 21, '#8fb8d8', align);
+    text(ctx, moveLine, x, y + 9, '#ccc', align);
+    text(ctx, `HP ${f.health}/${f.maxHealth}  POISE ${f.poise}  STAM ${f.stamina}`, x, y + 18, '#aaa', align);
+    if (sprite) text(ctx, sprite, x, y + 27, '#8fb8d8', align);
   }
 }
 

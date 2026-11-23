@@ -8,6 +8,8 @@ import type { Camera } from './camera';
 import { FLOOR_Y } from './camera';
 
 const MAX_PARTICLES = 200;
+/** Particle speeds and gravity below were tuned at 480x270; this scales them to 640x360. */
+const MOTION_SCALE = 4 / 3;
 
 const COL = {
   white: '#ffffff',
@@ -133,7 +135,7 @@ export class Effects {
         if (e.height === 'high') this.spark('streak', x, y, dir, 9, big);
         else if (e.height === 'low') this.spray(x, y, dir, big);
         else this.spark('burst', x, y, dir, 9, big);
-        if (e.type === 'counter_hit') this.spark('text', def.x / 100, def.y / 100 + def.height / 100 + 10, dir, 30, 1);
+        if (e.type === 'counter_hit') this.spark('text', def.x / 100, def.y / 100 + def.height / 100 + 13, dir, 30, 1);
         if (e.damage >= 20) this.startShake(2, 8);
         break;
       }
@@ -151,7 +153,7 @@ export class Effects {
         this.startShake(2, 8);
         break;
       case 'wall_splat':
-        this.cracks.push({ x, y, side: x < sim.arenaLeft / 100 + 40 ? 1 : -1, t: 0, seed: irnd(0, 9999) });
+        this.cracks.push({ x, y, side: x < sim.arenaLeft / 100 + 53 ? 1 : -1, t: 0, seed: irnd(0, 9999) });
         for (let i = 0; i < 10; i++) this.add({ x, y: y + rnd(-10, 10), vx: rnd(0.2, 1) * (x < (sim.arenaLeft + sim.arenaRight) / 200 ? 1 : -1), vy: rnd(-0.5, 0.8), g: 0.08, life: irnd(20, 40), color: COL.stoneLight, size: 1, bounce: false });
         this.startShake(3, 10);
         break;
@@ -169,10 +171,10 @@ export class Effects {
         break;
       case 'wall_break':
         for (let i = 0; i < 16; i++) {
-          const size = irnd(2, 6);
-          this.add({ x: x + rnd(-6, 6), y: rnd(20, 120), vx: rnd(0.3, 2.2), vy: rnd(0, 1.5), g: 0.15, life: 90, color: i % 3 ? COL.stone : COL.stoneLight, size, bounce: true });
+          const size = irnd(3, 8);
+          this.add({ x: x + rnd(-8, 8), y: rnd(27, 160), vx: rnd(0.3, 2.2), vy: rnd(0, 1.5), g: 0.15, life: 90, color: i % 3 ? COL.stone : COL.stoneLight, size, bounce: true });
         }
-        for (let i = 0; i < 14; i++) this.add({ x: x + rnd(-4, 10), y: rnd(0, 140), vx: rnd(0, 1), vy: rnd(-0.3, 0.3), g: 0.02, life: irnd(30, 60), color: COL.dust, size: 1, bounce: false });
+        for (let i = 0; i < 14; i++) this.add({ x: x + rnd(-5, 13), y: rnd(0, 187), vx: rnd(0, 1), vy: rnd(-0.3, 0.3), g: 0.02, life: irnd(30, 60), color: COL.dust, size: 1, bounce: false });
         this.startShake(3, 12);
         break;
       case 'ko':
@@ -185,6 +187,9 @@ export class Effects {
 
   private add(p: Particle): void {
     if (this.particles.length >= MAX_PARTICLES) this.particles.shift();
+    p.vx *= MOTION_SCALE;
+    p.vy *= MOTION_SCALE;
+    p.g *= MOTION_SCALE;
     this.particles.push(p);
   }
 
@@ -271,7 +276,7 @@ export class Effects {
         let px = sx;
         let py = sy;
         const dy = r() < 0.5 ? -1 : 1;
-        for (let n = 0; n < 6 + Math.floor(r() * 6); n++) {
+        for (let n = 0; n < 8 + Math.floor(r() * 8); n++) {
           ctx.fillRect(px, py, 1, 1);
           px += c.side * (r() < 0.6 ? 1 : 0);
           py += dy * (r() < 0.7 ? 1 : 0);
@@ -295,7 +300,7 @@ export class Effects {
     const k = s.t / s.max;
     switch (s.kind) {
       case 'streak': {
-        const len = Math.round((6 + 14 * k) * s.scale);
+        const len = Math.round((8 + 19 * k) * s.scale);
         ctx.fillStyle = COL.white;
         ctx.fillRect(s.dir === 1 ? x - 2 : x - len + 2, y, len, s.scale > 1 ? 2 : 1);
         if (s.t < 4) {
@@ -305,7 +310,7 @@ export class Effects {
         break;
       }
       case 'burst': {
-        const r = Math.round((2 + 7 * k) * s.scale);
+        const r = Math.round((3 + 9 * k) * s.scale);
         ctx.fillStyle = s.t < 3 ? COL.white : COL.paleGold;
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]] as const) {
           const d = dx && dy ? Math.round(r * 0.7) : r;
@@ -316,21 +321,21 @@ export class Effects {
         break;
       }
       case 'block': {
-        const r = 1 + Math.round(3 * k);
+        const r = 1 + Math.round(4 * k);
         ctx.fillStyle = COL.blockBlue;
         ctx.fillRect(x - r, y, r * 2 + 1, 1);
         ctx.fillRect(x, y - r, 1, r * 2 + 1);
         break;
       }
       case 'launch': {
-        const h = Math.round(10 + 30 * k);
+        const h = Math.round(13 + 40 * k);
         ctx.fillStyle = COL.white;
         ctx.fillRect(x, y - h, 1, h);
         ctx.fillRect(x - 1, y - h, 3, 2);
         break;
       }
       case 'ring': {
-        const g = Math.round(2 + 6 * k);
+        const g = Math.round(3 + 8 * k);
         ctx.strokeStyle = COL.metal;
         ctx.lineWidth = 1;
         ctx.globalAlpha = 1 - k * 0.7;

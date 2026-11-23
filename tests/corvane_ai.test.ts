@@ -75,7 +75,7 @@ describe('reaction delay', () => {
         return N;
       }, 1500, {
         setup: (sim, a) => {
-          sim.fighters[0].x = sim.fighters[1].x - 2800;
+          sim.fighters[0].x = sim.fighters[1].x - 3750;
           a.forceBehaviour('guard', 100000);
         },
       });
@@ -176,7 +176,7 @@ describe('punishes', () => {
       return N;
     }, 120, {
       setup: (sim, a) => {
-        sim.fighters[0].x = sim.fighters[1].x - 2800;
+        sim.fighters[0].x = sim.fighters[1].x - 3750;
         sim.fighters[1].phase = phase;
         a.forceBehaviour('guard', 60, guardDir);
       },
@@ -237,7 +237,7 @@ describe('phase 2 and Last Bell', () => {
     const c = r.sim.fighters[1];
     expect(c.phase).toBe(2);
     expect(r.sim.wallBroken).toBe(true);
-    expect(r.sim.arenaRight - r.sim.arenaLeft).toBe(144000);
+    expect(r.sim.arenaRight - r.sim.arenaLeft).toBe(192000);
     expect(r.ai.openers.filter((o) => o === 'last_bell').length).toBe(1);
     expect(r.ai.openers).toContain('iron_wall');
     const firstP2 = r.ai.openers.indexOf('iron_wall');

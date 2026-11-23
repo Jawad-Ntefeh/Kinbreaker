@@ -17,8 +17,8 @@ export interface SheetSpec {
 }
 
 /** Cell layout rule: this much room behind the pivot, and this much past the furthest hitbox. */
-export const CELL_BEHIND = 40;
-export const CELL_MARGIN = 8;
+export const CELL_BEHIND = 53;
+export const CELL_MARGIN = 11;
 /** Cell widths are rounded up to a multiple of this. */
 export const CELL_ROUND = 8;
 

@@ -1,9 +1,9 @@
 {
   "id": "sunken_colosseum",
   "name": "The Sunken Colosseum",
-  "width": 1200,
-  "start_gap": 160,
-  "breakable_left_wall": 240,
+  "width": 1600,
+  "start_gap": 213,
+  "breakable_left_wall": 320,
   "layers": [
     {
       "image": "art/arenas/sunken_colosseum/sky.png",

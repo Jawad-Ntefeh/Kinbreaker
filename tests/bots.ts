@@ -58,7 +58,7 @@ export class PerfectBot implements Bot {
     if (threat) {
       if (threat.glint && threat.path === 'linear' && c.moveFrame === threat.startup - 8) return out(5, ['phase']);
       // Launchers beat armor: Rising Kick (15f) lands before Iron Wall (22f).
-      if (threat.armorFrames && gap <= 14 && c.moveFrame <= threat.startup - 15) {
+      if (threat.armorFrames && gap <= 19 && c.moveFrame <= threat.startup - 15) {
         this.combo = true;
         return out(3, ['4']);
       }
@@ -68,33 +68,33 @@ export class PerfectBot implements Bot {
     // Juggle / free hits.
     if (c.state === 'airborne' || c.state === 'wall_splat') {
       this.combo = true;
-      return gap > 20 ? out(6) : out(5, ['1']);
+      return gap > 27 ? out(6) : out(5, ['1']);
     }
     if (c.state === 'stagger' || c.state === 'guard_break') {
       this.combo = true;
-      return gap > 10 ? out(6) : out(3, ['4']);
+      return gap > 13 ? out(6) : out(3, ['4']);
     }
     // Punish recovery.
     if (c.state === 'attack' && c.move) {
       const remaining = c.moveTotal - c.moveFrame;
-      if (gap <= 14 && remaining >= 15) {
+      if (gap <= 19 && remaining >= 15) {
         this.combo = true;
         return out(3, ['4']);
       }
-      if (gap <= 22 && remaining >= 10) {
+      if (gap <= 29 && remaining >= 10) {
         this.combo = true;
         return out(5, ['1']);
       }
       return out(4);
     }
     if (c.state === 'phase_transition') return out(4);
-    if (c.state === 'knockdown' && gap <= 20 && !c.groundHitTaken) return out(2, ['1']);
+    if (c.state === 'knockdown' && gap <= 27 && !c.groundHitTaken) return out(2, ['1']);
     if (!c.isNeutral) return out(4);
 
     // Neutral: get close, then attack what his guard can't stop: a launcher against a crouching
     // guard, a sweep or low jab against a standing guard, a low jab otherwise.
-    if (gap > 40) return this.dash(out);
-    if (gap > 14) return out(6);
+    if (gap > 53) return this.dash(out);
+    if (gap > 19) return out(6);
     if (c.state === 'block_crouch' || c.state === 'crouch') {
       this.combo = true;
       return out(3, ['4']);

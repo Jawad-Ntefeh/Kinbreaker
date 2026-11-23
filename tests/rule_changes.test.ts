@@ -22,7 +22,7 @@ describe('move priority: more buttons first', () => {
 /** Launch the dummy into the right wall; return the sim once it is splatted. */
 function splat(): CombatSim {
   const wall = TRAINING_W / 100;
-  const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 44, p2X: wall - 20 });
+  const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 59, p2X: wall - 27 });
   sim.step(inp(3, 1, '4'), N);
   runUntil(sim, () => sim.fighters[1].state === 'wall_splat', N, N, 120);
   return sim;
@@ -51,7 +51,7 @@ describe('wall splat', () => {
     const sim = splat();
     const d = sim.fighters[1];
     // Let it slide low, then hit with a low jab.
-    runUntil(sim, () => d.y < 1500, N, N, 60);
+    runUntil(sim, () => d.y < 2000, N, N, 60);
     sim.step(inp(2, 1, '1'), N);
     runUntil(sim, () => sim.events.some((e) => e.type === 'hit'), N, N, 20);
     expect(d.wallHits).toBe(1);

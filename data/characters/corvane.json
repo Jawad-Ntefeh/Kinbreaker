@@ -4,20 +4,20 @@
   "moveset": "corvane",
   "health": 450,
   "poise": 120,
-  "walk_forward": 2,
-  "walk_back": 2.5,
+  "walk_forward": 2.67,
+  "walk_back": 3.33,
   "dash": {
     "frames": 16,
-    "speed": 5
+    "speed": 6.67
   },
   "backdash": {
     "frames": 20,
-    "speed": 4
+    "speed": 5.33
   },
   "hurtbox": {
-    "width": 32,
-    "height": 88,
-    "crouch_height": 55
+    "width": 43,
+    "height": 117,
+    "crouch_height": 73
   },
   "limbs": {
     "left_arm": true,
@@ -29,7 +29,7 @@
     "phase2_health_percent": 50,
     "transition_frames": 90,
     "wall_break_frame": 45,
-    "transition_pushback": 60,
+    "transition_pushback": 80,
     "phase2_moves": [
       "corvane_iron_wall",
       "corvane_last_bell_1"

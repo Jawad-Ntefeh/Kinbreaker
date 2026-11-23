@@ -13,7 +13,7 @@ export function dummyConfig(moves: MoveSet = rookMoves()): FighterConfig {
   return { ...fighterConfig('dummy'), moves };
 }
 /** Rook's body width in px. */
-export const ROOK_W = 24;
+export const ROOK_W = 32;
 
 /** Rook at x, dummy at point-blank range (pushboxes touching) to her right. */
 export function pointBlank(opts: Partial<SimOptions> = {}, x = 400): CombatSim {

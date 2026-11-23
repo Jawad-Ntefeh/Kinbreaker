@@ -7,12 +7,12 @@ describe('arenas', () => {
   it('every arena file loads', () => {
     expect(loadAllArenas().errors).toEqual([]);
   });
-  it('the Sunken Colosseum is 1200 px; fighters start 160 px apart in the middle, Rook on the left', () => {
+  it('the Sunken Colosseum is 1600 px; fighters start 213 px apart in the middle, Rook on the left', () => {
     const sim = createCorvaneFight(1);
     const [rook, corvane] = sim.fighters;
-    expect(sim.arenaRight - sim.arenaLeft).toBe(120000);
-    expect(corvane.x - rook.x).toBe(16000);
-    expect((rook.x + corvane.x) / 2).toBe(60000);
+    expect(sim.arenaRight - sim.arenaLeft).toBe(160000);
+    expect(corvane.x - rook.x).toBe(21300);
+    expect((rook.x + corvane.x) / 2).toBe(80000);
     expect(rook.name).toBe('Rook');
   });
 });
@@ -23,7 +23,7 @@ describe('Corvane phase 2', () => {
     const sim = createCorvaneFight(1);
     const [rook, c] = sim.fighters;
     c.health = hp;
-    rook.x = c.x - 2800;
+    rook.x = c.x - 3750;
     return { sim, rook, c };
   }
 
@@ -42,7 +42,7 @@ describe('Corvane phase 2', () => {
     expect(c.phase).toBe(1);
     expect(c.state).not.toBe('phase_transition');
   });
-  it('waits for the end of a combo, then breaks the left wall and extends the arena to 1440 px', () => {
+  it('waits for the end of a combo, then breaks the left wall and extends the arena to 1920 px', () => {
     const { sim, rook, c } = nearHalf(230);
     sim.step(inp(3, 1, '4'), N); // Rising Kick launches him
     runUntil(sim, () => c.state === 'airborne', N, N, 30);
@@ -63,19 +63,19 @@ describe('Corvane phase 2', () => {
     expect(Math.abs(c.x - rook.x)).toBeGreaterThanOrEqual(6000);
     expect(sim.wallBroken).toBe(false);
     const len = runUntil(sim, () => sim.wallBroken, N, N, 90);
-    expect(sim.arenaLeft).toBe(-24000);
-    expect(sim.arenaRight - sim.arenaLeft).toBe(144000);
+    expect(sim.arenaLeft).toBe(-32000);
+    expect(sim.arenaRight - sim.arenaLeft).toBe(192000);
     const rest = runUntil(sim, () => c.state !== 'phase_transition', N, N, 90);
     expect(len + rest).toBe(90);
     expect(c.lockedMoves.has('corvane_iron_wall')).toBe(false);
     expect(c.lockedMoves.has('corvane_last_bell_1')).toBe(false);
   });
-  it('the broken side has a solid wall again at -240 px', () => {
+  it('the broken side has a solid wall again at -320 px', () => {
     const { sim, rook } = nearHalf(232);
     sim.step(inp(5, 1, '1'), N);
     runUntil(sim, () => sim.wallBroken, N, N, 200);
     run(sim, 600, inp(4, 1));
-    expect(rook.x).toBe(-24000 + rook.halfWidth);
+    expect(rook.x).toBe(-32000 + rook.halfWidth);
   });
 });
 
@@ -84,7 +84,7 @@ describe('KO', () => {
     const sim = createCorvaneFight(1);
     const [rook, c] = sim.fighters;
     c.health = 5;
-    rook.x = c.x - 2800;
+    rook.x = c.x - 3750;
     sim.step(inp(5, 1, '1'), N);
     runUntil(sim, () => sim.winner !== null, N, N, 30);
     expect(sim.winner).toBe(0);

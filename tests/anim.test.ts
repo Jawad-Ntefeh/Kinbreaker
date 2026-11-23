@@ -49,9 +49,9 @@ describe('animation validation', () => {
     expect(check(jabFile(f))).toEqual(['data/anims/rook.json: rook_jab: frame 1: cell 40 does not exist (the sheet has 32 cells)']);
   });
   it('catches a hitbox that reaches outside the cell', () => {
-    // The jab reaches 44 px; a 64 px cell with the pivot at 32 leaves only 32 px in front.
+    // The jab reaches 59 px; a 64 px cell with the pivot at 32 leaves only 32 px in front.
     expect(check({ ...jabFile(GOOD), cell: [64, 96], pivot: [32, 92] })).toEqual([
-      'data/anims/rook.json: rook_jab: hitbox reaches 44 px in front of the pivot, the cell has 32 px (widen the cell: reach + 8, rounded up to a multiple of 8)',
+      'data/anims/rook.json: rook_jab: hitbox reaches 59 px in front of the pivot, the cell has 32 px (widen the cell: reach + 8, rounded up to a multiple of 8)',
     ]);
   });
   it('catches a missing or doubled impact and an unknown move', () => {

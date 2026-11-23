@@ -17,7 +17,7 @@ Read this file at the start of every session. If a task conflicts with a rule he
 
 - TypeScript (strict mode), Vite, plain Canvas 2D. No game framework (no Phaser, no Pixi) unless asked: the combat sim is custom and rendering is simple pixel art.
 - Tests: Vitest (`npm test`).
-- Base resolution 480x270, drawn to an offscreen canvas and scaled by the largest whole number that fits the window (x4 at 1920x1080), with `imageSmoothingEnabled = false` and CSS `image-rendering: pixelated`. Letterbox the rest in black.
+- Base resolution 640x360 (since Prompt 04B; characters are about 108 px tall), drawn to an offscreen canvas and scaled by the largest whole number that fits the window (x3 at 1920x1080), with `imageSmoothingEnabled = false` and CSS `image-rendering: pixelated`. Letterbox the rest in black.
 - Deployment: GitHub Pages via a GitHub Actions workflow on every push to `main`, so the latest build is always playable in a browser.
 - Future desktop release: keep the game fully static (no server, all assets local, no network calls), so it can be wrapped with Tauri or Electron later without changes.
 
@@ -43,6 +43,10 @@ Keyboard is the primary input; every feature must be fully playable on keyboard,
 4. **Views never change game state.** Renderers, HUD and debug overlay only read the sim.
 5. **AI uses the same input path as the player.** AI produces input snapshots fed into an `InputBuffer`; it never sets fighter state directly.
 6. **Moves are data.** Every move is a JSON file in `data/moves/<character>/`, loaded with `import.meta.glob`. No frame numbers hard-coded in code.
+
+## Resolution migration (480x270 → 640x360)
+
+All pixel distances were multiplied by 4/3 by `tools/migrate_640.ts` (data files; it refuses to run twice) and by hand for code constants (AI ranges in `src/ai/corvane_ai.ts`, view layout, effect sizes, background placeholders, test bots and test positions). Frame data did not change. Rook's hurtbox is 32x107 (crouch 67), Corvane's 43x117 (crouch 73); the Colosseum is 1600 px wide (1920 after the 320 px wall break).
 
 ## Coordinates and conventions
 
@@ -137,7 +141,7 @@ public/art/           # generated sprite sheets (npm run art) and art
 - Palette: `art_src/palette.json` (ramps dark → light). Rook: oxblood coat (her main colour, a deep muted red-brown, not the glint red) with tarnished-gold accents. `#ff3a2e` is reserved for sweeping glints and never appears on a character.
 - When a character has an animation file but not every animation yet, the missing ones use the generated placeholder poses (never a fallback to idle).
 - Sprite sheets: `public/art/characters/<id>.png`, a grid of equal cells (cell 0 = top left). Animation files: `data/anims/<id>.json` (`sheet`, `cell`, `pivot`, optional `sheet_cells`, `anims`). Sheet layouts per character (cell size, pivot, columns, colour) live in `data/art_spec.json`; the dummy shares Rook's sheet (shifted to greys).
-- **Cell size comes from the data:** 40 px behind the pivot; in front of it, the character's furthest hitbox reach + 8 px; width rounded up to a multiple of 8; height fixed per character. `npm run art-spec` computes it into `data/art_spec.json` (currently Rook 104x96, pivot 40,92; Corvane 104x104, pivot 40,100). The animation validator fails if any hitbox of a move reaches outside its cell, so after changing hitboxes, rerun `npm run art-spec`.
+- **Cell size comes from the data:** 53 px behind the pivot; in front of it, the character's furthest hitbox reach + 11 px; width rounded up to a multiple of 8; height fixed per character. `npm run art-spec` computes it into `data/art_spec.json` (currently Rook 136x128, pivot 53,123; Corvane 144x139, pivot 53,133). The animation validator fails if any hitbox of a move reaches outside its cell, so after changing hitboxes, rerun `npm run art-spec`.
 - **Poses per move:** 3 to 7 held key poses. Moves with damage ≥ 20 or the `launcher` property get one extra "smear" frame immediately before the impact frame (taken from the wind-up, so the impact frame never moves).
 - **Required state animations** include `intro`, `stagger`, `guard_break` and `throw_break`; `victory` is optional (see `STATE_SPECS` in `src/view/anim_layout.ts`).
 - `dur` is in sim frames. A move animation (`"move": "<id>"`) has exactly one `"impact": true` frame that starts on the move's first active frame, and its durations add up to the move's total; the loader rejects anything else. Its playhead is the sim's move frame (never a separate timer), so it freezes during hitstop and can't drift.

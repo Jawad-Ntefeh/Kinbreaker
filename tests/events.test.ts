@@ -22,8 +22,8 @@ describe('sim events (for the view)', () => {
     const d = sim.fighters[1];
     expect(e.x).toBeGreaterThanOrEqual(d.x - d.halfWidth);
     expect(e.x).toBeLessThanOrEqual(d.x + d.halfWidth);
-    expect(e.y).toBeGreaterThanOrEqual(5200);
-    expect(e.y).toBeLessThanOrEqual(6200);
+    expect(e.y).toBeGreaterThanOrEqual(6900);
+    expect(e.y).toBeLessThanOrEqual(8200);
   });
   it('block', () => {
     const sim = pointBlank();
@@ -51,7 +51,7 @@ describe('sim events (for the view)', () => {
   });
   it('wall_splat at the wall', () => {
     const wall = getArena('training').width / 100;
-    const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 44, p2X: wall - 20 });
+    const sim = new CombatSim({ p1: rookConfig(), p2: dummyConfig(), p1X: wall - 59, p2X: wall - 27 });
     sim.step(inp(3, 1, '4'), N);
     const e = until(sim, 'wall_splat');
     expect(e.x).toBe(sim.arenaRight);
@@ -72,7 +72,7 @@ describe('sim events (for the view)', () => {
     expect(sim.events.map((e) => e.type)).toContain('throw_break');
   });
   it('armor_absorb', () => {
-    const sim = new CombatSim({ p1: fighterConfig('corvane'), p2: fighterConfig('rook'), p1X: 400, p2X: 428, arenaWidth: 1200 });
+    const sim = new CombatSim({ p1: fighterConfig('corvane'), p2: fighterConfig('rook'), p1X: 400, p2X: 437.5, arenaWidth: 1600 });
     sim.fighters[0].lockedMoves.clear();
     sim.step(inp(6, 1, '1', '2'), inp(5, -1, '1'));
     expect(until(sim, 'armor_absorb')).toMatchObject({ attacker: 1, defender: 0, moveId: 'rook_jab' });
@@ -81,13 +81,13 @@ describe('sim events (for the view)', () => {
     const sim = createCorvaneFight(1);
     const [rook, c] = sim.fighters;
     c.health = 232;
-    rook.x = c.x - 2800;
+    rook.x = c.x - 3750;
     sim.step(inp(5, 1, '1'), N);
     const wb = until(sim, 'wall_break', N, N, 200);
     expect(wb.x).toBe(0);
     c.health = 3;
     runUntil(sim, () => c.isNeutral && rook.isNeutral, N, N, 200);
-    rook.x = c.x - 2800;
+    rook.x = c.x - 3750;
     sim.step(inp(5, 1, '1'), N);
     expect(until(sim, 'ko', N, N, 40)).toMatchObject({ defender: 1 });
   });
@@ -102,7 +102,7 @@ describe('sim events (for the view)', () => {
     for (const d of [6, 5]) sim.step(inp(d, 1), N);
     sim.step(inp(6, 1), N);
     expect(sim.events.map((e) => e.type)).toContain('dash');
-    const c = new CombatSim({ p1: fighterConfig('corvane'), p2: fighterConfig('rook'), p1X: 300, p2X: 600, arenaWidth: 1200 });
+    const c = new CombatSim({ p1: fighterConfig('corvane'), p2: fighterConfig('rook'), p1X: 400, p2X: 800, arenaWidth: 1600 });
     c.step(inp(4, 1, '2'), N); // Haymaker: glint from frame 12
     const g = until(c, 'glint', N, N, 20);
     expect(g.moveId).toBe('corvane_haymaker');

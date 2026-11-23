@@ -2,11 +2,11 @@
 import type { CombatSim } from '../combat/combat_sim';
 import { BASE_WIDTH } from './screen';
 
-export const FLOOR_Y = 238;
+export const FLOOR_Y = 317;
 /** Fraction of the distance to the target covered per frame (view-only smoothing). */
 const LAG = 0.2;
 /** The camera may show this many px beyond each wall, so the walls themselves are visible. */
-export const WALL_MARGIN = 12;
+export const WALL_MARGIN = 16;
 
 export class Camera {
   /** Left edge of the view in arena pixels (whole pixels, shake included). */

@@ -138,38 +138,38 @@ export class BossFightScene extends SimScene {
       const a = Math.min(1, this.t / 10, (FLOW.introFrames - this.t) / 10);
       o.globalAlpha = Math.max(0, a);
       o.fillStyle = 'rgba(0,0,0,0.6)';
-      o.fillRect(0, H / 2 - 18, W, 32);
-      o.font = font(12);
-      text(o, 'CORVANE, THE IRON WRIST', W / 2, H / 2 - 9, '#d9d4c3', 'center');
+      o.fillRect(0, H / 2 - 24, W, 43);
+      o.font = font(16);
+      text(o, 'CORVANE, THE IRON WRIST', W / 2, H / 2 - 12, '#d9d4c3', 'center');
       o.globalAlpha = 1;
     }
     if (this.stage === 'defeat' && this.t > FLOW.defeatRunFrames) {
       const k = Math.min(1, (this.t - FLOW.defeatRunFrames) / 30);
       dim(o, 0.7 * k, W, H);
-      o.font = font(20);
+      o.font = font(27);
       o.globalAlpha = k;
-      text(o, 'FALLEN', W / 2, H / 2 - 16, '#b9a27a', 'center');
+      text(o, 'FALLEN', W / 2, H / 2 - 21, '#b9a27a', 'center');
       o.globalAlpha = 1;
       if (this.t >= FLOW.defeatRunFrames + FLOW.defeatPromptFrames) {
-        o.font = font(7);
-        text(o, `Press ${this.confirmKey()} to rise again`, W / 2, H / 2 + 14, '#cfcfd8', 'center');
+        o.font = font(9);
+        text(o, `Press ${this.confirmKey()} to rise again`, W / 2, H / 2 + 19, '#cfcfd8', 'center');
       }
     }
     if (this.stage === 'victory' && this.t > FLOW.victoryFreezeFrames) {
       const k = Math.min(1, (this.t - FLOW.victoryFreezeFrames) / 30);
       dim(o, 0.6 * k, W, H);
       o.globalAlpha = k;
-      o.font = font(14);
-      text(o, 'ANCESTOR LAID TO REST', W / 2, H / 2 - 12, '#d8b867', 'center');
+      o.font = font(19);
+      text(o, 'ANCESTOR LAID TO REST', W / 2, H / 2 - 16, '#d8b867', 'center');
       o.globalAlpha = 1;
       if (this.t >= FLOW.victoryFreezeFrames + FLOW.victoryPromptFrames) {
-        o.font = font(7);
-        text(o, `Press ${this.confirmKey()} to continue`, W / 2, H / 2 + 12, '#cfcfd8', 'center');
+        o.font = font(9);
+        text(o, `Press ${this.confirmKey()} to continue`, W / 2, H / 2 + 16, '#cfcfd8', 'center');
       }
     }
     if (boss.state === 'phase_transition') {
-      o.font = font(8);
-      text(o, 'The Iron Wrist tightens.', W / 2, 60, '#d9d4c3', 'center');
+      o.font = font(11);
+      text(o, 'The Iron Wrist tightens.', W / 2, 80, '#d9d4c3', 'center');
     }
     this.pauseMenu?.draw(o, 'PAUSED');
   }

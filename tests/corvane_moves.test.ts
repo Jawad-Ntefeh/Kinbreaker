@@ -7,7 +7,7 @@ import { inp, N, runUntil } from './helpers';
 
 /** Corvane (p1, facing right) at point blank against Rook (p2). Phase locks removed for move tests. */
 export function corvaneVsRook(): CombatSim {
-  const sim = new CombatSim({ p1: fighterConfig('corvane'), p2: fighterConfig('rook'), p1X: 400, p2X: 428, arenaWidth: 1200 });
+  const sim = new CombatSim({ p1: fighterConfig('corvane'), p2: fighterConfig('rook'), p1X: 400, p2X: 437.5, arenaWidth: 1600 });
   sim.fighters[0].lockedMoves.clear();
   return sim;
 }

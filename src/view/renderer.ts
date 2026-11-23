@@ -108,7 +108,7 @@ export class Renderer {
     ctx.fillStyle = '#1b1824';
     ctx.fillRect(0, FLOOR_Y + 1, BASE_WIDTH, BASE_HEIGHT - FLOOR_Y - 1);
     ctx.fillStyle = '#211e2b';
-    for (let x = sim.arenaLeft / 100; x <= sim.arenaRight / 100; x += 60) ctx.fillRect(x - c.x, FLOOR_Y + 1, 1, 4);
+    for (let x = sim.arenaLeft / 100; x <= sim.arenaRight / 100; x += 80) ctx.fillRect(x - c.x, FLOOR_Y + 1, 1, 5);
     ctx.fillStyle = '#5a5468';
     ctx.fillRect(0, FLOOR_Y, BASE_WIDTH, 1);
     this.drawWalls(ctx, sim, '#3a3546');
@@ -119,8 +119,8 @@ export class Renderer {
     ctx.fillStyle = color;
     const left = c.sx(sim.arenaLeft);
     const right = c.sx(sim.arenaRight);
-    if (left >= 0 && !(leftHasArt && !sim.wallBroken)) ctx.fillRect(left - 12, 0, 12, FLOOR_Y + 1);
-    if (right <= BASE_WIDTH) ctx.fillRect(right, 0, 12, FLOOR_Y + 1);
+    if (left >= 0 && !(leftHasArt && !sim.wallBroken)) ctx.fillRect(left - 16, 0, 16, FLOOR_Y + 1);
+    if (right <= BASE_WIDTH) ctx.fillRect(right, 0, 16, FLOOR_Y + 1);
   }
 
   /** Screen rect for a world box. */
@@ -137,10 +137,10 @@ export class Renderer {
   private drawShadow(ctx: CanvasRenderingContext2D, f: Fighter): void {
     const x = this.camera.sx(f.x);
     const h = Math.round(f.y / 100);
-    const half = Math.max(4, Math.round((f.halfWidth / 100) * 1.4) - Math.min(8, h >> 3));
+    const half = Math.max(5, Math.round((f.halfWidth / 100) * 1.4) - Math.min(11, Math.trunc(h / 8)));
     ctx.fillStyle = '#0b0a0f';
-    ctx.fillRect(x - half + 2, FLOOR_Y, half * 2 - 3, 2);
-    ctx.fillRect(x - half, FLOOR_Y + 1, half * 2 + 1, 1);
+    ctx.fillRect(x - half + 3, FLOOR_Y, half * 2 - 5, 2);
+    ctx.fillRect(x - half, FLOOR_Y + 1, half * 2 + 1, 2);
   }
 
   /** Pick and draw a fighter's sprite; records what was drawn for the debug overlay. */
@@ -213,12 +213,12 @@ export class Renderer {
     const g = f.glint;
     if (!g) return;
     const [x, y, w] = this.rect(f.hurtbox());
-    const hx = f.facing === 1 ? x + w + 3 : x - 4;
+    const hx = f.facing === 1 ? x + w + 4 : x - 5;
     const hy = y + Math.round((f.height / 100) * 0.3);
     // Pulse: the star grows over the glint window.
     const m = f.move!;
     const t = f.moveFrame - (m.startup - 14);
-    const r = t < 2 ? 2 : t < 6 ? 4 : 6;
+    const r = t < 2 ? 3 : t < 6 ? 5 : 8;
     ctx.fillStyle = GLINT[g];
     ctx.fillRect(hx - r, hy, r * 2 + 1, 1);
     ctx.fillRect(hx, hy - r, 1, r * 2 + 1);

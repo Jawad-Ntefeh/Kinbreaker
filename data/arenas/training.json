@@ -1,7 +1,7 @@
 {
   "id": "training",
   "name": "Training Ground",
-  "width": 960,
-  "start_gap": 120,
+  "width": 1280,
+  "start_gap": 160,
   "breakable_left_wall": 0
 }

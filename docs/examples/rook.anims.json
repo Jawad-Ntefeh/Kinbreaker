@@ -1,7 +1,7 @@
 {
   "sheet": "art/characters/rook.png",
-  "cell": [104,96],
-  "pivot": [40,92],
+  "cell": [136,128],
+  "pivot": [53,123],
   "sheet_cells": [8,17],
   "anims": {
     "idle": {"loop":true,"frames":[{"cell":0,"dur":10},{"cell":1,"dur":10},{"cell":2,"dur":10},{"cell":3,"dur":10}]},

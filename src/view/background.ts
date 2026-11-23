@@ -12,7 +12,7 @@ import { BASE_HEIGHT, BASE_WIDTH } from './screen';
 
 const ART = new Set(artFiles);
 /** Placeholder layer width (tiles horizontally when the layer repeats). */
-const TILE = 480;
+const TILE = 640;
 
 function canvas(w: number, h: number): [HTMLCanvasElement, CanvasRenderingContext2D] {
   const c = document.createElement('canvas');
@@ -34,14 +34,14 @@ const GENERATORS: Record<string, () => HTMLCanvasElement> = {
     const bands = ['#0b0a12', '#0e0d17', '#11101b', '#14121f', '#171523'];
     bands.forEach((col, i) => {
       g.fillStyle = col;
-      g.fillRect(0, i * 40, BASE_WIDTH, BASE_HEIGHT - i * 40);
+      g.fillRect(0, i * 53, BASE_WIDTH, BASE_HEIGHT - i * 53);
     });
     // Stars.
     const r = noise(7);
     g.fillStyle = '#3a3850';
-    for (let i = 0; i < 40; i++) g.fillRect(Math.floor(r() * BASE_WIDTH), Math.floor(r() * 120), 1, 1);
+    for (let i = 0; i < 70; i++) g.fillRect(Math.floor(r() * BASE_WIDTH), Math.floor(r() * 160), 1, 1);
     // A pale moon (pixel disc) with a darker crater or two.
-    const [mx, my, mr] = [372, 46, 14];
+    const [mx, my, mr] = [496, 61, 19];
     for (let y = -mr; y <= mr; y++) {
       const w = Math.floor(Math.sqrt(mr * mr - y * y));
       g.fillStyle = '#c9c4b2';
@@ -58,38 +58,38 @@ const GENERATORS: Record<string, () => HTMLCanvasElement> = {
     const r = noise(21);
     // Distant tiered stands, broken in places.
     for (let tier = 0; tier < 4; tier++) {
-      const top = 110 + tier * 22;
+      const top = 147 + tier * 29;
       g.fillStyle = ['#1a1824', '#1d1b28', '#201d2b', '#23202f'][tier]!;
       let x = 0;
       while (x < TILE) {
-        const w = 20 + Math.floor(r() * 50);
+        const w = 27 + Math.floor(r() * 67);
         const broken = r() < 0.25;
-        const h = broken ? Math.floor(r() * 10) : 0;
+        const h = broken ? Math.floor(r() * 13) : 0;
         g.fillRect(x, top + h, w, FLOOR_Y - top - h);
         // Arches along the top tier.
         if (tier === 0 && !broken) {
           g.fillStyle = '#121019';
-          for (let ax = x + 4; ax + 6 < x + w; ax += 12) g.fillRect(ax, top + 6, 6, 9);
+          for (let ax = x + 5; ax + 8 < x + w; ax += 16) g.fillRect(ax, top + 8, 8, 12);
           g.fillStyle = '#1a1824';
         }
-        x += w + (broken ? Math.floor(r() * 12) : 0);
+        x += w + (broken ? Math.floor(r() * 16) : 0);
       }
     }
     return c;
   },
   columns: () => {
     const [c, g] = canvas(TILE, BASE_HEIGHT);
-    const cols: [number, number][] = [[40, 130], [200, 90], [330, 160]];
+    const cols: [number, number][] = [[53, 173], [267, 120], [440, 213]];
     for (const [x, h] of cols) {
       g.fillStyle = '#0f0e13';
-      g.fillRect(x, FLOOR_Y - h, 26, h);
-      g.fillRect(x - 4, FLOOR_Y - h, 34, 6); // capital
-      g.fillRect(x - 5, FLOOR_Y - 6, 36, 6); // base
+      g.fillRect(x, FLOOR_Y - h, 35, h);
+      g.fillRect(x - 5, FLOOR_Y - h, 45, 8); // capital
+      g.fillRect(x - 7, FLOOR_Y - 8, 48, 8); // base
       g.fillStyle = '#16141c';
-      g.fillRect(x + 4, FLOOR_Y - h + 8, 3, h - 14); // flute highlight
+      g.fillRect(x + 5, FLOOR_Y - h + 11, 4, h - 19); // flute highlight
       g.fillStyle = '#0f0e13';
-      g.fillRect(x + 18, FLOOR_Y - h - 8, 8, 8); // jagged break
-      g.fillRect(x + 22, FLOOR_Y - h - 12, 4, 4);
+      g.fillRect(x + 24, FLOOR_Y - h - 11, 11, 11); // jagged break
+      g.fillRect(x + 29, FLOOR_Y - h - 16, 5, 5);
     }
     return c;
   },
@@ -103,34 +103,34 @@ const GENERATORS: Record<string, () => HTMLCanvasElement> = {
     g.fillStyle = '#1f3240';
     g.fillRect(0, FLOOR_Y + 2, TILE, 3);
     g.fillStyle = '#3d6077';
-    for (let x = 0; x < TILE; x += 32) g.fillRect(x, FLOOR_Y + 2, 10, 1);
+    for (let x = 0; x < TILE; x += 43) g.fillRect(x, FLOOR_Y + 3, 13, 1);
     g.fillStyle = '#16141c';
-    for (let x = 0; x < TILE; x += 48) g.fillRect(x, FLOOR_Y + 7, 1, BASE_HEIGHT - FLOOR_Y - 7);
-    for (let x = 24; x < TILE; x += 48) g.fillRect(x, FLOOR_Y + 18, 1, BASE_HEIGHT - FLOOR_Y - 18);
+    for (let x = 0; x < TILE; x += 64) g.fillRect(x, FLOOR_Y + 9, 1, BASE_HEIGHT - FLOOR_Y - 9);
+    for (let x = 32; x < TILE; x += 64) g.fillRect(x, FLOOR_Y + 24, 1, BASE_HEIGHT - FLOOR_Y - 24);
     return c;
   },
   wall_intact: () => {
     // Drawn so its right edge is the wall (x = 32 in the image).
-    const [c, g] = canvas(32, BASE_HEIGHT);
+    const [c, g] = canvas(43, BASE_HEIGHT);
     g.fillStyle = '#2c2934';
-    g.fillRect(0, 0, 32, FLOOR_Y + 1);
+    g.fillRect(0, 0, 43, FLOOR_Y + 1);
     g.fillStyle = '#24212c';
-    for (let y = 4; y < FLOOR_Y; y += 14) {
-      g.fillRect(0, y, 32, 1);
-      for (let x = (y / 14) % 2 ? 4 : 12; x < 32; x += 16) g.fillRect(x, y, 1, 14);
+    for (let y = 5; y < FLOOR_Y; y += 19) {
+      g.fillRect(0, y, 43, 1);
+      for (let x = ((y - 5) / 19) % 2 ? 5 : 16; x < 43; x += 21) g.fillRect(x, y, 1, 19);
     }
     g.fillStyle = '#3a3646';
-    g.fillRect(31, 0, 1, FLOOR_Y + 1);
+    g.fillRect(42, 0, 1, FLOOR_Y + 1);
     return c;
   },
   wall_broken: () => {
     // Rubble and a jagged stump where the wall stood (right edge = the old wall).
-    const [c, g] = canvas(48, BASE_HEIGHT);
+    const [c, g] = canvas(64, BASE_HEIGHT);
     g.fillStyle = '#2c2934';
-    const stump = [70, 64, 58, 61, 52, 47, 40, 44];
-    stump.forEach((h, i) => g.fillRect(16 + i * 4, FLOOR_Y + 1 - h, 4, h));
+    const stump = [93, 85, 77, 81, 69, 63, 53, 59];
+    stump.forEach((h, i) => g.fillRect(21 + i * 5, FLOOR_Y + 1 - h, 5, h));
     g.fillStyle = '#3a3646';
-    for (const [x, y, w, h] of [[2, -8, 9, 8], [10, -5, 7, 5], [40, -6, 8, 6], [30, -10, 6, 4], [20, -4, 5, 4]] as const) g.fillRect(x, FLOOR_Y + 1 + y, w, h);
+    for (const [x, y, w, h] of [[3, -11, 12, 11], [13, -7, 9, 7], [53, -8, 11, 8], [40, -13, 8, 5], [27, -5, 7, 5]] as const) g.fillRect(x, FLOOR_Y + 1 + y, w, h);
     return c;
   },
 };

@@ -16,16 +16,18 @@ import type { Move } from './move_data';
 import { SYSTEM, scaledDamage } from './system';
 import type { InputSnapshot } from './types';
 import { HASH_SEED, hashInt, hashString } from './hash';
+import type { Height } from './move_data';
 import { getArena, type ArenaDef } from './arena_data';
 import { Rng } from './rng';
 
-export type ContactKind = 'hit' | 'counter' | 'block' | 'throw';
+export type ContactKind = 'hit' | 'counter_hit' | 'block' | 'throw';
 
 export interface CombatEvent {
   type:
     | 'hit'
-    | 'counter'
+    | 'counter_hit'
     | 'block'
+    | 'whiff'
     | 'whiff_phase'
     | 'throw'
     | 'throw_break'
@@ -36,7 +38,11 @@ export interface CombatEvent {
     | 'wall_splat'
     | 'knockdown'
     | 'ground_hit'
-    | 'armor'
+    | 'armor_absorb'
+    | 'glint'
+    | 'phase_step'
+    | 'dash'
+    | 'land'
     | 'ko'
     | 'phase2'
     | 'wall_break';
@@ -44,6 +50,11 @@ export interface CombatEvent {
   defender: number;
   moveId: string;
   damage: number;
+  /** World position of the event in subpixels (the contact point for hits and blocks). */
+  x: number;
+  y: number;
+  /** Height of the move involved, or '' when there is none. */
+  height: Height | '';
 }
 
 /** Measured frame advantage: frames between the two fighters becoming able to act. */
@@ -79,6 +90,8 @@ interface Contact {
   move: Move;
   kind: ContactKind | 'phase_miss' | 'ground';
   group: number;
+  /** Contact point (subpixels). */
+  at: [number, number];
 }
 
 interface PendingAdvantage {
@@ -185,7 +198,7 @@ export class CombatSim {
     if (this.wallBroken || this.arena.breakableLeftWall <= 0) return;
     this.wallBroken = true;
     this.arenaLeft -= this.arena.breakableLeftWall;
-    this.event('wall_break', by, this.opponent(by), '', 0);
+    this.event('wall_break', by, this.opponent(by), '', 0, [this.arenaLeft + this.arena.breakableLeftWall, 0]);
   }
 
   // ---------------------------------------------------------------- timers
@@ -205,7 +218,11 @@ export class CombatSim {
           break;
         }
         if (m.cancelWindow && f.moveFrame === m.cancelWindow[0] && this.tryContinue(f, m)) break;
-        if (f.moveFrame === m.lastActive + 1 && f.connected === 0) f.extraRecovery = m.whiffRecovery;
+        if (f.moveFrame === m.lastActive + 1 && f.connected === 0) {
+          f.extraRecovery = m.whiffRecovery;
+          this.event('whiff', f, this.opponent(f), m.id, 0, [f.x, f.y + Math.trunc(f.height / 2)]);
+        }
+        if (m.glint && f.moveFrame === m.startup - SYSTEM.glintStart) this.event('glint', f, this.opponent(f), m.id, 0, [f.x, f.y + Math.trunc(f.height / 2)]);
         if (f.moveFrame > f.moveTotal) this.toNeutral(f);
         break;
       }
@@ -321,6 +338,7 @@ export class CombatSim {
         const dmg = this.applyDamage(def, atk.move.damage);
         this.event('throw_land', atk, def, atk.move.id, dmg);
         this.setTimed(def, 'knockdown', SYSTEM.knockdownFrames);
+        this.event('knockdown', atk, def, atk.move.id, 0, [def.x, 0]);
       }
     }
   }
@@ -440,6 +458,7 @@ export class CombatSim {
     f.connected = 0;
     f.stateFrame = 0;
     f.vx = 0;
+    if (m.glint && f.moveFrame <= m.startup - SYSTEM.glintStart && m.startup - SYSTEM.glintStart <= 1) this.event('glint', f, this.opponent(f), m.id, 0, [f.x, f.y + Math.trunc(f.height / 2)]);
   }
 
   private tryCancel(f: Fighter): void {
@@ -490,6 +509,7 @@ export class CombatSim {
     const drift = d === 6 || d === 9 || d === 3 ? 1 : d === 4 || d === 7 || d === 1 ? -1 : 0;
     this.setTimed(f, 'phase_step', SYSTEM.phaseFrames, 1);
     f.vx = drift * SYSTEM.phaseDrift * f.facing;
+    this.event('phase_step', f, this.opponent(f), '', 0, [f.x, f.y]);
     return true;
   }
 
@@ -498,12 +518,14 @@ export class CombatSim {
       f.buffer.consumeMotions();
       this.setTimed(f, 'dash_forward', f.config.dash.frames, 1);
       f.vx = f.config.dash.speed * f.facing;
+      this.event('dash', f, this.opponent(f), '', 0, [f.x - f.halfWidth * f.facing, 0]);
       return true;
     }
     if (f.buffer.motion('44', f.facing)) {
       f.buffer.consumeMotions();
       this.setTimed(f, 'backdash', f.config.backdash.frames, 1);
       f.vx = -f.config.backdash.speed * f.facing;
+      this.event('dash', f, this.opponent(f), '', 0, [f.x + f.halfWidth * f.facing, 0]);
       return true;
     }
     return false;
@@ -543,7 +565,8 @@ export class CombatSim {
           f.y = 0;
           f.vy = 0;
           this.setTimed(f, 'knockdown', SYSTEM.knockdownFrames);
-          this.event('knockdown', this.opponent(f), f, '', 0);
+          this.event('land', this.opponent(f), f, '', 0, [f.x, 0]);
+          this.event('knockdown', this.opponent(f), f, '', 0, [f.x, 0]);
         }
       }
       if (f.vx !== 0) {
@@ -563,7 +586,7 @@ export class CombatSim {
     f.splatY0 = y;
     f.vy = 0;
     f.wallHits = 0;
-    this.event('wall_splat', this.opponent(f), f, '', 0);
+    this.event('wall_splat', this.opponent(f), f, '', 0, [f.facing === 1 ? f.x - f.halfWidth : f.x + f.halfWidth, f.y + Math.trunc(f.height / 2)]);
   }
 
   /** Pushboxes: fighters never overlap. */
@@ -610,7 +633,7 @@ export class CombatSim {
       const front = def.hurtbox();
       const nearEdge = atk.facing === 1 ? front.x0 - atk.x : atk.x - front.x1;
       if (nearEdge > m.throwRange) return null;
-      return { attacker: atk, defender: def, move: m, kind: 'throw', group: 0 };
+      return { attacker: atk, defender: def, move: m, kind: 'throw', group: 0, at: [(atk.x + def.x) >> 1, Math.trunc((def.height * 2) / 3)] };
     }
     if (!def.isHittable) return null;
     const downed = def.state === 'knockdown';
@@ -619,14 +642,15 @@ export class CombatSim {
     for (const { box, group } of atk.activeHitboxes()) {
       if (atk.hitGroups & (1 << group)) continue;
       if (!overlap(box, hurt)) continue;
+      const at: [number, number] = [(Math.max(box.x0, hurt.x0) + Math.min(box.x1, hurt.x1)) >> 1, (Math.max(box.y0, hurt.y0) + Math.min(box.y1, hurt.y1)) >> 1];
       // Contact: decide the result.
-      if (downed) return { attacker: atk, defender: def, move: m, kind: 'ground', group };
-      if (m.path === 'linear' && def.isPhaseInvulnerable) return { attacker: atk, defender: def, move: m, kind: 'phase_miss', group };
+      if (downed) return { attacker: atk, defender: def, move: m, kind: 'ground', group, at };
+      if (m.path === 'linear' && def.isPhaseInvulnerable) return { attacker: atk, defender: def, move: m, kind: 'phase_miss', group, at };
       if (m.height === 'high' && def.isCrouching) continue;
       const stance = this.blockStance(def);
       const blocked = (stance === 'stand' && (m.height === 'high' || m.height === 'mid')) || (stance === 'crouch' && m.height === 'low');
-      if (blocked) return { attacker: atk, defender: def, move: m, kind: 'block', group };
-      return { attacker: atk, defender: def, move: m, kind: def.inStartup ? 'counter' : 'hit', group };
+      if (blocked) return { attacker: atk, defender: def, move: m, kind: 'block', group, at };
+      return { attacker: atk, defender: def, move: m, kind: def.inStartup ? 'counter_hit' : 'hit', group, at };
     }
     return null;
   }
@@ -663,17 +687,18 @@ export class CombatSim {
   private applyContact(c: Contact): void {
     const { attacker: atk, defender: def, move: m } = c;
     if (c.kind === 'phase_miss') {
-      this.event('whiff_phase', atk, def, m.id, 0);
+      this.event('whiff_phase', atk, def, m.id, 0, c.at);
       return;
     }
     atk.hitGroups |= 1 << c.group;
+    def.hitHeight = m.height;
     if (c.kind === 'ground') {
       // Ground hit: half damage, once per knockdown, the knockdown timer is untouched.
       atk.connected = 1;
       atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
       def.groundHitTaken = true;
       const dmg = this.applyDamage(def, m.damage, 50);
-      this.event('ground_hit', atk, def, m.id, dmg);
+      this.event('ground_hit', atk, def, m.id, dmg, c.at);
       return;
     }
     const contactFrame = atk.moveFrame;
@@ -686,7 +711,7 @@ export class CombatSim {
       atk.stateLength = SYSTEM.throwBreakWindow + SYSTEM.throwHitRecovery;
       atk.vx = 0;
       this.setTimed(def, 'thrown', 0);
-      this.event('throw', atk, def, m.id, 0);
+      this.event('throw', atk, def, m.id, 0, c.at);
       this.startPending('THROW', atk, def, m.id);
       return;
     }
@@ -700,25 +725,25 @@ export class CombatSim {
       if (def.stamina <= 0) {
         def.stamina = 0;
         this.setTimed(def, 'guard_break', SYSTEM.guardBreakFrames);
-        this.event('guard_break', atk, def, m.id, 0);
+        this.event('guard_break', atk, def, m.id, 0, c.at);
       } else {
         this.setTimed(def, 'blockstun', Math.max(1, (m.onBlock ?? 0) + remaining));
         def.crouchStun = crouch;
       }
-      this.event('block', atk, def, m.id, 0);
+      this.event('block', atk, def, m.id, 0, c.at);
       this.pushBack(atk, def);
       this.startPending('BLOCK', atk, def, m.id);
       return;
     }
 
-    const counter = c.kind === 'counter';
+    const counter = c.kind === 'counter_hit';
     const launchesNow = m.properties.includes('launcher') || (counter && m.properties.includes('counter_hit_launch')) || (counter ? m.onCounterHit : m.onHit) === 'launch';
     if (def.isArmored && !launchesNow) {
       // Armor: damage and poise damage, but no hitstun, no hitstop for the defender, no interruption.
       atk.connected = 1;
       atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
       const dmg = this.applyDamage(def, m.damage);
-      this.event('armor', atk, def, m.id, dmg);
+      this.event('armor_absorb', atk, def, m.id, dmg, c.at);
       if (m.poiseDamage > 0) {
         def.poise -= m.poiseDamage;
         def.poiseIdle = 0;
@@ -726,7 +751,7 @@ export class CombatSim {
           // A poise break still beats armor.
           def.poise = 0;
           this.setTimed(def, 'stagger', SYSTEM.staggerFrames);
-          this.event('stagger', atk, def, m.id, 0);
+          this.event('stagger', atk, def, m.id, 0, c.at);
         }
       }
       return;
@@ -737,7 +762,7 @@ export class CombatSim {
     atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
     def.hitstop = Math.max(def.hitstop, SYSTEM.hitstopHit);
     const dmg = this.applyDamage(def, m.damage);
-    this.event(counter ? 'counter' : 'hit', atk, def, m.id, dmg);
+    this.event(counter ? 'counter_hit' : 'hit', atk, def, m.id, dmg, c.at);
 
     let staggered = false;
     if (def.state !== 'stagger' && m.poiseDamage > 0) {
@@ -765,7 +790,7 @@ export class CombatSim {
       if (launch || def.wallHits >= SYSTEM.wallSplatMaxHits) {
         def.y = 0;
         this.setTimed(def, 'knockdown', SYSTEM.knockdownFrames);
-        this.event('knockdown', atk, def, m.id, 0);
+        this.event('knockdown', atk, def, m.id, 0, c.at);
       }
     } else if (launch) {
       this.setTimed(def, 'airborne', 0);
@@ -773,13 +798,13 @@ export class CombatSim {
       def.gravity = SYSTEM.gravity;
       def.vy = SYSTEM.launchVy;
       def.vx = SYSTEM.launchVx * away;
-      this.event('launch', atk, def, m.id, 0);
+      this.event('launch', atk, def, m.id, 0, c.at);
     } else if (knockdown) {
       this.setTimed(def, 'knockdown', SYSTEM.knockdownFrames);
-      this.event('knockdown', atk, def, m.id, 0);
+      this.event('knockdown', atk, def, m.id, 0, c.at);
     } else if (staggered) {
       this.setTimed(def, 'stagger', SYSTEM.staggerFrames);
-      this.event('stagger', atk, def, m.id, 0);
+      this.event('stagger', atk, def, m.id, 0, c.at);
     } else if (def.state === 'stagger' || def.state === 'guard_break') {
       // Free hits: the state keeps running.
     } else {
@@ -827,8 +852,11 @@ export class CombatSim {
     this.pending = { kind, moveId, attacker: atk.index, defender: def.index, attackerReady: -1, defenderReady: -1 };
   }
 
-  private event(type: CombatEvent['type'], atk: Fighter, def: Fighter, moveId: string, damage: number): void {
-    this.events.push({ type, attacker: atk.index, defender: def.index, moveId, damage });
+  /** Record an event. Position defaults to the defender's centre; height to the move's. */
+  private event(type: CombatEvent['type'], atk: Fighter, def: Fighter, moveId: string, damage: number, at?: [number, number]): void {
+    const m = moveId ? (atk.moves.get(moveId) ?? def.moves.get(moveId)) : undefined;
+    const [x, y] = at ?? [def.x, def.y + Math.trunc(def.height / 2)];
+    this.events.push({ type, attacker: atk.index, defender: def.index, moveId, damage, x, y, height: m ? m.height : '' });
   }
 
   // ---------------------------------------------------------------- regen

@@ -3,5 +3,35 @@
   "name": "The Sunken Colosseum",
   "width": 1200,
   "start_gap": 160,
-  "breakable_left_wall": 240
+  "breakable_left_wall": 240,
+  "layers": [
+    {
+      "image": "art/arenas/sunken_colosseum/sky.png",
+      "parallax": 0,
+      "y": 0,
+      "repeat": false
+    },
+    {
+      "image": "art/arenas/sunken_colosseum/stands.png",
+      "parallax": 0.25,
+      "y": 0,
+      "repeat": true
+    },
+    {
+      "image": "art/arenas/sunken_colosseum/columns.png",
+      "parallax": 0.6,
+      "y": 0,
+      "repeat": true
+    },
+    {
+      "image": "art/arenas/sunken_colosseum/floor.png",
+      "parallax": 1,
+      "y": 0,
+      "repeat": true
+    }
+  ],
+  "left_wall": {
+    "intact": "art/arenas/sunken_colosseum/wall_intact.png",
+    "broken": "art/arenas/sunken_colosseum/wall_broken.png"
+  }
 }

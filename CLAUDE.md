@@ -115,6 +115,9 @@ data/moves/<character>/*.json
 data/system.json      # system-wide combat constants
 data/characters/*.json
 data/arenas/*.json
+data/anims/*.json     # animation files (one per character with real art)
+data/art_spec.json    # sheet layout per character
+docs/ART_SPEC.md      # generated: npm run art-spec
 src/main.ts           # boot, game loop
 src/combat/           # CombatSim, fighters, InputBuffer, move data, hit resolution (pure logic, no DOM)
 src/ai/               # AI controllers (produce input snapshots)
@@ -125,6 +128,17 @@ src/view/             # canvas renderer, camera, HUD, debug overlay
 tests/                # Vitest tests
 public/art/           # sprites (later, from Pixelwright exports)
 ```
+
+## Art pipeline (sprites, animation, effects)
+
+- Sprite sheets: `public/art/characters/<id>.png`, a grid of equal cells (cell 0 = top left). Animation files: `data/anims/<id>.json` (`sheet`, `cell`, `pivot`, optional `sheet_cells`, `anims`). Sheet layouts per character (cell size, pivot, columns, colour) live in `data/art_spec.json`; the dummy shares Rook's sheet (shifted to greys).
+- `dur` is in sim frames. A move animation (`"move": "<id>"`) has exactly one `"impact": true` frame that starts on the move's first active frame, and its durations add up to the move's total; the loader rejects anything else. Its playhead is the sim's move frame (never a separate timer), so it freezes during hitstop and can't drift.
+- Animation choice is a pure function (`src/view/anim_select.ts`): current move id → state animation → fallback chain → idle. Without an animation file the game generates posed placeholder silhouettes (`src/view/placeholder.ts`).
+- The game only requests art files that exist (`virtual:art-manifest`, generated from `public/art/`), so missing art never causes 404s.
+- Arena background layers (`layers`: image, parallax 0–1, y, repeat) and the left wall's intact/broken images are listed in `data/arenas/<id>.json`; missing images get generated placeholders.
+- The sim emits an event list every frame (hit, block, counter_hit, whiff, launch, wall_splat, knockdown, land, ground_hit, throw_break, armor_absorb, glint, phase_step, dash, wall_break, ko, …) with position, attacker, defender, move id and height. Effects, hit flash and screen shake are built from these events only (`src/view/effects.ts`), use their own unseeded randomness, and never touch the sim.
+- `docs/ART_SPEC.md` and `docs/examples/rook.anims.json` are generated from the data: run `npm run art-spec` after changing moves, characters or `data/art_spec.json` (a test fails if they are stale). `npm run dev` then `/sprites.html` previews every sheet with cell numbers.
+- Dev URL parameters for the boss fight: `?seed=N`, `?boss_hp=N`.
 
 ## Bosses and AI
 

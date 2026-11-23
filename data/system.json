@@ -28,7 +28,7 @@
     "break_window": 20,
     "break_frames": 20,
     "break_separation": 40,
-    "hit_recovery": 20
+    "hit_recovery": 12
   },
   "launch": {
     "vy": 7.5,

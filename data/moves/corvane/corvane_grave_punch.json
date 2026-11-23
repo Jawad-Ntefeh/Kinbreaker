@@ -1,0 +1,56 @@
+{
+  "id": "corvane_grave_punch",
+  "name": "Grave Punch",
+  "limb": "right_arm",
+  "input": "2:1+2",
+  "startup": 10,
+  "active": 2,
+  "recovery": 24,
+  "damage": 16,
+  "poise_damage": 8,
+  "height": "low",
+  "path": "linear",
+  "on_block": -14,
+  "on_hit": 2,
+  "on_counter_hit": 2,
+  "properties": [
+    "ground_hit"
+  ],
+  "hitboxes": [
+    {
+      "frames": [
+        10,
+        11
+      ],
+      "x": 12,
+      "y": 0,
+      "w": 30,
+      "h": 12
+    }
+  ],
+  "hurtbox_overrides": [
+    {
+      "frames": [
+        1,
+        35
+      ],
+      "x": -16,
+      "y": 0,
+      "w": 32,
+      "h": 55
+    }
+  ],
+  "movement": [
+    {
+      "frame": 1,
+      "dx": 3
+    },
+    {
+      "frame": 10,
+      "dx": 0
+    }
+  ],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

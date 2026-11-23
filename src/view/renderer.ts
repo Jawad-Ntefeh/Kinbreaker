@@ -4,7 +4,11 @@
  */
 import type { CombatSim } from '../combat/combat_sim';
 import type { Fighter, WorldBox } from '../combat/fighter';
+import { pickFrame, type ScenePose } from './anim_select';
+import { Backgrounds } from './background';
 import { Camera, FLOOR_Y } from './camera';
+import type { Effects } from './effects';
+import { silhouette, SpriteBank, type CharacterSprites } from './sprites';
 import { BASE_HEIGHT, BASE_WIDTH } from './screen';
 
 export interface FighterLook {
@@ -34,19 +38,67 @@ export function lookOf(f: Fighter): FighterLook {
   return LOOKS[f.config.id ?? ''] ?? DEFAULT_LOOK;
 }
 
+/** What was drawn for a fighter (debug overlay). */
+export interface SpriteInfo {
+  anim: string;
+  cell: number;
+  label: string;
+  /** Pivot on screen. */
+  x: number;
+  y: number;
+  cellW: number;
+  cellH: number;
+  pivot: readonly [number, number];
+  facing: number;
+}
+
+export type SpriteMode = 'normal' | 'faded' | 'hidden';
+
 export class Renderer {
   readonly camera = new Camera();
+  readonly bank = new SpriteBank();
+  readonly backgrounds = new Backgrounds();
   /** Frame counter for simple animation (view-only). */
   private tick = 0;
+  spriteMode: SpriteMode = 'normal';
+  /** Scene poses (boss intro, victory) per fighter. */
+  pose: ScenePose[] = [null, null];
+  /** 0..1: fade of everything except the fighters (KO). */
+  koFade = 0;
+  readonly lastDrawn: (SpriteInfo | null)[] = [null, null];
+  private readonly tracks = [{ anim: '', start: 0 }, { anim: '', start: 0 }];
+  private onTop = 0;
+  private readonly lastMove = ['', ''];
 
-  draw(ctx: CanvasRenderingContext2D, sim: CombatSim): void {
+  draw(ctx: CanvasRenderingContext2D, sim: CombatSim, fx: Effects | null = null): void {
     this.tick++;
+    const shake = fx?.shake() ?? [0, 0];
+    this.camera.shakeX = shake[0];
+    this.camera.shakeY = shake[1];
     this.camera.follow(sim);
-    if (sim.arena.id === 'sunken_colosseum') this.drawColosseum(ctx, sim);
-    else this.drawTrainingGround(ctx, sim);
-    // Draw the opponent first so the player is on top.
-    for (const f of [sim.fighters[1], sim.fighters[0]]) this.drawFighter(ctx, f);
+    if (!this.backgrounds.draw(ctx, sim.arena, sim, this.camera)) this.drawTrainingGround(ctx, sim);
+    else this.drawWalls(ctx, sim, '#2c2934', !!sim.arena.leftWall);
+    fx?.drawBehind(ctx, this.camera, sim);
+    for (const f of sim.fighters) this.drawShadow(ctx, f);
+    // KO: everything but the fighters fades out.
+    if (this.koFade > 0) {
+      ctx.fillStyle = `rgba(0,0,0,${(this.koFade * 0.75).toFixed(2)})`;
+      ctx.fillRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
+    }
+    // The fighter who attacked most recently is drawn on top.
+    for (const f of sim.fighters) {
+      if (f.state === 'attack' && f.move && (f.moveFrame === 1 || this.lastMove[f.index] !== f.move.id)) this.onTop = f.index;
+      this.lastMove[f.index] = f.move?.id ?? '';
+    }
+    const order = this.onTop === 0 ? [sim.fighters[1], sim.fighters[0]] : [sim.fighters[0], sim.fighters[1]];
+    for (const f of order) this.drawFighter(ctx, sim, f, fx);
     for (const f of sim.fighters) this.drawGlint(ctx, f);
+    fx?.drawFront(ctx, this.camera, sim);
+  }
+
+  /** Debug: H cycles normal → 50% transparent → hidden (boxes only). */
+  cycleSpriteMode(): void {
+    this.spriteMode = this.spriteMode === 'normal' ? 'faded' : this.spriteMode === 'faded' ? 'hidden' : 'normal';
   }
 
   private drawTrainingGround(ctx: CanvasRenderingContext2D, sim: CombatSim): void {
@@ -62,55 +114,13 @@ export class Renderer {
     this.drawWalls(ctx, sim, '#3a3546');
   }
 
-  private drawColosseum(ctx: CanvasRenderingContext2D, sim: CombatSim): void {
-    const c = this.camera;
-    // Dark stone: back wall in courses of blocks, slower parallax.
-    ctx.fillStyle = '#16141b';
-    ctx.fillRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
-    const px = Math.round(c.x * 0.6);
-    ctx.fillStyle = '#1c1a22';
-    for (let row = 0; row < 12; row++) {
-      const y = 40 + row * 16;
-      const off = row % 2 ? 0 : 24;
-      for (let x = -((px + off) % 48) - 48; x < BASE_WIDTH; x += 48) ctx.fillRect(x, y, 46, 14);
-    }
-    // Broken columns (darker), at fixed arena positions.
-    ctx.fillStyle = '#0f0e13';
-    const cols: [number, number][] = [[-160, 120], [80, 150], [330, 90], [610, 160], [880, 110], [1110, 140]];
-    for (const [x, h] of cols) {
-      const sx = x - c.x;
-      if (sx < -40 || sx > BASE_WIDTH + 40) continue;
-      ctx.fillRect(sx, FLOOR_Y - h, 26, h);
-      ctx.fillRect(sx - 4, FLOOR_Y - h, 34, 6);
-      ctx.fillRect(sx + 18, FLOOR_Y - h - 8, 8, 8); // jagged break
-    }
-    // Floor and a shallow water line.
-    ctx.fillStyle = '#1d1b24';
-    ctx.fillRect(0, FLOOR_Y + 1, BASE_WIDTH, BASE_HEIGHT - FLOOR_Y - 1);
-    ctx.fillStyle = '#4a4656';
-    ctx.fillRect(0, FLOOR_Y, BASE_WIDTH, 1);
-    ctx.fillStyle = '#1f3240';
-    ctx.fillRect(0, FLOOR_Y + 2, BASE_WIDTH, 3);
-    ctx.fillStyle = '#3d6077';
-    for (let x = -((c.x + (this.tick >> 3)) % 32); x < BASE_WIDTH; x += 32) ctx.fillRect(x, FLOOR_Y + 2, 10, 1);
-    this.drawWalls(ctx, sim, '#2c2934');
-    // Rubble where the old left wall stood.
-    if (sim.wallBroken) {
-      const rx = -c.x;
-      ctx.fillStyle = '#2c2934';
-      ctx.fillRect(rx - 10, FLOOR_Y - 6, 8, 6);
-      ctx.fillRect(rx + 2, FLOOR_Y - 4, 6, 4);
-      ctx.fillRect(rx - 4, FLOOR_Y - 10, 5, 4);
-    }
-  }
-
-  private drawWalls(ctx: CanvasRenderingContext2D, sim: CombatSim, color: string): void {
+  private drawWalls(ctx: CanvasRenderingContext2D, sim: CombatSim, color: string, leftHasArt = false): void {
     const c = this.camera;
     ctx.fillStyle = color;
     const left = c.sx(sim.arenaLeft);
     const right = c.sx(sim.arenaRight);
-    if (left >= 0) ctx.fillRect(left - 6, 0, 6, FLOOR_Y + 1);
-    if (right <= BASE_WIDTH) ctx.fillRect(right, 0, 6, FLOOR_Y + 1);
+    if (left >= 0 && !(leftHasArt && !sim.wallBroken)) ctx.fillRect(left - 12, 0, 12, FLOOR_Y + 1);
+    if (right <= BASE_WIDTH) ctx.fillRect(right, 0, 12, FLOOR_Y + 1);
   }
 
   /** Screen rect for a world box. */
@@ -123,50 +133,79 @@ export class Renderer {
     return [x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0)];
   }
 
-  /** The body rectangle drawn for a fighter. */
-  bodyBox(f: Fighter): WorldBox {
-    if (f.state === 'knockdown' || f.state === 'defeated') {
-      const half = Math.trunc(f.height / 2);
-      return { x0: f.x - half, x1: f.x + half, y0: 0, y1: Math.trunc(f.height * 0.15) };
-    }
-    if (f.state === 'wake_up') return { x0: f.x - f.halfWidth, x1: f.x + f.halfWidth, y0: 0, y1: Math.trunc(f.height / 2) };
-    return f.hurtbox();
+  /** Small dark ellipse under a fighter, shrinking with height. */
+  private drawShadow(ctx: CanvasRenderingContext2D, f: Fighter): void {
+    const x = this.camera.sx(f.x);
+    const h = Math.round(f.y / 100);
+    const half = Math.max(4, Math.round((f.halfWidth / 100) * 1.4) - Math.min(8, h >> 3));
+    ctx.fillStyle = '#0b0a0f';
+    ctx.fillRect(x - half + 2, FLOOR_Y, half * 2 - 3, 2);
+    ctx.fillRect(x - half, FLOOR_Y + 1, half * 2 + 1, 1);
   }
 
-  private drawFighter(ctx: CanvasRenderingContext2D, f: Fighter): void {
-    const look = lookOf(f);
-    const [x, y, w, h] = this.rect(this.bodyBox(f));
-    ctx.fillStyle = look.body;
-    ctx.fillRect(x, y, w, h);
+  /** Pick and draw a fighter's sprite; records what was drawn for the debug overlay. */
+  private drawFighter(ctx: CanvasRenderingContext2D, sim: CombatSim, f: Fighter, fx: Effects | null): void {
+    const sprites = this.bank.get(f.config.id ?? 'rook');
+    const file = sprites.file;
+    const track = this.tracks[f.index]!;
+    const picked = pickFrame(f, file, this.pose[f.index] ?? null, track, sim.frame);
+    const info: SpriteInfo = { anim: '', cell: -1, label: '', x: 0, y: 0, cellW: file.cell[0], cellH: file.cell[1], pivot: file.pivot, facing: f.facing };
+    this.lastDrawn[f.index] = info;
+    if (!picked) return;
+    const { choice, anim, index: idx } = picked;
+    const frame = anim.frames[idx]!;
+    // Whole pixels: round the sim position once.
+    const sx = this.camera.sx(f.x);
+    const sy = this.camera.sy(f.y);
+    info.anim = choice.name;
+    info.cell = frame.cell;
+    info.x = sx;
+    info.y = sy;
+    info.label =
+      choice.kind === 'move' && f.move
+        ? `${choice.name}  cell ${frame.cell}  f${f.moveFrame}/${f.moveTotal}${frame.impact && f.moveFrame >= f.move.startup && f.moveFrame <= f.move.lastActive ? '  IMPACT' : ''}`
+        : `${choice.name}  cell ${frame.cell}`;
+    if (this.spriteMode === 'hidden') return;
 
-    // Facing marker ("eye") near the top, on the facing side.
-    if (f.state !== 'knockdown' && f.state !== 'defeated') {
-      ctx.fillStyle = '#15131c';
-      const ex = f.facing === 1 ? x + w - 6 : x + 3;
-      ctx.fillRect(ex, y + 6, 3, 2);
+    for (const ghost of fx?.afterimages(f.index) ?? []) {
+      this.blit(ctx, sprites, silhouette(sprites, ghost.color), ghost.cell, ghost.x - this.camera.x, FLOOR_Y - ghost.y + this.camera.shakeY, ghost.facing, ghost.alpha * this.spriteAlpha());
     }
+    const flash = fx?.isFlashing(f.index) ?? false;
+    const src = flash ? silhouette(sprites, '#ffffff') : sprites.sheet;
+    this.blit(ctx, sprites, src, frame.cell, sx, sy, f.facing, this.spriteAlpha());
+    fx?.noteSprite(f.index, frame.cell, Math.round(f.x / 100), Math.round(f.y / 100), f.facing);
+  }
 
-    // Active limbs: draw the hitboxes as limbs so attacks read without the debug view.
-    ctx.fillStyle = look.limb;
-    for (const { box } of f.activeHitboxes()) {
-      const [lx, ly, lw, lh] = this.rect(box);
-      ctx.fillRect(lx, ly, lw, lh);
-    }
+  private spriteAlpha(): number {
+    return this.spriteMode === 'faded' ? 0.5 : 1;
+  }
 
-    // State outline.
-    let outline: string | null = null;
-    if (f.isPhaseInvulnerable) outline = OUTLINE.invuln;
-    else if (f.state === 'phase_transition') outline = this.tick % 8 < 4 ? '#ffffff' : null;
-    else if (f.isArmored) outline = OUTLINE.armor;
-    else if (f.state === 'attack' || f.state === 'throw_attempt') outline = OUTLINE.attack;
-    else if (f.state === 'hitstun' || f.state === 'airborne' || f.state === 'wall_splat' || f.state === 'stagger' || f.state === 'thrown')
-      outline = OUTLINE.hitstun;
-    else if (f.state === 'blockstun' || f.state === 'guard_break') outline = OUTLINE.blockstun;
-    if (outline) {
-      ctx.strokeStyle = outline;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+  /** Draw one cell with its pivot at (sx, sy), mirrored around the pivot when facing left. */
+  private blit(
+    ctx: CanvasRenderingContext2D,
+    s: CharacterSprites,
+    src: CanvasImageSource,
+    cell: number,
+    sx: number,
+    sy: number,
+    facing: number,
+    alpha: number,
+  ): void {
+    const [cw, ch] = s.file.cell;
+    const [px, py] = s.file.pivot;
+    const cx = (cell % s.columns) * cw;
+    const cy = Math.floor(cell / s.columns) * ch;
+    ctx.globalAlpha = alpha;
+    if (facing === 1) {
+      ctx.drawImage(src, cx, cy, cw, ch, sx - px, sy - py, cw, ch);
+    } else {
+      ctx.save();
+      ctx.translate(sx + 1, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(src, cx, cy, cw, ch, -px, sy - py, cw, ch);
+      ctx.restore();
     }
+    ctx.globalAlpha = 1;
   }
 
   /** Glint: a star-shaped flash at the attacker's hand (white = linear, red = sweeping). */

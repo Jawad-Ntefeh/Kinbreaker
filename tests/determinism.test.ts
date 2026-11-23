@@ -51,7 +51,7 @@ describe('determinism', () => {
     let contacts = 0;
     for (let i = 0; i < 600; i++) {
       sim.step(a[i]!, b[i]!);
-      contacts += sim.events.filter((e) => e.type === 'hit' || e.type === 'block' || e.type === 'counter').length;
+      contacts += sim.events.filter((e) => e.type === 'hit' || e.type === 'block' || e.type === 'counter_hit').length;
     }
     expect(contacts).toBeGreaterThan(0);
   });

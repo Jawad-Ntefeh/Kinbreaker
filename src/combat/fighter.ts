@@ -3,7 +3,7 @@
  * All positions and velocities are integers in subpixels (1 px = 100 units).
  */
 import { InputBuffer } from './input_buffer';
-import type { Box, Limb, Move, MoveSet } from './move_data';
+import type { Box, Height, Limb, Move, MoveSet } from './move_data';
 import type { BossConfig } from './character_data';
 import { SYSTEM } from './system';
 import { hashInt, hashString } from './hash';
@@ -110,6 +110,8 @@ export class Fighter {
   /** Extra recovery added to the current move (whiff_recovery). */
   extraRecovery = 0;
 
+  /** Height of the last hit or block taken (for hit reactions in the view). */
+  hitHeight: Height | null = null;
   /** Crouching stance kept through hitstun/blockstun. */
   crouchStun = false;
   hitstop = 0;
@@ -277,6 +279,7 @@ export class Fighter {
     ];
     for (const n of ints) h = hashInt(h, n);
     h = hashString(h, this.move ? this.move.id : '');
+    h = hashString(h, this.hitHeight ?? '');
     h = hashString(h, [...this.lockedMoves].sort().join(','));
     return this.buffer.hashInto(h);
   }

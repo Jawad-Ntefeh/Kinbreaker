@@ -8,6 +8,7 @@ import { NEUTRAL_INPUT } from '../combat/types';
 import { createCorvaneFight } from '../fights';
 import { keyLabel } from '../input/bindings';
 import type { Action } from '../input/input_manager';
+import { Effects } from '../view/effects';
 import { BossHud } from '../view/hud';
 import { BASE_HEIGHT, BASE_WIDTH } from '../view/screen';
 import { dim, font, text } from '../view/text';
@@ -33,14 +34,16 @@ export class BossFightScene extends SimScene {
 
   constructor(game: Game) {
     super(game);
-    this.sim = createCorvaneFight(newSeed());
+    this.sim = createFight();
     this.ai = new CorvaneAI(1);
     this.overlay.visible = false;
   }
 
   restart(): void {
-    this.sim = createCorvaneFight(newSeed());
+    this.sim = createFight();
     this.ai = new CorvaneAI(1);
+    this.fx = new Effects();
+    this.renderer.camera.snap();
     this.stage = 'intro';
     this.t = 0;
   }
@@ -84,7 +87,9 @@ export class BossFightScene extends SimScene {
         return;
       case 'victory':
         // A short freeze, then the sim settles.
+        // A short freeze (effects keep playing), then the sim settles.
         if (this.t > FLOW.victoryFreezeFrames) this.simStep(NEUTRAL_INPUT);
+        else this.fx.onStep(this.sim, false);
         return;
     }
   }
@@ -92,6 +97,7 @@ export class BossFightScene extends SimScene {
   private simStep(p1: typeof NEUTRAL_INPUT): void {
     const p2 = this.ai.update(this.sim);
     this.sim.step(p1, p2);
+    this.fx.onStep(this.sim);
     this.hud.observe(this.sim);
   }
 
@@ -107,7 +113,10 @@ export class BossFightScene extends SimScene {
   render(): void {
     const screen = this.game.screen;
     const ctx = screen.ctx;
-    this.renderer.draw(ctx, this.sim);
+    const ko = this.fx.koFrames;
+    this.renderer.koFade = ko === null ? 0 : Math.min(1, ko / 30);
+    this.renderer.pose = this.stage === 'intro' ? [null, 'intro'] : this.stage === 'victory' ? (this.sim.winner === 0 ? ['victory', null] : [null, 'victory']) : this.stage === 'defeat' ? [null, 'victory'] : [null, null];
+    this.renderer.draw(ctx, this.sim, this.fx);
     this.hud.draw(ctx, this.sim);
     this.overlay.drawBoxes(ctx, this.sim, this.renderer);
     screen.present();
@@ -117,9 +126,10 @@ export class BossFightScene extends SimScene {
     this.overlay.drawText(o, this.sim, {
       simFps: this.game.simFps,
       modeLabel: `AI: ${this.ai.behaviour} · phase ${boss.phase}`,
+      sprites: this.renderer.lastDrawn.map((d) => d?.label ?? ''),
       bossLayout: true,
       paused: this.debugPaused ? 'PAUSED  (P resume · O step one frame)' : null,
-      controls: 'WASD move · U I J K attack · Space phase · Esc menu · ` debug · P pause · O step',
+      controls: 'WASD move · U I J K attack · Space phase · Esc menu · ` debug · P pause · O step · H sprites',
     });
 
     const W = BASE_WIDTH;
@@ -163,6 +173,23 @@ export class BossFightScene extends SimScene {
     }
     this.pauseMenu?.draw(o, 'PAUSED');
   }
+}
+
+/**
+ * Dev/test URL parameters for the boss fight (read once when a fight is created):
+ * ?seed=N fixes the fight's seed; ?boss_hp=N starts Corvane at N health (e.g. near phase 2).
+ */
+function devParam(name: string): number | null {
+  if (typeof location === 'undefined') return null;
+  const v = new URLSearchParams(location.search).get(name);
+  return v !== null && /^\d+$/.test(v) ? Number(v) : null;
+}
+
+function createFight(): CombatSim {
+  const sim = createCorvaneFight(devParam('seed') ?? newSeed());
+  const hp = devParam('boss_hp');
+  if (hp !== null) sim.fighters[1].health = Math.max(1, Math.min(sim.fighters[1].maxHealth, hp));
+  return sim;
 }
 
 /** A fresh seed per fight (outside the sim; the sim itself is deterministic given the seed). */

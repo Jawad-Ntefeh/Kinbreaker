@@ -6,7 +6,9 @@ const TRAINING_W = getArena('training').width;
 import { SYSTEM, scaledDamage } from '../src/combat/system';
 import { dummyConfig, inp, N, pointBlank, rookConfig, rookMoves, run, runUntil } from './helpers';
 
-const types = (sim: CombatSim) => sim.events.map((e) => e.type);
+/** Contact results only (not whiff, glint, dash, phase_step, land, which are feedback events). */
+const FEEDBACK = new Set(['whiff', 'glint', 'dash', 'phase_step', 'land']);
+const types = (sim: CombatSim) => sim.events.filter((e) => !FEEDBACK.has(e.type)).map((e) => e.type);
 
 /** Rook performs a move (relative dir + buttons) against a dummy holding `dummyDir`; collect all events. */
 function perform(rookDir: number, buttons: ('1' | '2' | '3' | '4')[], dummyDir: number, frames = 60) {
@@ -120,7 +122,7 @@ describe('counter hit', () => {
     sim.step(inp(5, 1, '1'), N);
     const ev = runUntil(sim, () => sim.events.length > 0);
     expect(ev).toBeGreaterThan(0);
-    expect(types(sim)).toEqual(['counter']);
+    expect(types(sim)).toEqual(['counter_hit']);
     runUntil(sim, () => sim.lastAdvantage !== null);
     expect(sim.lastAdvantage).toMatchObject({ kind: 'COUNTER', moveId: 'rook_jab', value: 12 });
   });

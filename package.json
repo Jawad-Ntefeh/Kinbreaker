@@ -9,10 +9,15 @@
     "test": "vitest run",
     "preview": "vite preview",
     "stats": "FIGHT_STATS=1 vitest run tests/fight_stats.test.ts",
-    "art-spec": "ART_SPEC_WRITE=cells vitest run tests/art_spec.test.ts && ART_SPEC_WRITE=docs vitest run tests/art_spec.test.ts"
+    "art-spec": "ART_SPEC_WRITE=cells vitest run tests/art_spec.test.ts && ART_SPEC_WRITE=docs vitest run tests/art_spec.test.ts",
+    "art": "tsx tools/art/build.ts && vitest run tests/anim.test.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "@types/pngjs": "^6.0.5",
+    "gifenc": "^1.0.3",
+    "pngjs": "^7.0.0",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"

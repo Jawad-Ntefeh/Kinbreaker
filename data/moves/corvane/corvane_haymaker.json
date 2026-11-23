@@ -1,0 +1,46 @@
+{
+  "id": "corvane_haymaker",
+  "name": "Haymaker",
+  "limb": "right_arm",
+  "input": "4:2",
+  "startup": 26,
+  "active": 3,
+  "recovery": 28,
+  "damage": 45,
+  "poise_damage": 30,
+  "height": "high",
+  "path": "sweeping",
+  "on_block": -18,
+  "on_hit": "knockdown",
+  "on_counter_hit": "knockdown",
+  "properties": [
+    "knockdown"
+  ],
+  "hitboxes": [
+    {
+      "frames": [
+        26,
+        28
+      ],
+      "x": 14,
+      "y": 56,
+      "w": 42,
+      "h": 14
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [
+    {
+      "frame": 16,
+      "dx": 2
+    },
+    {
+      "frame": 26,
+      "dx": 0
+    }
+  ],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": [],
+  "glint": true
+}

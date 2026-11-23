@@ -1,0 +1,34 @@
+{
+  "id": "corvane_body_hook",
+  "name": "Body Hook",
+  "limb": "right_arm",
+  "input": "3:2",
+  "startup": 16,
+  "active": 3,
+  "recovery": 22,
+  "damage": 26,
+  "poise_damage": 18,
+  "height": "mid",
+  "path": "sweeping",
+  "on_block": -8,
+  "on_hit": 4,
+  "on_counter_hit": 4,
+  "properties": [],
+  "hitboxes": [
+    {
+      "frames": [
+        16,
+        18
+      ],
+      "x": 10,
+      "y": 28,
+      "w": 34,
+      "h": 18
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

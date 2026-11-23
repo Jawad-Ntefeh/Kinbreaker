@@ -16,6 +16,8 @@ import type { Move } from './move_data';
 import { SYSTEM, scaledDamage } from './system';
 import type { InputSnapshot } from './types';
 import { HASH_SEED, hashInt, hashString } from './hash';
+import { getArena, type ArenaDef } from './arena_data';
+import { Rng } from './rng';
 
 export type ContactKind = 'hit' | 'counter' | 'block' | 'throw';
 
@@ -32,7 +34,12 @@ export interface CombatEvent {
     | 'stagger'
     | 'launch'
     | 'wall_splat'
-    | 'knockdown';
+    | 'knockdown'
+    | 'ground_hit'
+    | 'armor'
+    | 'ko'
+    | 'phase2'
+    | 'wall_break';
   attacker: number;
   defender: number;
   moveId: string;
@@ -56,13 +63,21 @@ export interface SimOptions {
   p2X?: number;
   /** Refill health after a fighter has been neutral for a while (training mode). */
   trainingRefill?: boolean;
+  /** Arena (default: the training arena). */
+  arena?: ArenaDef;
+  /** Arena width in px, overriding the arena's (tests). */
+  arenaWidth?: number;
+  /** Seed for the sim's RNG (used by AI decisions). */
+  seed?: number;
+  /** A fighter at 0 health is defeated (default true; training turns it off). */
+  ko?: boolean;
 }
 
 interface Contact {
   attacker: Fighter;
   defender: Fighter;
   move: Move;
-  kind: ContactKind | 'phase_miss';
+  kind: ContactKind | 'phase_miss' | 'ground';
   group: number;
 }
 
@@ -86,13 +101,28 @@ export class CombatSim {
   /** Fighters frozen by hitstop on the current step. */
   private readonly frozen = [false, false];
   private readonly trainingRefill: boolean;
+  /** Arena walls in subpixels. */
+  arenaLeft = 0;
+  arenaRight: number;
+  readonly arena: ArenaDef;
+  wallBroken = false;
+  /** Seeded RNG owned by the sim; AI controllers draw their random choices from it. */
+  readonly rng: Rng;
+  /** Index of the fighter who won by KO, or null. */
+  winner: number | null = null;
+  private readonly ko: boolean;
   /** Moves of each fighter sorted by input specificity (motion > held direction > plain button). */
   private readonly moveOrder: readonly [Move[], Move[]];
 
   constructor(opts: SimOptions) {
-    const mid = SYSTEM.arenaWidth / 2;
-    const x1 = opts.p1X !== undefined ? opts.p1X * 100 : mid - 6000;
-    const x2 = opts.p2X !== undefined ? opts.p2X * 100 : mid + 6000;
+    this.arena = opts.arena ?? getArena('training');
+    this.arenaRight = opts.arenaWidth !== undefined ? opts.arenaWidth * 100 : this.arena.width;
+    this.rng = new Rng(opts.seed ?? 1);
+    this.ko = opts.ko ?? true;
+    const mid = Math.trunc(this.arenaRight / 2);
+    const half = Math.trunc(this.arena.startGap / 2);
+    const x1 = opts.p1X !== undefined ? opts.p1X * 100 : mid - half;
+    const x2 = opts.p2X !== undefined ? opts.p2X * 100 : mid + half;
     const a = new Fighter(0, opts.p1, x1, x1 <= x2 ? 1 : -1);
     const b = new Fighter(1, opts.p2, x2, x1 <= x2 ? -1 : 1);
     this.fighters = [a, b];
@@ -113,11 +143,49 @@ export class CombatSim {
 
     for (const f of this.fighters) this.advance(f);
     this.updateThrows();
+    this.checkKo();
+    for (const f of this.fighters) this.startPhase2IfDue(f);
     this.measureAdvantage();
     for (const f of this.fighters) if (!this.frozen[f.index]) this.handleInput(f);
     this.move();
     this.resolveHits();
+    this.checkKo();
     for (const f of this.fighters) this.regen(f);
+  }
+
+  // ---------------------------------------------------------------- KO and boss phases
+
+  private checkKo(): void {
+    if (!this.ko) return;
+    for (const f of this.fighters) {
+      if (f.health > 0 || f.state === 'defeated') continue;
+      this.setTimed(f, 'defeated', 0);
+      f.y = 0;
+      f.vy = 0;
+      f.hitstop = 0;
+      if (this.winner === null) this.winner = 1 - f.index;
+      this.event('ko', this.opponent(f), f, '', 0);
+    }
+  }
+
+  /** Phase 2 starts once the boss is back on their feet (never mid-combo). */
+  private startPhase2IfDue(f: Fighter): void {
+    const boss = f.config.boss;
+    if (!boss || !f.phase2Pending || !f.isNeutral || this.frozen[f.index] || f.health <= 0) return;
+    f.phase2Pending = false;
+    f.phase = 2;
+    for (const m of boss.phase2Moves) if (!boss.oncePerFight.includes(m) || !f.usedOnce.has(m)) f.lockedMoves.delete(m);
+    this.setTimed(f, 'phase_transition', boss.transitionFrames, 1);
+    const opp = this.opponent(f);
+    this.shift(opp, (opp.x >= f.x ? 1 : -1) * boss.transitionPushback);
+    this.event('phase2', f, opp, '', 0);
+  }
+
+  private breakWall(by: Fighter): void {
+    if (this.wallBroken || this.arena.breakableLeftWall <= 0) return;
+    this.wallBroken = true;
+    this.arenaLeft -= this.arena.breakableLeftWall;
+    this.event('wall_break', by, this.opponent(by), '', 0);
   }
 
   // ---------------------------------------------------------------- timers
@@ -129,10 +197,18 @@ export class CombatSim {
       return;
     }
     switch (f.state) {
-      case 'attack':
+      case 'attack': {
         f.moveFrame++;
-        if (!f.move || f.moveFrame > f.move.total) this.toNeutral(f);
+        const m = f.move;
+        if (!m) {
+          this.toNeutral(f);
+          break;
+        }
+        if (m.cancelWindow && f.moveFrame === m.cancelWindow[0] && this.tryContinue(f, m)) break;
+        if (f.moveFrame === m.lastActive + 1 && f.connected === 0) f.extraRecovery = m.whiffRecovery;
+        if (f.moveFrame > f.moveTotal) this.toNeutral(f);
         break;
+      }
       case 'airborne':
         break; // ends on landing (movement phase)
       case 'thrown':
@@ -145,10 +221,31 @@ export class CombatSim {
       case 'block_stand':
       case 'block_crouch':
         break;
+      case 'defeated':
+        break;
       default:
         f.stateFrame++;
+        if (f.state === 'phase_transition' && f.config.boss && f.stateFrame === f.config.boss.wallBreakFrame) this.breakWall(f);
+        if (f.state === 'wall_splat') {
+          // Slide down the wall, reaching the floor on the last frame.
+          const t = Math.min(f.stateFrame, f.stateLength);
+          f.y = f.splatY0 - Math.trunc((f.splatY0 * t) / f.stateLength);
+        }
         if (f.stateFrame > f.stateLength) this.endTimedState(f);
     }
+  }
+
+  /** Linked parts of multi-hit moves start automatically if the previous part connected as required. */
+  private tryContinue(f: Fighter, m: Move): boolean {
+    const how = f.connected === 1 ? 'hit' : f.connected === 2 ? 'block' : 'whiff';
+    for (const id of m.cancelInto) {
+      const next = f.moves.get(id);
+      if (next && next.continueOn.length > 0 && next.continueOn.includes(how)) {
+        this.startMove(f, next, false, true);
+        return true;
+      }
+    }
+    return false;
   }
 
   private endTimedState(f: Fighter): void {
@@ -172,6 +269,7 @@ export class CombatSim {
   }
 
   private setTimed(f: Fighter, state: Fighter['state'], length: number, startFrame = 0): void {
+    if (state === 'knockdown') f.groundHitTaken = false;
     f.state = state;
     f.stateFrame = startFrame;
     f.stateLength = length;
@@ -186,6 +284,7 @@ export class CombatSim {
     f.stateLength = 0;
     f.move = null;
     f.moveFrame = 0;
+    f.extraRecovery = 0;
     f.vx = 0;
     f.vy = 0;
     f.y = 0;
@@ -239,20 +338,20 @@ export class CombatSim {
     // Whatever a wall blocked goes to the other fighter.
     const now = right.x - left.x;
     if (now < distance) {
-      if (left.x <= this.minX) this.shift(right, distance - now);
+      if (left.x <= this.minX(left)) this.shift(right, distance - now);
       else this.shift(left, -(distance - now));
     }
   }
 
-  private get minX(): number {
-    return SYSTEM.halfWidth;
+  minX(f: Fighter): number {
+    return this.arenaLeft + f.halfWidth;
   }
-  private get maxX(): number {
-    return SYSTEM.arenaWidth - SYSTEM.halfWidth;
+  maxX(f: Fighter): number {
+    return this.arenaRight - f.halfWidth;
   }
 
   private shift(f: Fighter, dx: number): void {
-    f.x = Math.min(this.maxX, Math.max(this.minX, f.x + dx));
+    f.x = Math.min(this.maxX(f), Math.max(this.minX(f), f.x + dx));
   }
 
   // ---------------------------------------------------------------- frame advantage
@@ -290,7 +389,7 @@ export class CombatSim {
 
   /** Does the buffer hold the input for this move right now? */
   private matches(f: Fighter, m: Move, pressWindow: number): boolean {
-    if (!f.hasLimb(m.limb)) return false;
+    if (!f.hasLimb(m.limb) || f.lockedMoves.has(m.id) || m.continueOn.length > 0) return false;
     const buf = f.buffer;
     const btns = m.input.buttons;
     let age: number;
@@ -320,9 +419,17 @@ export class CombatSim {
     return false;
   }
 
-  private startMove(f: Fighter, m: Move, keepFrame = false): void {
-    for (const b of m.input.buttons) f.buffer.consume(b);
-    if (m.input.motion) f.buffer.consumeMotions();
+  private startMove(f: Fighter, m: Move, keepFrame = false, automatic = false): void {
+    if (!automatic) {
+      for (const b of m.input.buttons) f.buffer.consume(b);
+      if (m.input.motion) f.buffer.consumeMotions();
+    }
+    const once = f.config.boss?.oncePerFight;
+    if (once && once.includes(m.id)) {
+      f.lockedMoves.add(m.id);
+      f.usedOnce.add(m.id);
+    }
+    f.extraRecovery = 0;
     f.state = 'attack';
     f.move = m;
     if (!keepFrame) {
@@ -362,7 +469,7 @@ export class CombatSim {
     const first = m.input.buttons[0]!;
     for (const c of this.moveOrder[f.index]!) {
       if (c.input.buttons.length !== 2 || !c.input.buttons.includes(first) || c.cancelOnly) continue;
-      if (!f.hasLimb(c.limb) || c.input.motion) continue;
+      if (!f.hasLimb(c.limb) || c.input.motion || f.lockedMoves.has(c.id) || c.continueOn.length > 0) continue;
       if (c.input.dir !== null && f.buffer.heldDir(f.facing) !== c.input.dir) continue;
       const second = c.input.buttons[0] === first ? c.input.buttons[1]! : c.input.buttons[0]!;
       const a = f.buffer.pressAge(first, SYSTEM.buttonBuffer, true);
@@ -389,14 +496,14 @@ export class CombatSim {
   private tryDash(f: Fighter): boolean {
     if (f.buffer.motion('66', f.facing)) {
       f.buffer.consumeMotions();
-      this.setTimed(f, 'dash_forward', SYSTEM.dashFrames, 1);
-      f.vx = SYSTEM.dashSpeed * f.facing;
+      this.setTimed(f, 'dash_forward', f.config.dash.frames, 1);
+      f.vx = f.config.dash.speed * f.facing;
       return true;
     }
     if (f.buffer.motion('44', f.facing)) {
       f.buffer.consumeMotions();
-      this.setTimed(f, 'backdash', SYSTEM.backdashFrames, 1);
-      f.vx = -SYSTEM.backdashSpeed * f.facing;
+      this.setTimed(f, 'backdash', f.config.backdash.frames, 1);
+      f.vx = -f.config.backdash.speed * f.facing;
       return true;
     }
     return false;
@@ -411,11 +518,11 @@ export class CombatSim {
       if (opp.isThreatening) f.state = 'block_stand';
       else {
         f.state = 'walk_back';
-        f.vx = -SYSTEM.walkBack * f.facing;
+        f.vx = -f.config.walkBack * f.facing;
       }
     } else if (d === 6 || d === 9) {
       f.state = 'walk_forward';
-      f.vx = SYSTEM.walkForward * f.facing;
+      f.vx = f.config.walkForward * f.facing;
     } else f.state = 'idle';
   }
 
@@ -453,6 +560,7 @@ export class CombatSim {
     const y = f.y;
     this.setTimed(f, 'wall_splat', SYSTEM.wallSplatFrames);
     f.y = y;
+    f.splatY0 = y;
     f.vy = 0;
     f.wallHits = 0;
     this.event('wall_splat', this.opponent(f), f, '', 0);
@@ -463,7 +571,7 @@ export class CombatSim {
     const [a, b] = this.fighters;
     const left = a.x < b.x || (a.x === b.x && a.facing === 1) ? a : b;
     const right = left === a ? b : a;
-    this.separate(left, right, SYSTEM.bodyWidth);
+    this.separate(left, right, left.halfWidth + right.halfWidth);
   }
 
   // ---------------------------------------------------------------- hits
@@ -505,11 +613,14 @@ export class CombatSim {
       return { attacker: atk, defender: def, move: m, kind: 'throw', group: 0 };
     }
     if (!def.isHittable) return null;
+    const downed = def.state === 'knockdown';
+    if (downed && (def.groundHitTaken || !(m.height === 'low' || m.properties.includes('ground_hit')))) return null;
     const hurt = def.hurtbox();
     for (const { box, group } of atk.activeHitboxes()) {
       if (atk.hitGroups & (1 << group)) continue;
       if (!overlap(box, hurt)) continue;
       // Contact: decide the result.
+      if (downed) return { attacker: atk, defender: def, move: m, kind: 'ground', group };
       if (m.path === 'linear' && def.isPhaseInvulnerable) return { attacker: atk, defender: def, move: m, kind: 'phase_miss', group };
       if (m.height === 'high' && def.isCrouching) continue;
       const stance = this.blockStance(def);
@@ -531,6 +642,8 @@ export class CombatSim {
       case 'throw_attempt':
       case 'throw_break':
       case 'wall_splat':
+      case 'phase_transition':
+      case 'defeated':
         return false;
       default:
         return def.y === 0;
@@ -554,6 +667,15 @@ export class CombatSim {
       return;
     }
     atk.hitGroups |= 1 << c.group;
+    if (c.kind === 'ground') {
+      // Ground hit: half damage, once per knockdown, the knockdown timer is untouched.
+      atk.connected = 1;
+      atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
+      def.groundHitTaken = true;
+      const dmg = this.applyDamage(def, m.damage, 50);
+      this.event('ground_hit', atk, def, m.id, dmg);
+      return;
+    }
     const contactFrame = atk.moveFrame;
     const remaining = m.lastActive - contactFrame + m.recovery;
 
@@ -589,8 +711,28 @@ export class CombatSim {
       return;
     }
 
-    // Hit or counter hit.
     const counter = c.kind === 'counter';
+    const launchesNow = m.properties.includes('launcher') || (counter && m.properties.includes('counter_hit_launch')) || (counter ? m.onCounterHit : m.onHit) === 'launch';
+    if (def.isArmored && !launchesNow) {
+      // Armor: damage and poise damage, but no hitstun, no hitstop for the defender, no interruption.
+      atk.connected = 1;
+      atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
+      const dmg = this.applyDamage(def, m.damage);
+      this.event('armor', atk, def, m.id, dmg);
+      if (m.poiseDamage > 0) {
+        def.poise -= m.poiseDamage;
+        def.poiseIdle = 0;
+        if (def.poise <= 0) {
+          // A poise break still beats armor.
+          def.poise = 0;
+          this.setTimed(def, 'stagger', SYSTEM.staggerFrames);
+          this.event('stagger', atk, def, m.id, 0);
+        }
+      }
+      return;
+    }
+
+    // Hit or counter hit.
     atk.connected = 1;
     atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
     def.hitstop = Math.max(def.hitstop, SYSTEM.hitstopHit);
@@ -654,7 +796,7 @@ export class CombatSim {
   }
 
   private atWall(f: Fighter): boolean {
-    return f.x <= this.minX || f.x >= this.maxX;
+    return f.x <= this.minX(f) || f.x >= this.maxX(f);
   }
 
   /** Push the defender back; whatever a wall blocks moves the attacker instead. */
@@ -666,16 +808,18 @@ export class CombatSim {
     if (moved < SYSTEM.pushback) this.shift(atk, -(SYSTEM.pushback - moved) * dir);
   }
 
-  private applyDamage(def: Fighter, damage: number): number {
+  private applyDamage(def: Fighter, damage: number, percent = 100): number {
     if (!def.comboActive) {
       def.comboActive = true;
       def.comboHits = 0;
       def.comboDamage = 0;
     }
     def.comboHits++;
-    const dmg = scaledDamage(damage, def.comboHits);
+    const dmg = Math.trunc((scaledDamage(damage, def.comboHits) * percent) / 100);
     def.health = Math.max(0, def.health - dmg);
     def.comboDamage += dmg;
+    const boss = def.config.boss;
+    if (boss && def.phase === 1 && def.health * 100 <= def.maxHealth * boss.phase2HealthPercent) def.phase2Pending = true;
     return dmg;
   }
 
@@ -705,6 +849,10 @@ export class CombatSim {
 
   stateHash(): number {
     let h = hashInt(HASH_SEED, this.frame);
+    h = hashInt(h, this.arenaLeft);
+    h = hashInt(h, this.arenaRight);
+    h = hashInt(h, this.rng.state);
+    h = hashInt(h, this.winner ?? -1);
     for (const f of this.fighters) h = f.hashInto(h);
     const p = this.pending;
     if (p) {
@@ -726,8 +874,9 @@ function overlap(a: WorldBox, b: WorldBox): boolean {
   return a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
 }
 
-/** Most specific inputs first: motion > held direction > plain; then more buttons; then id for stability. */
+/** Most specific inputs first: more buttons, then motion > held direction > plain; then id for stability. */
 function sortMoves(f: Fighter): Move[] {
-  const rank = (m: Move) => (m.input.motion ? 3 : m.input.dir !== null ? 2 : 1) * 10 + m.input.buttons.length;
+  // More buttons first, then motion > held direction > plain button.
+  const rank = (m: Move) => m.input.buttons.length * 10 + (m.input.motion ? 3 : m.input.dir !== null ? 2 : 1);
   return [...f.moves.values()].sort((a, b) => rank(b) - rank(a) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }

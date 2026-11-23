@@ -22,6 +22,7 @@ export class Keyboard {
       ...Object.values(k.dirs).flat(),
       ...Object.values(k.buttons).flat(),
       ...Object.values(k.meta).flat(),
+      ...Object.values(k.menu).flat(),
       ...Object.values(k.debug).flat(),
     ]);
     target.addEventListener('keydown', (e) => {
@@ -42,6 +43,11 @@ export class Keyboard {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) this.clear();
     });
+  }
+
+  /** Forget presses that haven't been sampled yet (e.g. menu presses when a scene changes). */
+  clearLatched(): void {
+    this.latched.clear();
   }
 
   clear(): void {

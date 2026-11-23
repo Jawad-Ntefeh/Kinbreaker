@@ -85,14 +85,22 @@ Keyboard is the primary input; every feature must be fully playable on keyboard,
 - `input` grammar: an optional direction or motion in numpad digits, then `:`, then the buttons joined by `+`. Examples: `"1"` (button 1), `"3:4"` (hold down-forward, press 4), `"2:4"` (hold down, press 4), `"236:2"` (motion down, down-forward, forward, then 2), `"1+3"` (buttons 1 and 3 together).
 - `height`: `high` | `mid` | `low` | `throw`.
 - `path`: `linear` | `sweeping`.
-- `properties`: any of `launcher`, `knockdown`, `wall_splat`, `armor`, `counter_hit_launch`.
+- `properties`: any of `launcher`, `knockdown`, `wall_splat`, `armor`, `counter_hit_launch`, `ground_hit`.
 - Hitbox/hurtbox units are **pixels** in the data (converted to subpixels on load); `x` is distance in front of the fighter's origin, `y` is height above the ground of the box's bottom edge.
 - `movement`: optional list of `{ "frame": n, "dx": px_per_frame }` steps for advancing or retreating moves.
 - Throws additionally have `"break": "1"` or `"break": "2"` and `"range": px` (measured from the thrower's origin to the target's front edge), and `"on_block": null`.
 - `on_hit` / `on_counter_hit` are a number, or `"knockdown"` / `"launch"` for moves that don't leave the opponent standing. `on_counter_hit` defaults to `on_hit`.
 - `cancel_only: true` marks a move that can only be reached as a cancel (e.g. the second hit of a string), never from neutral.
+- `glint: true` marks a big telegraphed attack: the fighter shows a glint from frame `startup - 14` to `startup - 6`, white for `linear`, red for `sweeping` (`fighter.glint` in the sim; the view draws it).
+- `armor_frames: [first, last]`: hits landing in those frames deal damage and poise damage but cause no hitstun, no hitstop for the armored fighter and don't interrupt the move. Throws, launchers and poise breaks still beat armor.
+- `whiff_recovery`: extra recovery frames added when the move hits nothing.
+- `continue_on` (e.g. `["hit", "block"]`): marks a linked part of a multi-hit move. The previous part lists it in `cancel_into`; it starts automatically (no input) on the first frame of the previous part's `cancel_window`, only if the previous part connected in one of the listed ways.
 - Hitboxes may have a `"group"` (default 0); a move hits the same target at most once per group.
-- System-wide combat values (walk speeds, hitstop, knockdown/stagger lengths, juggle physics, damage scaling, fighter health/poise) live in `data/system.json`, not in code.
+- System-wide combat values (hitstop, knockdown/stagger lengths, juggle physics, damage scaling) live in `data/system.json`, not in code.
+
+## Character files (`data/characters/<id>.json`)
+
+Health, poise, walk speeds (px/frame), dash and backdash (`frames`, `speed`), hurtbox (`width`, `height`, `crouch_height` in px), limbs, and the `moveset` folder in `data/moves/` the character uses (the training dummy uses `rook`). Bosses add a `boss` section: `phase2_health_percent`, `transition_frames`, `wall_break_frame`, `transition_pushback` (px), `phase2_moves` and `once_per_fight`. Validated on load like move files.
 
 The move loader validates every file (a TypeScript type plus runtime checks) and reports clear errors: file, field, problem. Invalid data fails the tests.
 
@@ -105,14 +113,24 @@ CLAUDE.md
 .github/workflows/deploy.yml
 data/moves/<character>/*.json
 data/system.json      # system-wide combat constants
+data/characters/*.json
+data/arenas/*.json
 src/main.ts           # boot, game loop
 src/combat/           # CombatSim, fighters, InputBuffer, move data, hit resolution (pure logic, no DOM)
 src/ai/               # AI controllers (produce input snapshots)
+src/scenes/           # title menu, training, boss fights (flow and UI; never change sim rules)
+src/fights.ts         # factories for each fight (shared by scenes and tests)
 src/input/            # keyboard + gamepad → input snapshot; bindings
 src/view/             # canvas renderer, camera, HUD, debug overlay
 tests/                # Vitest tests
 public/art/           # sprites (later, from Pixelwright exports)
 ```
+
+## Bosses and AI
+
+- Boss phases, arena changes (breaking walls) and once-per-fight moves live in the sim, driven by the character's `boss` section and the arena file (`data/arenas/<id>.json`: `width`, `start_gap`, `breakable_left_wall`).
+- Boss AI only uses what a player could see: positions immediately, the player's state and move after a reaction delay. Every random choice uses the sim's seeded RNG (`sim.rng`), so a fight is reproducible from its seed and the player's inputs.
+- `npm run stats` plays scripted fights (a "perfect" bot and a button-masher) and prints win rates, fight length and move usage.
 
 ## Testing
 
@@ -133,4 +151,7 @@ public/art/           # sprites (later, from Pixelwright exports)
 - Attack glints: white = linear, red = sweeping. Red is never used as a character accent colour; Rook's accent is tarnished gold.
 - Phase step passes through `linear` attacks only; `sweeping` attacks hit it.
 - Stamina is spent only by phase steps and blocking; attacks are free. Empty stamina while blocking = guard break.
+- Move priority when several moves match: more buttons first, then a motion input, then a held direction, then a plain button (forward + U + J = throw).
+- Wall splat lasts 50 frames; the fighter slides from the height they hit the wall down to the floor, reaching it on the last frame, and can be hit at any height meanwhile.
+- Ground hits: `low` moves and moves with `ground_hit` can hit a fighter in `knockdown` for 50% damage (after combo scaling), once per knockdown, without resetting or extending the knockdown. `wake_up` is invulnerable.
 - One difficulty, no settings that change combat. All dialogue is text only.

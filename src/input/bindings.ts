@@ -6,6 +6,7 @@ import type { Button } from '../combat/types';
 
 export type DirAction = 'up' | 'down' | 'left' | 'right';
 export type MetaAction = 'pause';
+export type MenuAction = 'up' | 'down' | 'confirm' | 'back';
 export type DebugAction = 'toggleOverlay' | 'debugPause' | 'frameStep' | 'cycleDummy';
 
 export interface Bindings {
@@ -13,6 +14,7 @@ export interface Bindings {
     dirs: Record<DirAction, string[]>;
     buttons: Record<Button, string[]>;
     meta: Record<MetaAction, string[]>;
+    menu: Record<MenuAction, string[]>;
     /** Training-scene only. Never F1–F12 (the browser uses them). */
     debug: Record<DebugAction, string[]>;
   };
@@ -21,6 +23,7 @@ export interface Bindings {
     dirs: Record<DirAction, number[]>;
     buttons: Record<Button, number[]>;
     meta: Record<MetaAction, number[]>;
+    menu: Record<MenuAction, number[]>;
     /** Left stick deadzone (0..1), mapped to 8 directions. */
     stickDeadzone: number;
   };
@@ -43,6 +46,12 @@ export const DEFAULT_BINDINGS: Bindings = {
     },
     meta: {
       pause: ['Escape'],
+    },
+    menu: {
+      up: ['KeyW', 'ArrowUp'],
+      down: ['KeyS', 'ArrowDown'],
+      confirm: ['KeyU', 'Enter'],
+      back: ['Escape'],
     },
     debug: {
       toggleOverlay: ['Backquote'],
@@ -67,6 +76,12 @@ export const DEFAULT_BINDINGS: Bindings = {
     },
     meta: {
       pause: [9], // Start
+    },
+    menu: {
+      up: [12],
+      down: [13],
+      confirm: [0], // A
+      back: [1], // B
     },
     stickDeadzone: 0.5,
   },

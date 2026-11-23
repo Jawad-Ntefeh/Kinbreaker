@@ -1,0 +1,47 @@
+{
+  "id": "corvane_liver_shot",
+  "name": "Liver Shot",
+  "limb": "left_arm",
+  "input": "2:2",
+  "startup": 18,
+  "active": 3,
+  "recovery": 30,
+  "damage": 20,
+  "poise_damage": 12,
+  "height": "low",
+  "path": "linear",
+  "on_block": -13,
+  "on_hit": 3,
+  "on_counter_hit": 3,
+  "properties": [
+    "ground_hit"
+  ],
+  "hitboxes": [
+    {
+      "frames": [
+        18,
+        20
+      ],
+      "x": 12,
+      "y": 2,
+      "w": 36,
+      "h": 14
+    }
+  ],
+  "hurtbox_overrides": [
+    {
+      "frames": [
+        1,
+        50
+      ],
+      "x": -16,
+      "y": 0,
+      "w": 32,
+      "h": 55
+    }
+  ],
+  "movement": [],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

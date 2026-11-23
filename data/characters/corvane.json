@@ -1,0 +1,41 @@
+{
+  "id": "corvane",
+  "name": "Corvane, the Iron Wrist",
+  "moveset": "corvane",
+  "health": 450,
+  "poise": 120,
+  "walk_forward": 2,
+  "walk_back": 2.5,
+  "dash": {
+    "frames": 16,
+    "speed": 5
+  },
+  "backdash": {
+    "frames": 20,
+    "speed": 4
+  },
+  "hurtbox": {
+    "width": 32,
+    "height": 88,
+    "crouch_height": 55
+  },
+  "limbs": {
+    "left_arm": true,
+    "right_arm": true,
+    "left_leg": true,
+    "right_leg": true
+  },
+  "boss": {
+    "phase2_health_percent": 50,
+    "transition_frames": 90,
+    "wall_break_frame": 45,
+    "transition_pushback": 60,
+    "phase2_moves": [
+      "corvane_iron_wall",
+      "corvane_last_bell_1"
+    ],
+    "once_per_fight": [
+      "corvane_last_bell_1"
+    ]
+  }
+}

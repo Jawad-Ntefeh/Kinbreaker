@@ -1,0 +1,28 @@
+{
+  "id": "dummy",
+  "name": "Dummy",
+  "moveset": "rook",
+  "health": 170,
+  "poise": 100,
+  "walk_forward": 2.5,
+  "walk_back": 2,
+  "dash": {
+    "frames": 16,
+    "speed": 5
+  },
+  "backdash": {
+    "frames": 20,
+    "speed": 4
+  },
+  "hurtbox": {
+    "width": 24,
+    "height": 80,
+    "crouch_height": 50
+  },
+  "limbs": {
+    "left_arm": true,
+    "right_arm": true,
+    "left_leg": true,
+    "right_leg": true
+  }
+}

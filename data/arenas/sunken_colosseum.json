@@ -1,0 +1,7 @@
+{
+  "id": "sunken_colosseum",
+  "name": "The Sunken Colosseum",
+  "width": 1200,
+  "start_gap": 160,
+  "breakable_left_wall": 240
+}

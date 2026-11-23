@@ -1,0 +1,50 @@
+{
+  "id": "corvane_iron_wall",
+  "name": "Iron Wall",
+  "limb": "core",
+  "input": "6:1+2",
+  "startup": 22,
+  "active": 3,
+  "recovery": 30,
+  "damage": 30,
+  "poise_damage": 25,
+  "height": "mid",
+  "path": "sweeping",
+  "on_block": -16,
+  "on_hit": 4,
+  "on_counter_hit": 4,
+  "properties": [
+    "wall_splat"
+  ],
+  "hitboxes": [
+    {
+      "frames": [
+        22,
+        24
+      ],
+      "x": 12,
+      "y": 28,
+      "w": 38,
+      "h": 34
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [
+    {
+      "frame": 1,
+      "dx": 1.5
+    },
+    {
+      "frame": 22,
+      "dx": 0
+    }
+  ],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": [],
+  "glint": true,
+  "armor_frames": [
+    1,
+    21
+  ]
+}

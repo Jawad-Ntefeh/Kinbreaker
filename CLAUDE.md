@@ -1,0 +1,131 @@
+# Kinbreaker — project guide for Claude Code
+
+Kinbreaker is a single-player 2D action RPG for PC: Dark Souls exploration and progression combined with Tekken-style, frame-based duels. The player is Rook, last heir of House Vael, fighting a cursed tournament of her undead ancestors and taking back her body one relic limb at a time.
+
+It is built as a browser game (TypeScript + HTML canvas) and will later be wrapped as a desktop app for a PC release.
+
+Read this file at the start of every session. If a task conflicts with a rule here, stop and ask before deviating.
+
+## Design pillars (decide trade-offs with these)
+
+1. Every fight is a duel: every enemy has a real move list with frame data.
+2. Your moveset is your loot: each of the 4 attack buttons is a limb; relics replace limbs and their moves.
+3. Power has a price: relics raise Kinship (the curse meter).
+4. Learn, don't grind: frame data, readability and fairness come first.
+
+## Tech stack
+
+- TypeScript (strict mode), Vite, plain Canvas 2D. No game framework (no Phaser, no Pixi) unless asked: the combat sim is custom and rendering is simple pixel art.
+- Tests: Vitest (`npm test`).
+- Base resolution 480x270, drawn to an offscreen canvas and scaled by the largest whole number that fits the window (x4 at 1920x1080), with `imageSmoothingEnabled = false` and CSS `image-rendering: pixelated`. Letterbox the rest in black.
+- Deployment: GitHub Pages via a GitHub Actions workflow on every push to `main`, so the latest build is always playable in a browser.
+- Future desktop release: keep the game fully static (no server, all assets local, no network calls), so it can be wrapped with Tauri or Electron later without changes.
+
+## Input: keyboard first, controller supported
+
+Keyboard is the primary input; every feature must be fully playable on keyboard, and on-screen prompts show keyboard keys by default. Controllers are fully supported through the Gamepad API (standard mapping), and prompts switch to controller buttons when a controller was the last device used.
+
+- Read keys with `KeyboardEvent.code` (physical key position), never `KeyboardEvent.key`, so the game works the same on any keyboard layout, including Arabic and AZERTY.
+- Call `preventDefault()` on game keys so Space and the arrow keys don't scroll the page.
+- **SOCD cleaning** (opposite directions held together on a keyboard): left + right = neutral; up + down = neutral.
+- Key bindings live in one config object (`src/input/bindings.ts`) so a rebinding menu can be added later. No key codes hard-coded anywhere else.
+- Input is sampled once per sim frame into a snapshot; the sim never reads the keyboard or gamepad directly.
+
+## Architecture rules (non-negotiable)
+
+1. **The combat sim is pure logic.** It lives in `src/combat/`, imports nothing from the DOM, canvas or input code, and owns all combat state: positions, velocities, fighter states, frame counters, health, poise, stamina, hitboxes, hurtboxes. It must run in Node for tests.
+2. **Fixed 60 Hz simulation.** The game loop uses `requestAnimationFrame` with an accumulator and advances the sim in fixed 1/60 s steps (correct on 60, 120 and 144 Hz screens). If more than 3 steps are pending (e.g. the tab was in the background), drop the backlog instead of fast-forwarding.
+3. **Deterministic.** Same inputs → same result, every time.
+   - Integer math only in the sim. Positions and velocities are integers in **subpixels: 1 px = 100 units**. Use `Math.trunc` or `| 0` after any division; never store floats in sim state.
+   - Never use `Math.random()`, `Date.now()`, `performance.now()` or frame delta in the sim. If randomness is needed, use a seeded RNG owned by the sim.
+   - Iterate arrays in a fixed order when order affects outcomes.
+   - `CombatSim.stateHash(): number` hashes the full sim state; tests use it to check determinism.
+4. **Views never change game state.** Renderers, HUD and debug overlay only read the sim.
+5. **AI uses the same input path as the player.** AI produces input snapshots fed into an `InputBuffer`; it never sets fighter state directly.
+6. **Moves are data.** Every move is a JSON file in `data/moves/<character>/`, loaded with `import.meta.glob`. No frame numbers hard-coded in code.
+
+## Coordinates and conventions
+
+- Sim space: x increases to the right, y is height above the ground (up is positive). The renderer converts to canvas space.
+- Facing: `1` = facing right, `-1` = facing left. Hitbox `x` values in move data are written for a fighter facing right and mirrored by facing.
+- Directions use **numpad notation relative to facing**: 6 = forward, 4 = back, 2 = down, 8 = up, 3 = down-forward, 1 = down-back, 5 = neutral.
+- Buttons: `1` left punch, `2` right punch, `3` left kick, `4` right kick, plus `phase` (phase step).
+- Frame counting: frame 1 is the first frame of a move. `startup` = the number of the first active frame (a 10f jab hits on frame 10).
+- Frame advantage: `on_block` and `on_hit` are authored in the data; the sim derives blockstun/hitstun from them so the authored advantage is exactly what happens when the hit lands on the first active frame.
+
+## Move data schema (`data/moves/<character>/<move_id>.json`)
+
+```json
+{
+  "id": "rook_jab",
+  "name": "Jab",
+  "limb": "left_arm",
+  "input": "1",
+  "startup": 10,
+  "active": 2,
+  "recovery": 13,
+  "damage": 7,
+  "poise_damage": 4,
+  "height": "high",
+  "path": "linear",
+  "on_block": 1,
+  "on_hit": 8,
+  "on_counter_hit": 8,
+  "properties": [],
+  "hitboxes": [{ "frames": [10, 11], "x": 18, "y": 52, "w": 26, "h": 10 }],
+  "hurtbox_overrides": [],
+  "movement": [],
+  "cancel_into": ["rook_jab_2"],
+  "cancel_window": [12, 20],
+  "cancel_on": ["hit", "block"]
+}
+```
+
+- `limb`: `left_arm` | `right_arm` | `left_leg` | `right_leg` | `core` | `none`. A move whose limb is missing cannot be performed.
+- `input` grammar: an optional direction or motion in numpad digits, then `:`, then the buttons joined by `+`. Examples: `"1"` (button 1), `"3:4"` (hold down-forward, press 4), `"2:4"` (hold down, press 4), `"236:2"` (motion down, down-forward, forward, then 2), `"1+3"` (buttons 1 and 3 together).
+- `height`: `high` | `mid` | `low` | `throw`.
+- `path`: `linear` | `sweeping`.
+- `properties`: any of `launcher`, `knockdown`, `wall_splat`, `armor`, `counter_hit_launch`.
+- Hitbox/hurtbox units are **pixels** in the data (converted to subpixels on load); `x` is distance in front of the fighter's origin, `y` is height above the ground of the box's bottom edge.
+- `movement`: optional list of `{ "frame": n, "dx": px_per_frame }` steps for advancing or retreating moves.
+- Throws additionally have `"break": "1"` or `"break": "2"` and `"range": px`.
+
+The move loader validates every file (a TypeScript type plus runtime checks) and reports clear errors: file, field, problem. Invalid data fails the tests.
+
+## Folder structure
+
+```
+index.html
+package.json, tsconfig.json, vite.config.ts
+CLAUDE.md
+.github/workflows/deploy.yml
+data/moves/<character>/*.json
+src/main.ts           # boot, game loop
+src/combat/           # CombatSim, fighters, InputBuffer, move data, hit resolution (pure logic, no DOM)
+src/ai/               # AI controllers (produce input snapshots)
+src/input/            # keyboard + gamepad → input snapshot; bindings
+src/view/             # canvas renderer, camera, HUD, debug overlay
+tests/                # Vitest tests
+public/art/           # sprites (later, from Pixelwright exports)
+```
+
+## Testing
+
+- Vitest, one file per area (`input_buffer.test.ts`, `frame_advantage.test.ts`, …). `npm test` runs them all once.
+- Run the tests after every change to `src/combat/` or `data/moves/`. Never leave tests failing at the end of a task.
+- Combat bugs get a regression test before the fix.
+- `npm run build` must also pass (type-check + build) before a task is finished.
+
+## Workflow
+
+- Work in small steps; after each, run the tests and the build.
+- Use git: commit after each completed step with a clear message, and push so the GitHub Pages build updates.
+- At the end of a task, report: what was built, the link to play it, the controls, test results, and anything you were unsure about.
+
+## Game facts to keep consistent
+
+- Rook starts missing her **right arm**: button `2` does nothing until the Iron Wrist relic is equipped.
+- Attack glints: white = linear, red = sweeping. Red is never used as a character accent colour; Rook's accent is tarnished gold.
+- Phase step passes through `linear` attacks only; `sweeping` attacks hit it.
+- Stamina is spent only by phase steps and blocking; attacks are free. Empty stamina while blocking = guard break.
+- One difficulty, no settings that change combat. All dialogue is text only.

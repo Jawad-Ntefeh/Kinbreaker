@@ -10,7 +10,7 @@ export const SUBPX = 100;
 export const LIMBS = ['left_arm', 'right_arm', 'left_leg', 'right_leg', 'core', 'none'] as const;
 export const HEIGHTS = ['high', 'mid', 'low', 'throw'] as const;
 export const PATHS = ['linear', 'sweeping'] as const;
-export const PROPERTIES = ['launcher', 'knockdown', 'wall_splat', 'armor', 'counter_hit_launch'] as const;
+export const PROPERTIES = ['launcher', 'knockdown', 'wall_splat', 'armor', 'counter_hit_launch', 'ground_hit'] as const;
 export const CANCEL_ON = ['hit', 'block', 'whiff'] as const;
 export const OUTCOME_WORDS = ['knockdown', 'launch'] as const;
 

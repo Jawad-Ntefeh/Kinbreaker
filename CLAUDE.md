@@ -85,7 +85,7 @@ Keyboard is the primary input; every feature must be fully playable on keyboard,
 - `input` grammar: an optional direction or motion in numpad digits, then `:`, then the buttons joined by `+`. Examples: `"1"` (button 1), `"3:4"` (hold down-forward, press 4), `"2:4"` (hold down, press 4), `"236:2"` (motion down, down-forward, forward, then 2), `"1+3"` (buttons 1 and 3 together).
 - `height`: `high` | `mid` | `low` | `throw`.
 - `path`: `linear` | `sweeping`.
-- `properties`: any of `launcher`, `knockdown`, `wall_splat`, `armor`, `counter_hit_launch`.
+- `properties`: any of `launcher`, `knockdown`, `wall_splat`, `armor`, `counter_hit_launch`, `ground_hit`.
 - Hitbox/hurtbox units are **pixels** in the data (converted to subpixels on load); `x` is distance in front of the fighter's origin, `y` is height above the ground of the box's bottom edge.
 - `movement`: optional list of `{ "frame": n, "dx": px_per_frame }` steps for advancing or retreating moves.
 - Throws additionally have `"break": "1"` or `"break": "2"` and `"range": px` (measured from the thrower's origin to the target's front edge), and `"on_block": null`.
@@ -133,4 +133,7 @@ public/art/           # sprites (later, from Pixelwright exports)
 - Attack glints: white = linear, red = sweeping. Red is never used as a character accent colour; Rook's accent is tarnished gold.
 - Phase step passes through `linear` attacks only; `sweeping` attacks hit it.
 - Stamina is spent only by phase steps and blocking; attacks are free. Empty stamina while blocking = guard break.
+- Move priority when several moves match: more buttons first, then a motion input, then a held direction, then a plain button (forward + U + J = throw).
+- Wall splat lasts 50 frames; the fighter slides from the height they hit the wall down to the floor, reaching it on the last frame, and can be hit at any height meanwhile.
+- Ground hits: `low` moves and moves with `ground_hit` can hit a fighter in `knockdown` for 50% damage (after combo scaling), once per knockdown, without resetting or extending the knockdown. `wake_up` is invulnerable.
 - One difficulty, no settings that change combat. All dialogue is text only.

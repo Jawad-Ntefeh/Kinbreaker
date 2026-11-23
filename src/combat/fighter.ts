@@ -108,6 +108,10 @@ export class Fighter {
   juggleCount = 0;
   gravity = SYSTEM.gravity;
   wallHits = 0;
+  /** Height at which a wall splat started; the fighter slides from here to the floor. */
+  splatY0 = 0;
+  /** A ground hit was already taken during the current knockdown. */
+  groundHitTaken = false;
   /** Frames spent in a neutral state (training refill). */
   neutralFrames = 0;
 
@@ -149,9 +153,9 @@ export class Fighter {
     return this.state === 'phase_step' && this.stateFrame >= a && this.stateFrame <= b;
   }
 
-  /** Can this fighter be hit by attacks at all? */
+  /** Can this fighter be hit by attacks at all? (Knocked-down fighters only by ground hits.) */
   get isHittable(): boolean {
-    return this.state !== 'knockdown' && this.state !== 'wake_up';
+    return this.state !== 'wake_up';
   }
 
   /** In startup frames of an attack (counter-hit window). */
@@ -180,7 +184,11 @@ export class Fighter {
     const h = SYSTEM.halfWidth;
     let height = SYSTEM.bodyHeight;
     if (this.isCrouching) height = SYSTEM.crouchHeight;
-    if (this.state === 'knockdown' || this.state === 'wake_up') height = SYSTEM.knockdownHeight;
+    if (this.state === 'knockdown' || this.state === 'wake_up') {
+      // Lying flat: as wide as the fighter is tall.
+      const half = Math.trunc(SYSTEM.bodyHeight / 2);
+      return { x0: this.x - half, x1: this.x + half, y0: this.y, y1: this.y + SYSTEM.knockdownHeight };
+    }
     return { x0: this.x - h, x1: this.x + h, y0: this.y, y1: this.y + height };
   }
 
@@ -212,7 +220,7 @@ export class Fighter {
       this.stateLength, this.moveFrame, this.moveStartInputFrame, this.hitGroups, this.connected,
       this.crouchStun ? 1 : 0, this.hitstop, this.health, this.poise, this.poiseIdle, this.stamina,
       this.comboActive ? 1 : 0, this.comboHits, this.comboDamage, this.juggleCount, this.gravity,
-      this.wallHits, this.neutralFrames,
+      this.wallHits, this.neutralFrames, this.splatY0, this.groundHitTaken ? 1 : 0,
     ];
     for (const n of ints) h = hashInt(h, n);
     h = hashString(h, this.move ? this.move.id : '');

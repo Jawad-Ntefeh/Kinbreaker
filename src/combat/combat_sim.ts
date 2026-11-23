@@ -32,7 +32,8 @@ export interface CombatEvent {
     | 'stagger'
     | 'launch'
     | 'wall_splat'
-    | 'knockdown';
+    | 'knockdown'
+    | 'ground_hit';
   attacker: number;
   defender: number;
   moveId: string;
@@ -62,7 +63,7 @@ interface Contact {
   attacker: Fighter;
   defender: Fighter;
   move: Move;
-  kind: ContactKind | 'phase_miss';
+  kind: ContactKind | 'phase_miss' | 'ground';
   group: number;
 }
 
@@ -147,6 +148,11 @@ export class CombatSim {
         break;
       default:
         f.stateFrame++;
+        if (f.state === 'wall_splat') {
+          // Slide down the wall, reaching the floor on the last frame.
+          const t = Math.min(f.stateFrame, f.stateLength);
+          f.y = f.splatY0 - Math.trunc((f.splatY0 * t) / f.stateLength);
+        }
         if (f.stateFrame > f.stateLength) this.endTimedState(f);
     }
   }
@@ -172,6 +178,7 @@ export class CombatSim {
   }
 
   private setTimed(f: Fighter, state: Fighter['state'], length: number, startFrame = 0): void {
+    if (state === 'knockdown') f.groundHitTaken = false;
     f.state = state;
     f.stateFrame = startFrame;
     f.stateLength = length;
@@ -453,6 +460,7 @@ export class CombatSim {
     const y = f.y;
     this.setTimed(f, 'wall_splat', SYSTEM.wallSplatFrames);
     f.y = y;
+    f.splatY0 = y;
     f.vy = 0;
     f.wallHits = 0;
     this.event('wall_splat', this.opponent(f), f, '', 0);
@@ -505,11 +513,14 @@ export class CombatSim {
       return { attacker: atk, defender: def, move: m, kind: 'throw', group: 0 };
     }
     if (!def.isHittable) return null;
+    const downed = def.state === 'knockdown';
+    if (downed && (def.groundHitTaken || !(m.height === 'low' || m.properties.includes('ground_hit')))) return null;
     const hurt = def.hurtbox();
     for (const { box, group } of atk.activeHitboxes()) {
       if (atk.hitGroups & (1 << group)) continue;
       if (!overlap(box, hurt)) continue;
       // Contact: decide the result.
+      if (downed) return { attacker: atk, defender: def, move: m, kind: 'ground', group };
       if (m.path === 'linear' && def.isPhaseInvulnerable) return { attacker: atk, defender: def, move: m, kind: 'phase_miss', group };
       if (m.height === 'high' && def.isCrouching) continue;
       const stance = this.blockStance(def);
@@ -554,6 +565,15 @@ export class CombatSim {
       return;
     }
     atk.hitGroups |= 1 << c.group;
+    if (c.kind === 'ground') {
+      // Ground hit: half damage, once per knockdown, the knockdown timer is untouched.
+      atk.connected = 1;
+      atk.hitstop = Math.max(atk.hitstop, SYSTEM.hitstopHit);
+      def.groundHitTaken = true;
+      const dmg = this.applyDamage(def, m.damage, 50);
+      this.event('ground_hit', atk, def, m.id, dmg);
+      return;
+    }
     const contactFrame = atk.moveFrame;
     const remaining = m.lastActive - contactFrame + m.recovery;
 
@@ -666,14 +686,14 @@ export class CombatSim {
     if (moved < SYSTEM.pushback) this.shift(atk, -(SYSTEM.pushback - moved) * dir);
   }
 
-  private applyDamage(def: Fighter, damage: number): number {
+  private applyDamage(def: Fighter, damage: number, percent = 100): number {
     if (!def.comboActive) {
       def.comboActive = true;
       def.comboHits = 0;
       def.comboDamage = 0;
     }
     def.comboHits++;
-    const dmg = scaledDamage(damage, def.comboHits);
+    const dmg = Math.trunc((scaledDamage(damage, def.comboHits) * percent) / 100);
     def.health = Math.max(0, def.health - dmg);
     def.comboDamage += dmg;
     return dmg;
@@ -726,8 +746,9 @@ function overlap(a: WorldBox, b: WorldBox): boolean {
   return a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
 }
 
-/** Most specific inputs first: motion > held direction > plain; then more buttons; then id for stability. */
+/** Most specific inputs first: more buttons, then motion > held direction > plain; then id for stability. */
 function sortMoves(f: Fighter): Move[] {
-  const rank = (m: Move) => (m.input.motion ? 3 : m.input.dir !== null ? 2 : 1) * 10 + m.input.buttons.length;
+  // More buttons first, then motion > held direction > plain button.
+  const rank = (m: Move) => m.input.buttons.length * 10 + (m.input.motion ? 3 : m.input.dir !== null ? 2 : 1);
   return [...f.moves.values()].sort((a, b) => rank(b) - rank(a) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }

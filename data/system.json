@@ -35,7 +35,7 @@
   "knockdown_frames": 30,
   "wake_up_frames": 20,
   "wall_splat": {
-    "frames": 35,
+    "frames": 50,
     "max_hits": 3
   },
   "throw": {

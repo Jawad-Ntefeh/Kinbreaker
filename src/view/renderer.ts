@@ -4,8 +4,7 @@
  */
 import type { CombatSim } from '../combat/combat_sim';
 import type { Fighter, WorldBox } from '../combat/fighter';
-import { frameAtMoveFrame, frameAtTick } from './anim_data';
-import { selectAnim, type ScenePose } from './anim_select';
+import { pickFrame, type ScenePose } from './anim_select';
 import { Backgrounds } from './background';
 import { Camera, FLOOR_Y } from './camera';
 import type { Effects } from './effects';
@@ -148,22 +147,12 @@ export class Renderer {
   private drawFighter(ctx: CanvasRenderingContext2D, sim: CombatSim, f: Fighter, fx: Effects | null): void {
     const sprites = this.bank.get(f.config.id ?? 'rook');
     const file = sprites.file;
-    const choice = selectAnim(f, (n) => file.anims.has(n), this.pose[f.index] ?? null);
+    const track = this.tracks[f.index]!;
+    const picked = pickFrame(f, file, this.pose[f.index] ?? null, track, sim.frame);
     const info: SpriteInfo = { anim: '', cell: -1, label: '', x: 0, y: 0, cellW: file.cell[0], cellH: file.cell[1], pivot: file.pivot, facing: f.facing };
     this.lastDrawn[f.index] = info;
-    if (!choice) return;
-    const anim = file.anims.get(choice.name)!;
-    let idx: number;
-    if (choice.kind === 'move') {
-      idx = frameAtMoveFrame(anim, f.moveFrame);
-    } else {
-      const track = this.tracks[f.index]!;
-      if (track.anim !== choice.name) {
-        track.anim = choice.name;
-        track.start = sim.frame;
-      }
-      idx = frameAtTick(anim, sim.frame - track.start);
-    }
+    if (!picked) return;
+    const { choice, anim, index: idx } = picked;
     const frame = anim.frames[idx]!;
     // Whole pixels: round the sim position once.
     const sx = this.camera.sx(f.x);

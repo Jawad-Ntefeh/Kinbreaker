@@ -119,3 +119,34 @@ describe('anim_select', () => {
     expect(selectAnim(f({}), all([]))).toBe(null);
   });
 });
+
+describe('sync rule', () => {
+  it("a move animation's displayed frame matches the sim's move frame on every frame, including hitstop", async () => {
+    const { pickFrame } = await import('../src/view/anim_select');
+    const { pointBlank, inp, N } = await import('./helpers');
+    const { def } = validateAnimFile('data/anims/rook.json', jabFile(GOOD), rookMoves);
+    const sim = pointBlank();
+    const rook = sim.fighters[0];
+    const track = { anim: '', start: 0 };
+    sim.step(inp(5, 1, '1'), N);
+    let sawHitstop = false;
+    let prevIndex = -1;
+    let prevMoveFrame = -1;
+    while (rook.state === 'attack') {
+      const p = pickFrame(rook, def!, null, track, sim.frame)!;
+      expect(p.choice).toEqual({ name: 'rook_jab', kind: 'move' });
+      expect(p.index).toBe(frameAtMoveFrame(p.anim, rook.moveFrame));
+      // The impact pose is on screen exactly while the move is active.
+      const active = rook.moveFrame >= 10 && rook.moveFrame <= 11;
+      expect(p.anim.frames[p.index]!.impact).toBe(active);
+      if (rook.hitstop > 0 && rook.moveFrame === prevMoveFrame) {
+        sawHitstop = true;
+        expect(p.index).toBe(prevIndex); // frozen like the sim
+      }
+      prevIndex = p.index;
+      prevMoveFrame = rook.moveFrame;
+      sim.step(N, N);
+    }
+    expect(sawHitstop).toBe(true);
+  });
+});

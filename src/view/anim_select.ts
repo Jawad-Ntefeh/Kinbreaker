@@ -4,6 +4,7 @@
  */
 import type { FighterState } from '../combat/fighter';
 import type { Height } from '../combat/move_data';
+import { frameAtMoveFrame, frameAtTick, type Anim } from './anim_data';
 
 /** The parts of a fighter the selection needs (a Fighter satisfies this). */
 export interface AnimSubject {
@@ -65,4 +66,32 @@ export function selectAnim(f: AnimSubject, has: (name: string) => boolean, pose:
   const s = stateAnimName(f);
   for (const name of [s, ...(FALLBACK[s] ?? []), 'idle']) if (has(name)) return { name, kind: 'state' };
   return null;
+}
+
+/** View-side clock for state animations: which one is playing and when it started. */
+export interface AnimTrack {
+  anim: string;
+  start: number;
+}
+
+/**
+ * The animation frame to show. Move animations use the sim's move frame (so they can't drift and
+ * freeze during hitstop like the sim); state animations use `now - track.start` (view-side).
+ */
+export function pickFrame(
+  f: AnimSubject & { moveFrame: number },
+  file: { anims: ReadonlyMap<string, Anim> },
+  pose: ScenePose,
+  track: AnimTrack,
+  now: number,
+): { choice: AnimChoice; anim: Anim; index: number } | null {
+  const choice = selectAnim(f, (n) => file.anims.has(n), pose);
+  if (!choice) return null;
+  const anim = file.anims.get(choice.name)!;
+  if (choice.kind === 'move') return { choice, anim, index: frameAtMoveFrame(anim, f.moveFrame) };
+  if (track.anim !== choice.name) {
+    track.anim = choice.name;
+    track.start = now;
+  }
+  return { choice, anim, index: frameAtTick(anim, now - track.start) };
 }

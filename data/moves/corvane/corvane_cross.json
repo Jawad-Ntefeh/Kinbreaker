@@ -1,0 +1,43 @@
+{
+  "id": "corvane_cross",
+  "name": "Straight Cross",
+  "limb": "right_arm",
+  "input": "6:2",
+  "startup": 14,
+  "active": 3,
+  "recovery": 20,
+  "damage": 22,
+  "poise_damage": 14,
+  "height": "mid",
+  "path": "linear",
+  "on_block": -6,
+  "on_hit": 6,
+  "on_counter_hit": 6,
+  "properties": [],
+  "hitboxes": [
+    {
+      "frames": [
+        14,
+        16
+      ],
+      "x": 16,
+      "y": 44,
+      "w": 34,
+      "h": 14
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [
+    {
+      "frame": 1,
+      "dx": 1
+    },
+    {
+      "frame": 14,
+      "dx": 0
+    }
+  ],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

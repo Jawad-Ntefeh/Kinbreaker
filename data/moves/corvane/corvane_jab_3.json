@@ -1,0 +1,35 @@
+{
+  "id": "corvane_jab_3",
+  "name": "Iron Jab 3",
+  "limb": "left_arm",
+  "input": "1",
+  "startup": 12,
+  "active": 2,
+  "recovery": 18,
+  "damage": 12,
+  "poise_damage": 8,
+  "height": "high",
+  "path": "linear",
+  "on_block": -4,
+  "on_hit": 5,
+  "on_counter_hit": 5,
+  "properties": [],
+  "hitboxes": [
+    {
+      "frames": [
+        12,
+        13
+      ],
+      "x": 16,
+      "y": 58,
+      "w": 32,
+      "h": 10
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": [],
+  "cancel_only": true
+}

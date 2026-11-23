@@ -1,0 +1,48 @@
+{
+  "id": "corvane_last_bell_5",
+  "name": "Last Bell",
+  "limb": "core",
+  "input": "236:1+2",
+  "startup": 6,
+  "active": 2,
+  "recovery": 22,
+  "damage": 12,
+  "poise_damage": 6,
+  "height": "mid",
+  "path": "linear",
+  "on_block": -20,
+  "on_hit": 2,
+  "on_counter_hit": 2,
+  "properties": [],
+  "hitboxes": [
+    {
+      "frames": [
+        6,
+        7
+      ],
+      "x": 14,
+      "y": 40,
+      "w": 36,
+      "h": 16
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [
+    {
+      "frame": 1,
+      "dx": 1
+    },
+    {
+      "frame": 6,
+      "dx": 0
+    }
+  ],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": [],
+  "cancel_only": true,
+  "continue_on": [
+    "hit",
+    "block"
+  ]
+}

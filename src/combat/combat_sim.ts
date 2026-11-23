@@ -221,6 +221,7 @@ export class CombatSim {
     f.stateLength = 0;
     f.move = null;
     f.moveFrame = 0;
+    f.extraRecovery = 0;
     f.vx = 0;
     f.vy = 0;
     f.y = 0;

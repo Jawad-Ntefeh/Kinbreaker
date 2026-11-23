@@ -1,16 +1,78 @@
 {
-  "_comment": "Character palette. Each ramp is dark → light. Light comes from the upper left. Red (#ff3a2e) is reserved for sweeping glints and never appears on a character.",
+  "_comment": "Character palette. Each ramp is dark \u2192 light. Light comes from the upper left. Red (#ff3a2e) is reserved for sweeping glints and never appears on a character.",
   "ramps": {
-    "outline": ["#1a1418"],
-    "skin": ["#5a3a2e", "#8a5a44", "#b88466", "#ddb08c"],
-    "hair": ["#1f1a22", "#352c3a", "#4e4256"],
-    "coat": ["#2e1218", "#4a1c24", "#6b2a32", "#8a3a3f"],
-    "gold": ["#5c4a22", "#8a7034", "#b8963f", "#d9bf6a"],
-    "wraps": ["#4a443c", "#6e6458", "#9a8f80", "#c2b8a6"],
-    "silver": ["#4c5056", "#7a7f86", "#b4b9bf"],
-    "iron": ["#2b2f36", "#444b55", "#66707c", "#8c97a3"],
-    "leather": ["#3a2216", "#5e3820", "#86542e", "#a8703e"],
-    "spirit": ["#8fb8e8", "#cfe6ff"]
+    "outline": [
+      "#1a1418"
+    ],
+    "skin": [
+      "#5a3a2e",
+      "#8a5a44",
+      "#b88466",
+      "#ddb08c"
+    ],
+    "hair": [
+      "#1f1a22",
+      "#352c3a",
+      "#4e4256"
+    ],
+    "coat": [
+      "#2e1218",
+      "#4a1c24",
+      "#6b2a32",
+      "#8a3a3f"
+    ],
+    "gold": [
+      "#5c4a22",
+      "#8a7034",
+      "#b8963f",
+      "#d9bf6a"
+    ],
+    "wraps": [
+      "#4a443c",
+      "#6e6458",
+      "#9a8f80",
+      "#c2b8a6"
+    ],
+    "silver": [
+      "#4c5056",
+      "#7a7f86",
+      "#b4b9bf"
+    ],
+    "iron": [
+      "#2b2f36",
+      "#444b55",
+      "#66707c",
+      "#8c97a3"
+    ],
+    "leather": [
+      "#3a2216",
+      "#5e3820",
+      "#86542e",
+      "#a8703e"
+    ],
+    "spirit": [
+      "#8fb8e8",
+      "#cfe6ff"
+    ],
+    "wraps_warm": [
+      "#3d2b2a",
+      "#553d3b",
+      "#6b514c",
+      "#8d6f65",
+      "#b59a90"
+    ],
+    "trousers": [
+      "#120a0d",
+      "#23171c",
+      "#39282b",
+      "#4d3737"
+    ]
   },
-  "reserved": { "sweeping_glint": "#ff3a2e" }
+  "reserved": {
+    "sweeping_glint": "#ff3a2e"
+  },
+  "_added": {
+    "wraps_warm": "Prompt 04B: Rook's cloth wraps in the approved reference are a warm mauve-grey; the cool 'wraps' ramp was 10-11 dE off.",
+    "trousers": "Prompt 04B: Rook's trousers and boots in the reference are warm near-blacks; hair/wraps were 8.6-10.5 dE off."
+  }
 }

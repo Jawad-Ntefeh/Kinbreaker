@@ -1,0 +1,32 @@
+{
+  "_comment": "Sheet layout the art pipeline expects per character (cell size, pivot, columns). The dummy reuses Rook's sheet with a grey palette shift.",
+  "characters": {
+    "rook": {
+      "cell": [
+        64,
+        96
+      ],
+      "pivot": [
+        32,
+        92
+      ],
+      "columns": 8,
+      "color": "tarnished gold"
+    },
+    "corvane": {
+      "cell": [
+        80,
+        104
+      ],
+      "pivot": [
+        40,
+        100
+      ],
+      "columns": 8,
+      "color": "bronze-brown"
+    }
+  },
+  "shared": {
+    "dummy": "rook"
+  }
+}

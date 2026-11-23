@@ -667,6 +667,7 @@ export class CombatSim {
       return;
     }
     atk.hitGroups |= 1 << c.group;
+    def.hitHeight = m.height;
     if (c.kind === 'ground') {
       // Ground hit: half damage, once per knockdown, the knockdown timer is untouched.
       atk.connected = 1;

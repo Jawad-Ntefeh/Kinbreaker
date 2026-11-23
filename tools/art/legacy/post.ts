@@ -11,12 +11,8 @@
 import { hexToRgb, type Palette } from './core';
 import type { Layer } from './rig';
 
-export interface Frame {
-  w: number;
-  h: number;
-  /** Hex colour per pixel, '' = transparent. */
-  px: string[];
-}
+export type { Frame } from '../io';
+import type { Frame } from '../io';
 
 const N4: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 

@@ -4,8 +4,18 @@ import { dirname } from 'node:path';
 import { PNG } from 'pngjs';
 import gifenc from 'gifenc';
 const { GIFEncoder } = gifenc as unknown as typeof import('gifenc');
-import { hexToRgb } from './core';
-import type { Frame } from './post';
+
+/** A frame of hex colours ('' = transparent). */
+export interface Frame {
+  w: number;
+  h: number;
+  px: string[];
+}
+
+export function hexToRgb(h: string): [number, number, number] {
+  const n = parseInt(h.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
 
 /** An RGBA canvas made of hex colours ('' = transparent). */
 export class Canvas {

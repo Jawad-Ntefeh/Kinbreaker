@@ -11,7 +11,8 @@ import { join } from 'node:path';
 export type Pt = [number, number];
 
 export const ROOT = process.cwd();
-export const SRC = join(ROOT, 'art_src');
+/** Legacy (Part A) rig sources. */
+export const SRC = join(ROOT, 'tools/art/legacy/art_src');
 
 // ---------------------------------------------------------------- palette
 

@@ -5,8 +5,8 @@
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { Move } from '../../src/combat/move_data';
-import { movePoses, STATE_SPECS, type MovePhase } from '../../src/view/anim_layout';
+import type { Move } from '../../../src/combat/move_data';
+import { movePoses, STATE_SPECS, type MovePhase } from '../../../src/view/anim_layout';
 import { lerpPose, SRC, type Pose, type Pt } from './core';
 import { compose, orderedBones, solve, type BoneState, type Layer, type Rig } from './rig';
 import { finish, type Frame } from './post';

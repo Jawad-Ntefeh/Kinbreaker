@@ -1,0 +1,16 @@
+{
+  "_comment": "Character palette. Each ramp is dark → light. Light comes from the upper left. Red (#ff3a2e) is reserved for sweeping glints and never appears on a character.",
+  "ramps": {
+    "outline": ["#1a1418"],
+    "skin": ["#5a3a2e", "#8a5a44", "#b88466", "#ddb08c"],
+    "hair": ["#1f1a22", "#352c3a", "#4e4256"],
+    "coat": ["#2e1218", "#4a1c24", "#6b2a32", "#8a3a3f"],
+    "gold": ["#5c4a22", "#8a7034", "#b8963f", "#d9bf6a"],
+    "wraps": ["#4a443c", "#6e6458", "#9a8f80", "#c2b8a6"],
+    "silver": ["#4c5056", "#7a7f86", "#b4b9bf"],
+    "iron": ["#2b2f36", "#444b55", "#66707c", "#8c97a3"],
+    "leather": ["#3a2216", "#5e3820", "#86542e", "#a8703e"],
+    "spirit": ["#8fb8e8", "#cfe6ff"]
+  },
+  "reserved": { "sweeping_glint": "#ff3a2e" }
+}

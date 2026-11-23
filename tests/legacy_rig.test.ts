@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { parsePart, quarterTurn, type Grid } from '../tools/art/core';
-import { rotateGrid, scale2x } from '../tools/art/rotsprite';
+import { parsePart, quarterTurn, type Grid } from '../tools/art/legacy/core';
+import { rotateGrid, scale2x } from '../tools/art/legacy/rotsprite';
 
 const grid = (rows: string[]): Grid => ({ w: rows[0]!.length, h: rows.length, px: rows.join('').split('') });
 
-describe('art toolkit', () => {
+describe('legacy Part A rig (retired)', () => {
   it('Scale2x doubles and keeps hard edges (no new colours)', () => {
     const g = scale2x(grid(['ab', 'ba']));
     expect(g.w).toBe(4);

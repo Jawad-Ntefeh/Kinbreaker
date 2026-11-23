@@ -1,5 +1,5 @@
 {
-  "_comment": "Character palette. Each ramp is dark \u2192 light. Light comes from the upper left. Red (#ff3a2e) is reserved for sweeping glints and never appears on a character.",
+  "_comment": "Character palette. Each ramp is dark → light. Light comes from the upper left. Red (#ff3a2e) is reserved for sweeping glints and never appears on a character.",
   "ramps": {
     "outline": [
       "#1a1418"
@@ -66,6 +66,11 @@
       "#23171c",
       "#39282b",
       "#4d3737"
+    ],
+    "bronze": [
+      "#6a4632",
+      "#8a5e40",
+      "#a87a52"
     ]
   },
   "reserved": {
@@ -73,6 +78,7 @@
   },
   "_added": {
     "wraps_warm": "Prompt 04B: Rook's cloth wraps in the approved reference are a warm mauve-grey; the cool 'wraps' ramp was 10-11 dE off.",
-    "trousers": "Prompt 04B: Rook's trousers and boots in the reference are warm near-blacks; hair/wraps were 8.6-10.5 dE off."
+    "trousers": "Prompt 04B: Rook's trousers and boots in the reference are warm near-blacks; hair/wraps were 8.6-10.5 dE off.",
+    "bronze": "Prompt 04B: the gold embroidery and trim in Rook's approved reference is a warm bronze (hue ~20 deg); the gold ramp is ~40 deg, so it snapped to skin/leather (gold share 0%). Counted as gold by the consistency checks."
   }
 }

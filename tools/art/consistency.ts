@@ -13,6 +13,8 @@ import type { Palette } from './pipeline';
 export const CATEGORY: Record<string, string> = {
   coat: 'coat',
   gold: 'gold',
+  // The reference's gold trim is a warm bronze; both count as the gold accent.
+  bronze: 'gold',
   skin: 'skin',
   wraps: 'wraps',
   wraps_warm: 'wraps',

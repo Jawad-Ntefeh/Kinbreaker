@@ -218,17 +218,18 @@ describe('punishes', () => {
 });
 
 describe('phase 2 and Last Bell', () => {
-  it('Last Bell (Ember) is used at most once per fight', () => {
+  it('Last Bell (Ember) is used exactly once in a long phase 2, never again', () => {
     for (const seed of [1, 2, 3]) {
-      const { ai, sim } = play(seed, blocker, 8000, {
-        setup: (s) => {
-          s.fighters[1].health = 226;
+      const { ai } = play(seed, blocker, 8000, {
+        setup: (sim) => {
+          const c = sim.fighters[1];
+          c.phase = 2;
+          c.lockedMoves.delete('corvane_iron_wall');
+          c.lockedMoves.delete('corvane_last_bell_1');
         },
       });
-      // Get him to phase 2 with one jab... the blocker never attacks, so do it directly.
-      void sim;
-      const used = ai.openers.filter((o) => o === 'last_bell').length;
-      expect(used).toBeLessThanOrEqual(1);
+      expect(ai.openers.filter((o) => o === 'last_bell').length).toBe(1);
+      expect(ai.log.filter((e) => e.type === 'ember').length).toBe(1);
     }
   });
   it('in a real fight Corvane reaches phase 2, breaks the wall, uses Iron Wall and Last Bell once', () => {

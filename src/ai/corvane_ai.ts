@@ -166,6 +166,7 @@ export class CorvaneAI {
     // Reads are used up only when the forced opener actually comes out.
     if (plan.forced === 'throw_read') this.throwReadArmed = false;
     if (plan.forced === 'phase_read') this.sweepForced = Math.max(0, this.sweepForced - 1);
+    if (plan.forced === 'ember') this.log.push({ frame: this.now, type: 'ember' });
     this.openers.push(plan.opener);
     this.log.push({ frame: this.now, type: 'opener', opener: plan.opener, move: plan.move, range: plan.range, forced: plan.forced });
     void rook;
@@ -326,7 +327,6 @@ export class CorvaneAI {
       this.plan = this.makePlan(sim, 'last_bell', false);
       this.plan.forced = 'ember';
       this.plan.range = range;
-      this.log.push({ frame: sim.frame, type: 'ember' });
       this.behaviour = 'attack';
       return this.runPlan(me, gap);
     }

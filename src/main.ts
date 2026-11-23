@@ -20,10 +20,14 @@ const game: Game = {
   input,
   screen,
   simFps: 0,
-  goTitle: () => (scene = new TitleScene(game)),
-  goFight: () => (scene = new BossFightScene(game)),
-  goTraining: () => (scene = new TrainingScene(game)),
+  goTitle: () => switchTo(new TitleScene(game)),
+  goFight: () => switchTo(new BossFightScene(game)),
+  goTraining: () => switchTo(new TrainingScene(game)),
 };
+function switchTo(next: Scene): void {
+  input.keyboard.clearLatched();
+  scene = next;
+}
 game.goTitle();
 
 // Pause everything while the canvas doesn't have focus.

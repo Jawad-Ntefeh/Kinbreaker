@@ -45,6 +45,11 @@ export class Keyboard {
     });
   }
 
+  /** Forget presses that haven't been sampled yet (e.g. menu presses when a scene changes). */
+  clearLatched(): void {
+    this.latched.clear();
+  }
+
   clear(): void {
     this.held.clear();
     this.latched.clear();

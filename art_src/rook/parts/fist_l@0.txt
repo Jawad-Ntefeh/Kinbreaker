@@ -1,0 +1,8 @@
+# Wrapped fist hanging down (knuckles down).
+joint 1 0
+---
+.ww.
+wwww
+wwww
+wWWw
+.ww.

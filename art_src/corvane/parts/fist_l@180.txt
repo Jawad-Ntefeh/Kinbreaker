@@ -1,0 +1,8 @@
+# Iron fist raised in guard, knuckles up.
+joint 2 4
+---
+.iIIi.
+iiiiii
+iiiiii
+iiiiii
+.iiii.

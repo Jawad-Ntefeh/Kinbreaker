@@ -1,0 +1,13 @@
+# Lower braid with the silver band and the loose end.
+joint 1 0
+tip end 1 8
+---
+hhh
+hkh
+hhh
+vvv
+vvv
+.h.
+hkh
+.h.
+.h.

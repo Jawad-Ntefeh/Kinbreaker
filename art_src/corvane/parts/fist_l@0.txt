@@ -1,0 +1,8 @@
+# Big iron fist hanging down.
+joint 2 0
+---
+.iiii.
+iiiiii
+iiiiii
+iIiiIi
+.iiii.

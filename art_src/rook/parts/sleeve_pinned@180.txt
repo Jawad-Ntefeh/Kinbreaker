@@ -1,0 +1,9 @@
+# The empty right sleeve, folded up and pinned at the shoulder with a gold pin (G).
+joint 3 2
+---
+.ccc.
+ccccc
+ccGcc
+cgGgc
+.ccc.
+..c..

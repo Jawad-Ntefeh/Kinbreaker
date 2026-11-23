@@ -1,0 +1,23 @@
+# Bald iron head, heavy brow and jaw, thick neck, two pixels of spirit-glow eyes (e),
+# a few long pale strands (w) hanging from the back. Facing right, drawn upright.
+joint 7 18
+---
+....iiiiii.....
+..iiiiiiiiii...
+.iiiiiiiiiiii..
+.iiiiiiiiiiiii.
+wiiiiiiiiiiiii.
+wiiiiiiiiiIIii.
+wiiiiiiiiiieeii
+wwiiiiiiiiiiiiii
+.wiiiiiiiiiiiiii
+.wiiiiiiiiiiIii.
+.wiiiiiiiiiiiii.
+..iiiiiiiiiIIIi.
+..iiiiiiiiiiiii.
+..iiiiiiiiiiii..
+...iiiiiiiiiii..
+...iiiiiiiiii...
+...iiiiiiiiii...
+...iiiiiiiiii...
+...iiiiiiiiii...

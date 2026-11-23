@@ -1,0 +1,75 @@
+{
+  "_comment": "One character per pixel. Lit/shaded steps are added by the toolkit (light from the upper left); fixed entries are details that are never re-lit.",
+  "s": {
+    "ramp": "skin",
+    "step": 2
+  },
+  "h": {
+    "ramp": "hair",
+    "step": 1
+  },
+  "k": {
+    "ramp": "hair",
+    "step": 2,
+    "fixed": true
+  },
+  "c": {
+    "ramp": "coat",
+    "step": 2,
+    "min": 1
+  },
+  "C": {
+    "ramp": "coat",
+    "step": 0,
+    "fixed": true
+  },
+  "P": {
+    "ramp": "coat",
+    "step": 3,
+    "fixed": true
+  },
+  "t": {
+    "ramp": "coat",
+    "step": 0,
+    "max": 1
+  },
+  "g": {
+    "ramp": "gold",
+    "step": 2,
+    "min": 1
+  },
+  "G": {
+    "ramp": "gold",
+    "step": 3,
+    "fixed": true
+  },
+  "w": {
+    "ramp": "wraps",
+    "step": 2,
+    "min": 1
+  },
+  "W": {
+    "ramp": "wraps",
+    "step": 1,
+    "fixed": true
+  },
+  "v": {
+    "ramp": "silver",
+    "step": 1
+  },
+  "e": {
+    "ramp": "hair",
+    "step": 0,
+    "fixed": true
+  },
+  "x": {
+    "ramp": "skin",
+    "step": 3,
+    "fixed": true
+  },
+  "m": {
+    "ramp": "skin",
+    "step": 1,
+    "fixed": true
+  }
+}

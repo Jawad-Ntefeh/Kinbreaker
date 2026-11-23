@@ -1,0 +1,16 @@
+# Rust-leather boxing trunks under a wide old championship belt (leather, gold plate).
+joint 8 5
+tip waist 8 0
+tip hip_f 11 6
+tip hip_b 5 6
+---
+LLLLLLLLLLLLLLLL
+lllgggGgggglllll
+lllgGgggggGlllll
+lllggggggggllll.
+LLLLLLLLLLLLLLLL
+lllllllllllllll.
+llllllllllllllll
+llllllLlllllllll
+lllllllLlllllll.
+.lllllllllllll..

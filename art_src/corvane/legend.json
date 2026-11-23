@@ -1,0 +1,16 @@
+{
+  "_comment": "Corvane: iron-grey skin (i), cracks and scars (I), splint bands (b) with rivets (r), rust leather trunks/belt/wraps (l, L), tarnished gold (g, G), spirit-glow eyes (e), pale strands (w). His right arm is Rook's: her skin ramp (s) with her House Vael gold band.",
+  "i": { "ramp": "iron", "step": 2 },
+  "I": { "ramp": "iron", "step": 0, "fixed": true },
+  "J": { "ramp": "iron", "step": 3, "fixed": true },
+  "b": { "ramp": "iron", "step": 1, "min": 0, "max": 2 },
+  "r": { "ramp": "iron", "step": 3, "fixed": true },
+  "c": { "ramp": "iron", "step": 1, "min": 0, "max": 2 },
+  "l": { "ramp": "leather", "step": 2 },
+  "L": { "ramp": "leather", "step": 0, "fixed": true },
+  "g": { "ramp": "gold", "step": 2, "min": 1 },
+  "G": { "ramp": "gold", "step": 3, "fixed": true },
+  "s": { "ramp": "skin", "step": 2 },
+  "e": { "ramp": "spirit", "step": 1, "fixed": true },
+  "w": { "ramp": "wraps", "step": 3, "fixed": true }
+}

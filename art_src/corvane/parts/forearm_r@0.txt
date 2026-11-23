@@ -1,0 +1,17 @@
+# Rook's forearm with her House Vael tarnished-gold wrist band (g, G).
+joint 1 0
+tip wrist 1 11
+quarter
+---
+ssss
+ssss
+ssss
+ssss
+ssss
+ssss
+ssss
+gggg
+gGgg
+.ss.
+.ss.
+.ss.

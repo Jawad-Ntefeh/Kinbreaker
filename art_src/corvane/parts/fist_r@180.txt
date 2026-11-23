@@ -1,0 +1,7 @@
+# Rook's bare fist, raised.
+joint 1 3
+---
+.ss.
+ssss
+ssss
+.ss.

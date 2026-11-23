@@ -1,0 +1,12 @@
+# Upper braid, hanging down from the back of the head.
+joint 1 0
+tip end 1 7
+---
+.h.
+hkh
+hhh
+khk
+hhh
+hkh
+hhh
+khk

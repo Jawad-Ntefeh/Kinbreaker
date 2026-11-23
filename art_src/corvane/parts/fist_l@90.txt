@@ -1,0 +1,8 @@
+# Iron fist punching forward.
+joint 0 2
+---
+iiiii.
+iiiiii
+iiiIii
+iiiiIi
+.iiii.

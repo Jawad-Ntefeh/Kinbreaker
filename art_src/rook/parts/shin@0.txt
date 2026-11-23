@@ -1,0 +1,25 @@
+# Shin: trousers tucked into cloth wraps (W = binding lines).
+joint 2 0
+tip ankle 2 19
+quarter
+---
+.ttt.
+ttttt
+ttttt
+ttttt
+ttttt
+ttttt
+ttttt
+ttttt
+ttttt
+ttttt
+.ttt.
+wwwww
+wWwww
+wwwWw
+wWwww
+wwwWw
+wWwww
+.www.
+.www.
+.www.

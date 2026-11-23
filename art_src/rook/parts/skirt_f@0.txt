@@ -1,0 +1,22 @@
+# Front panel of the coat skirt, knee length, flaring, with the gold hem.
+joint 2 0
+---
+cccc...
+ccccc..
+ccccc..
+ccccc..
+cccccc.
+cccccc.
+cccccc.
+cccccc.
+cccccc.
+ccccccc
+ccccccc
+ccccccc
+ccccccc
+ccccccc
+ccccccc
+ccccccc
+ccccccc
+ccccccc
+ggggggg

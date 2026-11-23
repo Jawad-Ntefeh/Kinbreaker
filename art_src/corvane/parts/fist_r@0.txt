@@ -1,0 +1,7 @@
+# Rook's bare hand, closed, hanging down.
+joint 1 0
+---
+.ss.
+ssss
+ssss
+.ss.

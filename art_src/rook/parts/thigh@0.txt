@@ -1,0 +1,25 @@
+# Thigh (dark fitted trousers).
+joint 2 0
+tip knee 2 19
+quarter
+---
+.tttt.
+tttttt
+tttttt
+tttttt
+tttttt
+tttttt
+tttttt
+tttttt
+.ttttt
+.ttttt
+.ttttt
+.tttt.
+.tttt.
+.tttt.
+.tttt.
+.tttt.
+.tttt.
+.tttt.
+.tttt.
+.tttt.

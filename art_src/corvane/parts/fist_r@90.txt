@@ -1,0 +1,7 @@
+# Rook's bare fist, punching forward.
+joint 0 1
+---
+sss.
+ssss
+ssss
+.ss.

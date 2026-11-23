@@ -1,0 +1,36 @@
+# Bare scarred iron chest, drawn upright, facing right: a rounded hunched upper back, thick neck
+# base jutting forward, deep chest, heavy belly. I = cracks and scars, J = pale scar ridges.
+joint 10 28
+tip neck 15 3
+tip shoulder_l 14 6
+tip shoulder_r 6 6
+---
+.......iiiiiii.........
+....iiiiiiiiiiiii......
+..iiiiiiiiiiiiiiiii....
+.iiiiiiiiiiiiiiiiiiii..
+iiiiiiiiiiiiiiiiiiiiii.
+iiiiiiiiiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiiiIiiiiii
+iiiiiiiiiiiiiiiIiJiiiii
+iiiiiiiiiiiiiiIiiiJiiii
+iiiiiiIiiiiiiiiiiiiiiii
+iiiiiiiIiiiiiiiiiiiiiii
+.iiiiiiiIiiiiiiiiiiiiii
+.iiiiiiiiiiiiiiiiiiiiii
+.iiiiiiiiiiiiiiiiiiiiii
+..iiiiiiiiiiiiiiiIiiiii
+..iiiiiiiiiiiiiiiiIiiii
+..iiiiiiiiiiiiiiiiiiiii
+...iiiiiiiiiiiiiiiiiiii
+...iiiiiiiiiiiiiiiiiiii
+...iiiiiiiiiiiiiiiiiiii
+...iiiiiiiiiiiiiiiiiiii
+....iiiiiiiiiiiiiiiiii.
+....iiiiiiiiiiiiiiiiii.
+....iiiiiiiiiiiiiiiii..
+.....iiiiiiiiiiiiiiii..
+.....iiiiiiiiiiiiiii...
+.....iiiiiiiiiiiiiii...
+.....iiiiiiiiiiiiiii...

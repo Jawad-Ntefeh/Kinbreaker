@@ -83,8 +83,34 @@ export class SpriteBank {
         console.warn(`Art for ${id} not used:\n${errors.join('\n')}`);
         return;
       }
-      sprites.file = real;
-      sprites.sheet = img;
+      // Real animations replace the placeholder ones; anything not drawn yet keeps its placeholder,
+      // so a partial set never falls back to idle. Both sheets use the same cell size (art spec).
+      const ph = sprites.file;
+      const sameCell = ph.cell[0] === real.cell[0] && ph.cell[1] === real.cell[1];
+      const realCells = cols * rows;
+      const anims = new Map(real.anims);
+      let sheet: HTMLCanvasElement | HTMLImageElement = img;
+      if (sameCell) {
+        const phCanvas = sprites.sheet;
+        const phCols = sprites.columns;
+        const phRows = Math.ceil(phCanvas.height / ph.cell[1]);
+        const c = document.createElement('canvas');
+        c.width = Math.max(img.width, cols * real.cell[0]);
+        c.height = Math.ceil((realCells + phCols * phRows) / cols) * real.cell[1];
+        const ctx = c.getContext('2d')!;
+        ctx.drawImage(img, 0, 0);
+        // Re-pack the placeholder cells after the real ones, on the real sheet's grid.
+        for (let i = 0; i < phCols * phRows; i++) {
+          const j = realCells + i;
+          ctx.drawImage(phCanvas, (i % phCols) * ph.cell[0], Math.floor(i / phCols) * ph.cell[1], ph.cell[0], ph.cell[1], (j % cols) * real.cell[0], Math.floor(j / cols) * real.cell[1], real.cell[0], real.cell[1]);
+        }
+        for (const [name, a] of ph.anims) {
+          if (!anims.has(name)) anims.set(name, { ...a, frames: a.frames.map((f) => ({ ...f, cell: f.cell + realCells })) });
+        }
+        sheet = c;
+      }
+      sprites.file = { ...real, anims };
+      sprites.sheet = sheet;
       sprites.columns = cols;
       sprites.placeholder = false;
       sprites.silhouettes.clear();

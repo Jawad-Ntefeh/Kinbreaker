@@ -1,0 +1,19 @@
+# Left upper arm: thick iron.
+joint 2 1
+tip elbow 2 13
+quarter
+---
+.iiii.
+iiiiii
+iiiiii
+iiiiii
+iiiiii
+iiiiii
+iiiIii
+iiiiii
+iiiiii
+iiiiii
+iiiiii
+iiiiii
+iiiiii
+.iiii.

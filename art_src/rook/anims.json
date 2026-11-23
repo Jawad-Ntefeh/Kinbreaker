@@ -1,0 +1,6 @@
+{
+  "_comment": "Animations built from poses. State animations take their pose count and timing from the art spec; move animations take their phases and timing from the move data (startup, smear, impact, recovery), so they pass the validator by construction. speed = how fast the body travels (px/frame), used for secondary motion.",
+  "idle": { "poses": ["stance", "idle_b", "idle_c", "idle_b"], "speed": 0 },
+  "walk_forward": { "poses": ["walk_1", "walk_2", "walk_3", "walk_4", "walk_5", "walk_6"], "speed": 2.5 },
+  "rook_jab": { "move": "rook_jab", "startup": ["jab_s1", "jab_s2"], "impact": "jab_hit", "recovery": ["jab_r1", "jab_r2"], "speed": 0 }
+}

@@ -126,11 +126,16 @@ src/fights.ts         # factories for each fight (shared by scenes and tests)
 src/input/            # keyboard + gamepad → input snapshot; bindings
 src/view/             # canvas renderer, camera, HUD, debug overlay
 tests/                # Vitest tests
-public/art/           # sprites (later, from Pixelwright exports)
+art_src/              # character art sources (palette, parts, skeletons, poses, animation keys)
+tools/art/            # the art toolkit (npm run art)
+public/art/           # generated sprite sheets (npm run art) and art
 ```
 
 ## Art pipeline (sprites, animation, effects)
 
+- **Character art is made in code** (`tools/art/`, `npm run art`): hand-drawn pixel parts in `art_src/<character>/parts/*.txt` (text grids, one legend character per pixel, `@DIR` = the direction a variant was drawn pointing), a skeleton with IK chains and secondary bones (coat tails, braid), poses and animation keys. Rotation is RotSprite only (Scale2x x3, nearest-neighbour rotate, 8x8 majority); a part is never rotated more than ~45° from a drawn variant. Light (upper left), inner lines, cleanup and the outline are applied after compositing, so every frame is lit the same way. Animation timing comes from the move data and the art spec. `npm run art` rebuilds `public/art/characters/<id>.png`, `data/anims/<id>.json` and `docs/art_review/` (model sheets, 4x GIFs and contact sheets, served at `/art_review/`), and fails on off-palette colours, broken outlines, pixels outside the cell, or a striking limb that misses its hitbox. Never edit generated PNGs by hand.
+- Palette: `art_src/palette.json` (ramps dark → light). Rook: oxblood coat (her main colour, a deep muted red-brown, not the glint red) with tarnished-gold accents. `#ff3a2e` is reserved for sweeping glints and never appears on a character.
+- When a character has an animation file but not every animation yet, the missing ones use the generated placeholder poses (never a fallback to idle).
 - Sprite sheets: `public/art/characters/<id>.png`, a grid of equal cells (cell 0 = top left). Animation files: `data/anims/<id>.json` (`sheet`, `cell`, `pivot`, optional `sheet_cells`, `anims`). Sheet layouts per character (cell size, pivot, columns, colour) live in `data/art_spec.json`; the dummy shares Rook's sheet (shifted to greys).
 - **Cell size comes from the data:** 40 px behind the pivot; in front of it, the character's furthest hitbox reach + 8 px; width rounded up to a multiple of 8; height fixed per character. `npm run art-spec` computes it into `data/art_spec.json` (currently Rook 104x96, pivot 40,92; Corvane 104x104, pivot 40,100). The animation validator fails if any hitbox of a move reaches outside its cell, so after changing hitboxes, rerun `npm run art-spec`.
 - **Poses per move:** 3 to 7 held key poses. Moves with damage ≥ 20 or the `launcher` property get one extra "smear" frame immediately before the impact frame (taken from the wind-up, so the impact frame never moves).

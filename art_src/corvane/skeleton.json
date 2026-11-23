@@ -1,0 +1,35 @@
+{
+  "_comment": "Corvane's rig. Facing right: his left side (the Iron Wrist, lead arm, front leg) faces the viewer. His right arm is Rook's: the upper arm sits behind his torso, the forearm and hand come in front, tucked by the ribs.",
+  "root": [0, -45],
+  "bones": [
+    { "name": "pelvis", "part": "pelvis", "z": 14, "group": "body" },
+    { "name": "torso", "part": "torso", "parent": "pelvis", "at": "waist", "rest": 180, "z": 20, "group": "body" },
+    { "name": "head", "part": "head", "parent": "torso", "at": "neck", "z": 22, "group": "head" },
+    { "name": "upper_arm_r", "part": "upper_arm_r", "parent": "torso", "at": "shoulder_r", "z": 10, "group": "arm_r" },
+    { "name": "forearm_r", "part": "forearm_r", "parent": "upper_arm_r", "at": "elbow", "z": 26, "group": "arm_r" },
+    { "name": "fist_r", "part": "fist_r", "parent": "forearm_r", "at": "wrist", "z": 27, "group": "arm_r" },
+    { "name": "collar_r", "part": "collar_r", "parent": "torso", "at": "shoulder_r", "z": 24, "group": "collar" },
+    { "name": "upper_arm_l", "part": "upper_arm_l", "parent": "torso", "at": "shoulder_l", "z": 30, "group": "arm" },
+    { "name": "forearm_l", "part": "forearm_l", "parent": "upper_arm_l", "at": "elbow", "z": 31, "group": "arm" },
+    { "name": "fist_l", "part": "fist_l", "parent": "forearm_l", "at": "wrist", "z": 32, "group": "arm" },
+    { "name": "thigh_f", "part": "thigh", "parent": "pelvis", "at": "hip_f", "z": 16, "group": "leg_f" },
+    { "name": "shin_f", "part": "shin", "parent": "thigh_f", "at": "knee", "z": 16, "group": "leg_f" },
+    { "name": "foot_f", "part": "foot", "parent": "shin_f", "at": "ankle", "z": 17, "group": "leg_f" },
+    { "name": "thigh_b", "part": "thigh", "parent": "pelvis", "at": "hip_b", "z": 8, "group": "leg_b", "far": true },
+    { "name": "shin_b", "part": "shin", "parent": "thigh_b", "at": "knee", "z": 8, "group": "leg_b", "far": true },
+    { "name": "foot_b", "part": "foot", "parent": "shin_b", "at": "ankle", "z": 9, "group": "leg_b", "far": true }
+  ],
+  "ik": {
+    "leg_f": { "upper": "thigh_f", "lower": "shin_f", "bend": "forward", "end": "ankle" },
+    "leg_b": { "upper": "thigh_b", "lower": "shin_b", "bend": "forward", "end": "ankle" },
+    "arm_l": { "upper": "upper_arm_l", "lower": "forearm_l", "bend": "down", "end": "wrist" },
+    "arm_r": { "upper": "upper_arm_r", "lower": "forearm_r", "bend": "down", "end": "wrist" }
+  },
+  "limbs": {
+    "left_arm": ["upper_arm_l", "forearm_l", "fist_l"],
+    "right_arm": ["upper_arm_r", "forearm_r", "fist_r"],
+    "left_leg": ["shin_f", "foot_f"],
+    "right_leg": ["shin_b", "foot_b"],
+    "core": ["forearm_l", "fist_l", "forearm_r", "fist_r"]
+  }
+}

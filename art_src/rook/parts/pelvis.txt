@@ -1,0 +1,13 @@
+# Hips (trousers). Root of the skeleton; joint = hip centre.
+joint 4 2
+tip waist 4 0
+tip hip_f 6 2
+tip hip_b 2 2
+tip skirt_f 6 0
+tip tail 1 0
+---
+.ttttttt.
+ttttttttt
+ttttttttt
+ttttttttt
+.ttttttt.

@@ -1,0 +1,6 @@
+# Wrapped foot, toes to the right. Joint at the ankle.
+joint 2 0
+---
+.ww.....
+wwwwwww.
+wWwwwWww

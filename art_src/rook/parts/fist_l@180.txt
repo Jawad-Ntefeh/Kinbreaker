@@ -1,0 +1,8 @@
+# Wrapped fist raised in guard: knuckles up, facing the opponent.
+joint 1 4
+---
+.ww.
+wWWw
+wwwww
+wwww.
+.ww..

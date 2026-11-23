@@ -1,0 +1,33 @@
+# Coat body, drawn upright (pointing up = 180), facing right. Sloped shoulders, chest forward,
+# narrower waist. Gold embroidery at the collar and down the lapel; patch seam on the back (C).
+joint 5 25
+tip neck 6 1
+tip shoulder_l 6 4
+tip shoulder_r 2 4
+---
+.....ggg....
+...cgGgcg...
+..cccccccgc.
+.cccccccccgc
+ccccccccccgc
+cccccccccgcc
+cccccccccgcc
+cCcccccccgcc
+cCcccccccgcc
+cCCcccccgccc
+cccccccccgcc
+.ccccccgcccc
+.ccccccgcccc
+.ccccccgccc.
+.cccccgcccc.
+.cccccgcccc.
+..ccccgcccc.
+..ccccgccc..
+..cccgcccc..
+..cccgcccc..
+..cccgcccc..
+..ccgccccc..
+..ccgccccc..
+..cgcccccc..
+..ggggggggg.
+..ggggggggg.

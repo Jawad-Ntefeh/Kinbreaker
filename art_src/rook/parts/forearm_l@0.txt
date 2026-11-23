@@ -1,0 +1,18 @@
+# Left forearm with the gold cuff and wrapped wrist.
+joint 1 0
+tip wrist 1 12
+quarter
+---
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+gggg
+gggg
+.ww.
+.ww.
+.ww.

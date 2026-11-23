@@ -1,0 +1,19 @@
+# The Iron Wrist: left forearm bound in iron splints and bands (b) with rivets (r), elbow to wrist.
+joint 2 0
+tip wrist 2 13
+quarter
+---
+iiiiii
+bbbbbb
+brbbrb
+bbbbbb
+iiIiii
+bbbbbb
+brbbrb
+bbbbbb
+iiiIii
+bbbbbb
+brbbrb
+bbbbbb
+.iiii.
+.iiii.

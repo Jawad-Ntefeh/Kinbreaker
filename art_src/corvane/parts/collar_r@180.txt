@@ -1,0 +1,8 @@
+# Rough iron collar where Rook's arm is grafted onto his shoulder.
+joint 3 2
+---
+.cccc.
+cIccIc
+cccccc
+cIcccc
+.cccc.

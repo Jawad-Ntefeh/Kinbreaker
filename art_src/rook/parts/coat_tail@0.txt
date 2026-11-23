@@ -1,0 +1,23 @@
+# Split back tails of the coat: torn, patched (P = lighter patch, C = seam), gold hem.
+joint 4 0
+---
+.ccccc.
+ccccccc
+ccccccc
+ccccccc
+ccccccc
+cccccCc
+cccPPCc
+cccPPCc
+ccccccc
+cccccccc
+cccccccc
+cccccccc
+cccccccc
+cccccccc
+cccccccc
+cccccccc
+cccccccc
+cgcgccgc
+gg.gcgg.
+g...g.g.

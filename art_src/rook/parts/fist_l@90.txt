@@ -1,0 +1,8 @@
+# Wrapped fist punching forward: knuckles to the right, thumb on top.
+joint 0 1
+---
+www..
+wwwww
+wwWWw
+wwwww
+.ww..

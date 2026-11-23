@@ -1,0 +1,24 @@
+# Head in profile facing right, drawn upright. Joint at the base of the neck.
+# Hair swept back from a fringe (k = sheen) toward the braid; brow (m), eye (e), straight nose,
+# firm mouth (m), and a pale scar line along the jaw (x).
+joint 6 17
+tip braid 1 7
+---
+....hhhhhh....
+..hhhhhhhhhh..
+.hhhhhhhhhhhk.
+hhhhhhhhhhhkkh
+hhhhhhhhhhhhss
+hhhhhhhhhhssss
+hhhhhhhhhsmmss
+hhhhhhhhsssess
+hhhhhhhhsssssss
+.hhhhhhhssssss.
+.hhhhhhssssssss
+..hhhhhsssssm..
+..hhhhssssss...
+...hhhsxsss....
+....hhssxss....
+......ssxs.....
+......sss......
+......sss......

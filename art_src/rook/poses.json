@@ -1,0 +1,24 @@
+{
+  "_comment": "Poses: root offset (px, y down), local angles a, world angles w, IK targets (px from the pivot, y down: the floor is y = 0, ankles sit at y = -3), forced variants v. 'from' inherits.",
+  "stance": {
+    "root": [-2, 2],
+    "a": { "torso": -4, "head": -3 },
+    "w": { "foot_f": 0, "foot_b": 0, "fist_l": 180 },
+    "ik": { "leg_f": [9, -3], "leg_b": [-11, -3], "arm_l": [9, -60] }
+  },
+  "idle_b": { "from": "stance", "root": [-2, 3], "a": { "torso": -5, "head": -2 }, "ik": { "arm_l": [9, -59] } },
+  "idle_c": { "from": "stance", "root": [-2, 3], "a": { "torso": -6, "head": -1 }, "ik": { "arm_l": [9, -58] } },
+
+  "walk_1": { "from": "stance" },
+  "walk_2": { "from": "stance", "root": [-1, 1], "ik": { "leg_f": [12, -8], "arm_l": [10, -61] } },
+  "walk_3": { "from": "stance", "root": [0, 3], "a": { "torso": -6 }, "ik": { "leg_f": [13, -3], "leg_b": [-9, -3], "arm_l": [11, -59] } },
+  "walk_4": { "from": "stance", "root": [0, 1], "ik": { "leg_f": [12, -3], "leg_b": [-5, -8], "arm_l": [11, -61] } },
+  "walk_5": { "from": "stance", "root": [-1, 2], "ik": { "leg_f": [10, -3], "leg_b": [-8, -3], "arm_l": [10, -60] } },
+  "walk_6": { "from": "stance", "root": [-2, 2], "ik": { "leg_f": [9, -3], "leg_b": [-10, -3] } },
+
+  "jab_s1": { "from": "stance", "root": [-2, 2], "a": { "torso": -2, "head": -4 }, "ik": { "arm_l": [6, -61] } },
+  "jab_s2": { "from": "stance", "root": [0, 2], "a": { "torso": -8, "head": 0 }, "w": { "fist_l": 120 }, "ik": { "arm_l": [18, -62], "leg_f": [10, -3] } },
+  "jab_hit": { "from": "stance", "root": [2, 3], "a": { "torso": -12, "head": 4 }, "w": { "fist_l": 90 }, "ik": { "arm_l": [40, -61], "leg_f": [11, -3], "leg_b": [-10, -3] } },
+  "jab_r1": { "from": "stance", "root": [1, 2], "a": { "torso": -9, "head": 1 }, "w": { "fist_l": 110 }, "ik": { "arm_l": [22, -61], "leg_f": [10, -3] } },
+  "jab_r2": { "from": "stance", "root": [-1, 2], "a": { "torso": -5, "head": -2 }, "w": { "fist_l": 160 }, "ik": { "arm_l": [12, -60] } }
+}

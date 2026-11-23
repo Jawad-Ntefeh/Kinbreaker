@@ -1,0 +1,20 @@
+# Left upper arm (coat sleeve), hanging down. Exact quarter turns are generated.
+joint 1 1
+tip elbow 1 13
+quarter
+---
+.cc.
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+cccc
+.cc.

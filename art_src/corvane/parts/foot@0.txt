@@ -1,0 +1,7 @@
+# Rust-leather wrapped foot, toes to the right.
+joint 2 0
+---
+.lll......
+lllllllll.
+lLllllLlll
+llllllllll

@@ -1,0 +1,18 @@
+# Right upper arm: Rook's arm, younger and leaner, in her skin tones.
+joint 1 1
+tip elbow 1 12
+quarter
+---
+.ss.
+ssss
+ssss
+ssss
+ssss
+ssss
+ssss
+ssss
+ssss
+ssss
+ssss
+ssss
+.ss.

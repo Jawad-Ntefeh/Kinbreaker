@@ -1,0 +1,37 @@
+{
+  "_comment": "Classic boxer guard: hunched, knees bent, on the balls of his feet; iron forearm high, Rook's arm tucked low by the ribs.",
+  "stance": {
+    "root": [
+      -2,
+      9
+    ],
+    "a": {
+      "torso": -18,
+      "head": 14
+    },
+    "w": {
+      "foot_f": 0,
+      "foot_b": 0,
+      "fist_l": 180,
+      "fist_r": 150
+    },
+    "ik": {
+      "leg_f": [
+        15,
+        -4
+      ],
+      "leg_b": [
+        -15,
+        -4
+      ],
+      "arm_l": [
+        22,
+        -66
+      ],
+      "arm_r": [
+        14,
+        -52
+      ]
+    }
+  }
+}

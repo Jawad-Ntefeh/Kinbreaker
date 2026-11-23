@@ -1,0 +1,25 @@
+# Shin: iron, with rust-leather wraps at the ankle.
+joint 3 0
+tip ankle 3 19
+quarter
+---
+.iiiii.
+iiiiiii
+iiiiiii
+iiiiiii
+iiiiIii
+iiiiiii
+iiiiiii
+iiiiiii
+iiiiiii
+.iiiii.
+.iiiii.
+.iiiii.
+.iiiii.
+.iiiii.
+llllll.
+lLllll.
+llllLl.
+lLllll.
+.llll..
+.llll..

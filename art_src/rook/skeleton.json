@@ -1,0 +1,215 @@
+{
+  "_comment": "Rook's rig. Facing right: her left side (lead arm, front leg) faces the viewer; the far leg is drawn one shade darker. The right-arm slot (upper_arm_r, forearm_r, fist_r) is kept for relics but has no parts yet: only the pinned sleeve.",
+  "root": [
+    0,
+    -41
+  ],
+  "bones": [
+    {
+      "name": "pelvis",
+      "part": "pelvis",
+      "z": 14,
+      "group": "body"
+    },
+    {
+      "name": "torso",
+      "part": "torso",
+      "parent": "pelvis",
+      "at": "waist",
+      "rest": 180,
+      "z": 20,
+      "group": "body"
+    },
+    {
+      "name": "head",
+      "part": "head",
+      "parent": "torso",
+      "at": "neck",
+      "z": 22,
+      "group": "head"
+    },
+    {
+      "name": "braid1",
+      "part": "braid1",
+      "parent": "head",
+      "at": "braid",
+      "z": 21,
+      "group": "braid",
+      "secondary": {
+        "lag": 3,
+        "base": -24,
+        "speed": -3,
+        "inherit": 0.9,
+        "bob": 2
+      },
+      "rest": 180
+    },
+    {
+      "name": "braid2",
+      "part": "braid2",
+      "parent": "braid1",
+      "at": "end",
+      "z": 21,
+      "group": "braid",
+      "secondary": {
+        "lag": 4,
+        "base": 10,
+        "speed": -2,
+        "inherit": 1.0,
+        "bob": 3
+      }
+    },
+    {
+      "name": "sleeve_pinned",
+      "part": "sleeve_pinned",
+      "parent": "torso",
+      "at": "shoulder_r",
+      "z": 23,
+      "group": "sleeve"
+    },
+    {
+      "name": "upper_arm_l",
+      "part": "upper_arm_l",
+      "parent": "torso",
+      "at": "shoulder_l",
+      "z": 30,
+      "group": "arm"
+    },
+    {
+      "name": "forearm_l",
+      "part": "forearm_l",
+      "parent": "upper_arm_l",
+      "at": "elbow",
+      "z": 31,
+      "group": "arm"
+    },
+    {
+      "name": "fist_l",
+      "part": "fist_l",
+      "parent": "forearm_l",
+      "at": "wrist",
+      "z": 32,
+      "group": "arm"
+    },
+    {
+      "name": "thigh_f",
+      "part": "thigh",
+      "parent": "pelvis",
+      "at": "hip_f",
+      "z": 16,
+      "group": "leg_f"
+    },
+    {
+      "name": "shin_f",
+      "part": "shin",
+      "parent": "thigh_f",
+      "at": "knee",
+      "z": 16,
+      "group": "leg_f"
+    },
+    {
+      "name": "foot_f",
+      "part": "foot",
+      "parent": "shin_f",
+      "at": "ankle",
+      "z": 17,
+      "group": "leg_f"
+    },
+    {
+      "name": "thigh_b",
+      "part": "thigh",
+      "parent": "pelvis",
+      "at": "hip_b",
+      "z": 8,
+      "group": "leg_b",
+      "far": true
+    },
+    {
+      "name": "shin_b",
+      "part": "shin",
+      "parent": "thigh_b",
+      "at": "knee",
+      "z": 8,
+      "group": "leg_b",
+      "far": true
+    },
+    {
+      "name": "foot_b",
+      "part": "foot",
+      "parent": "shin_b",
+      "at": "ankle",
+      "z": 9,
+      "group": "leg_b",
+      "far": true
+    },
+    {
+      "name": "skirt_f",
+      "part": "skirt_f",
+      "parent": "pelvis",
+      "at": "skirt_f",
+      "z": 18,
+      "group": "skirt",
+      "secondary": {
+        "lag": 2,
+        "base": 4,
+        "copy": "thigh_f",
+        "mix": 0.55,
+        "speed": -2
+      }
+    },
+    {
+      "name": "coat_tail",
+      "part": "coat_tail",
+      "parent": "pelvis",
+      "at": "tail",
+      "z": 6,
+      "group": "tail",
+      "secondary": {
+        "lag": 3,
+        "base": -10,
+        "speed": -2.5,
+        "inherit": 0.6,
+        "bob": 3
+      }
+    }
+  ],
+  "ik": {
+    "leg_f": {
+      "upper": "thigh_f",
+      "lower": "shin_f",
+      "bend": "forward",
+      "end": "ankle"
+    },
+    "leg_b": {
+      "upper": "thigh_b",
+      "lower": "shin_b",
+      "bend": "forward",
+      "end": "ankle"
+    },
+    "arm_l": {
+      "upper": "upper_arm_l",
+      "lower": "forearm_l",
+      "bend": "down",
+      "end": "wrist"
+    }
+  },
+  "limbs": {
+    "left_arm": [
+      "upper_arm_l",
+      "forearm_l",
+      "fist_l"
+    ],
+    "left_leg": [
+      "shin_f",
+      "foot_f"
+    ],
+    "right_leg": [
+      "shin_b",
+      "foot_b"
+    ],
+    "core": [
+      "forearm_l",
+      "fist_l"
+    ]
+  }
+}

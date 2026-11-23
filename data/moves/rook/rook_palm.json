@@ -1,0 +1,43 @@
+{
+  "id": "rook_palm",
+  "name": "Lunging Palm",
+  "limb": "left_arm",
+  "input": "6:1",
+  "startup": 14,
+  "active": 3,
+  "recovery": 22,
+  "damage": 14,
+  "poise_damage": 14,
+  "height": "mid",
+  "path": "linear",
+  "on_block": -9,
+  "on_hit": 5,
+  "on_counter_hit": 5,
+  "properties": [],
+  "hitboxes": [
+    {
+      "frames": [
+        14,
+        16
+      ],
+      "x": 14,
+      "y": 36,
+      "w": 30,
+      "h": 14
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [
+    {
+      "frame": 1,
+      "dx": 1.5
+    },
+    {
+      "frame": 14,
+      "dx": 0
+    }
+  ],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

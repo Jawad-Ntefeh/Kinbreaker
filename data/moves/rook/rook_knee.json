@@ -1,0 +1,34 @@
+{
+  "id": "rook_knee",
+  "name": "Knee",
+  "limb": "left_leg",
+  "input": "3",
+  "startup": 13,
+  "active": 3,
+  "recovery": 20,
+  "damage": 12,
+  "poise_damage": 10,
+  "height": "mid",
+  "path": "linear",
+  "on_block": -6,
+  "on_hit": 4,
+  "on_counter_hit": 4,
+  "properties": [],
+  "hitboxes": [
+    {
+      "frames": [
+        13,
+        15
+      ],
+      "x": 10,
+      "y": 26,
+      "w": 24,
+      "h": 18
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

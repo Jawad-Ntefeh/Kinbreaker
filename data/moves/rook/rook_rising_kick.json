@@ -1,0 +1,36 @@
+{
+  "id": "rook_rising_kick",
+  "name": "Rising Kick",
+  "limb": "right_leg",
+  "input": "3:4",
+  "startup": 15,
+  "active": 3,
+  "recovery": 18,
+  "damage": 15,
+  "poise_damage": 15,
+  "height": "mid",
+  "path": "linear",
+  "on_block": -13,
+  "on_hit": "launch",
+  "on_counter_hit": "launch",
+  "properties": [
+    "launcher"
+  ],
+  "hitboxes": [
+    {
+      "frames": [
+        15,
+        17
+      ],
+      "x": 8,
+      "y": 30,
+      "w": 28,
+      "h": 44
+    }
+  ],
+  "hurtbox_overrides": [],
+  "movement": [],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

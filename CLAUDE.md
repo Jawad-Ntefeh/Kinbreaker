@@ -88,7 +88,11 @@ Keyboard is the primary input; every feature must be fully playable on keyboard,
 - `properties`: any of `launcher`, `knockdown`, `wall_splat`, `armor`, `counter_hit_launch`.
 - Hitbox/hurtbox units are **pixels** in the data (converted to subpixels on load); `x` is distance in front of the fighter's origin, `y` is height above the ground of the box's bottom edge.
 - `movement`: optional list of `{ "frame": n, "dx": px_per_frame }` steps for advancing or retreating moves.
-- Throws additionally have `"break": "1"` or `"break": "2"` and `"range": px`.
+- Throws additionally have `"break": "1"` or `"break": "2"` and `"range": px` (measured from the thrower's origin to the target's front edge), and `"on_block": null`.
+- `on_hit` / `on_counter_hit` are a number, or `"knockdown"` / `"launch"` for moves that don't leave the opponent standing. `on_counter_hit` defaults to `on_hit`.
+- `cancel_only: true` marks a move that can only be reached as a cancel (e.g. the second hit of a string), never from neutral.
+- Hitboxes may have a `"group"` (default 0); a move hits the same target at most once per group.
+- System-wide combat values (walk speeds, hitstop, knockdown/stagger lengths, juggle physics, damage scaling, fighter health/poise) live in `data/system.json`, not in code.
 
 The move loader validates every file (a TypeScript type plus runtime checks) and reports clear errors: file, field, problem. Invalid data fails the tests.
 
@@ -100,6 +104,7 @@ package.json, tsconfig.json, vite.config.ts
 CLAUDE.md
 .github/workflows/deploy.yml
 data/moves/<character>/*.json
+data/system.json      # system-wide combat constants
 src/main.ts           # boot, game loop
 src/combat/           # CombatSim, fighters, InputBuffer, move data, hit resolution (pure logic, no DOM)
 src/ai/               # AI controllers (produce input snapshots)

@@ -1,0 +1,81 @@
+{
+  "arena_width": 960,
+  "body": {
+    "width": 24,
+    "height": 80,
+    "crouch_height": 50,
+    "knockdown_height": 16
+  },
+  "walk_forward_speed": 2.5,
+  "walk_back_speed": 2,
+  "dash_forward": {
+    "frames": 16,
+    "speed": 5
+  },
+  "backdash": {
+    "frames": 20,
+    "speed": 4
+  },
+  "phase_step": {
+    "frames": 20,
+    "drift": 1,
+    "invuln": [
+      4,
+      13
+    ],
+    "stamina_cost": 20
+  },
+  "hitstop": {
+    "hit": 10,
+    "block": 8
+  },
+  "pushback": 8,
+  "guard_break_frames": 40,
+  "stagger_frames": 45,
+  "knockdown_frames": 30,
+  "wake_up_frames": 20,
+  "wall_splat": {
+    "frames": 35,
+    "max_hits": 3
+  },
+  "throw": {
+    "break_window": 20,
+    "break_frames": 20,
+    "break_separation": 40,
+    "hit_recovery": 20
+  },
+  "launch": {
+    "vy": 7.5,
+    "vx": 0.5,
+    "gravity": 0.45
+  },
+  "juggle": {
+    "vy": 5,
+    "vx": 0.5,
+    "gravity_step": 0.05
+  },
+  "damage_scaling": [
+    100,
+    100,
+    80,
+    70,
+    60,
+    50,
+    40
+  ],
+  "poise_regen_delay": 60,
+  "stamina_max": 100,
+  "button_buffer": 6,
+  "together_window": 2,
+  "training_refill_delay": 60,
+  "fighters": {
+    "rook": {
+      "health": 170,
+      "poise": 100
+    },
+    "dummy": {
+      "health": 170,
+      "poise": 100
+    }
+  }
+}

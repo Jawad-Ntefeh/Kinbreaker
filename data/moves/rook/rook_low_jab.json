@@ -1,0 +1,45 @@
+{
+  "id": "rook_low_jab",
+  "name": "Low Jab",
+  "limb": "left_arm",
+  "input": "2:1",
+  "startup": 10,
+  "active": 2,
+  "recovery": 14,
+  "damage": 5,
+  "poise_damage": 3,
+  "height": "low",
+  "path": "linear",
+  "on_block": -5,
+  "on_hit": 4,
+  "on_counter_hit": 4,
+  "properties": [],
+  "hitboxes": [
+    {
+      "frames": [
+        10,
+        11
+      ],
+      "x": 16,
+      "y": 6,
+      "w": 26,
+      "h": 10
+    }
+  ],
+  "hurtbox_overrides": [
+    {
+      "frames": [
+        1,
+        25
+      ],
+      "x": -12,
+      "y": 0,
+      "w": 24,
+      "h": 50
+    }
+  ],
+  "movement": [],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

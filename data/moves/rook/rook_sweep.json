@@ -1,0 +1,47 @@
+{
+  "id": "rook_sweep",
+  "name": "Sweep",
+  "limb": "right_leg",
+  "input": "2:4",
+  "startup": 16,
+  "active": 3,
+  "recovery": 28,
+  "damage": 14,
+  "poise_damage": 12,
+  "height": "low",
+  "path": "sweeping",
+  "on_block": -14,
+  "on_hit": "knockdown",
+  "on_counter_hit": "knockdown",
+  "properties": [
+    "knockdown"
+  ],
+  "hitboxes": [
+    {
+      "frames": [
+        16,
+        18
+      ],
+      "x": 10,
+      "y": 0,
+      "w": 40,
+      "h": 12
+    }
+  ],
+  "hurtbox_overrides": [
+    {
+      "frames": [
+        1,
+        46
+      ],
+      "x": -12,
+      "y": 0,
+      "w": 24,
+      "h": 50
+    }
+  ],
+  "movement": [],
+  "cancel_into": [],
+  "cancel_window": null,
+  "cancel_on": []
+}

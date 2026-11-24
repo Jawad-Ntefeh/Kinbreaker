@@ -267,3 +267,28 @@ describe('accents', () => {
     expect(s.px[1 * 4 + 1]).toBe(eye);
   });
 });
+
+describe('floor bands', () => {
+  it('one shadow band joining several figures is stripped, so they split apart', () => {
+    const img = whiteSheet(120, 60);
+    for (const x0 of [10, 50, 90]) {
+      rect(img, x0, 5, 16, 40, [90, 20, 30]);
+      rect(img, x0 - 2, 45, 6, 5, [100, 70, 60]); // boots
+      rect(img, x0 + 12, 45, 6, 5, [100, 70, 60]);
+    }
+    rect(img, 4, 50, 112, 4, [35, 25, 30]); // one band under all three
+    rect(img, 30, 54, 40, 1, [180, 180, 180]); // ragged grey bottom edge
+    const mask = foregroundMask(img);
+    expect(splitFigures(mask, 120, 60).length).toBe(1);
+    stripFloorLine(img, mask, splitFigures(mask, 120, 60)[0]!, 10);
+    expect(splitFigures(mask, 120, 60).length).toBe(3);
+  });
+  it('a dark body lying on the floor keeps its underside', () => {
+    const img = whiteSheet(80, 40);
+    rect(img, 10, 20, 60, 6, [90, 20, 30]); // lying coat
+    rect(img, 10, 26, 60, 4, [40, 30, 35]); // dark trousers and hair along the floor
+    const mask = foregroundMask(img);
+    stripFloorLine(img, mask, splitFigures(mask, 80, 40)[0]!, 10);
+    expect(mask[27 * 80 + 30]).toBe(1);
+  });
+});

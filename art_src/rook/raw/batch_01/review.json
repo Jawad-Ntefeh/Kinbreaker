@@ -2,28 +2,28 @@
   "_comment": "Visual review (design lock: no right arm/hand, pinned sleeve with gold pin, braid with silver band, wraps, knee-length torn oxblood coat with gold trim, facing right). Colour drift is judged by the automatic checks. Each verdict carries the fingerprint of the image it was given for (image); a replaced image needs a new review.",
   "rook_idle_01.png#1": {
     "pass": true,
-    "note": "on model",
-    "image": "222e6a4d5500"
+    "note": "anchor",
+    "image": "3c8baa8432bc"
   },
   "rook_idle_01.png#2": {
     "pass": true,
-    "note": "on model",
-    "image": "222e6a4d5500"
+    "note": "regenerated idle: warm skin and bronze trim match the other sheets; one arm in guard, pinned sleeve",
+    "image": "3c8baa8432bc"
   },
   "rook_idle_01.png#3": {
     "pass": true,
-    "note": "on model",
-    "image": "222e6a4d5500"
+    "note": "regenerated idle: warm skin and bronze trim match the other sheets; one arm in guard, pinned sleeve",
+    "image": "3c8baa8432bc"
   },
   "rook_idle_01.png#4": {
     "pass": true,
-    "note": "on model",
-    "image": "222e6a4d5500"
+    "note": "regenerated idle: warm skin and bronze trim match the other sheets; one arm in guard, pinned sleeve",
+    "image": "3c8baa8432bc"
   },
   "rook_idle_01.png#5": {
     "pass": true,
-    "note": "on model",
-    "image": "222e6a4d5500"
+    "note": "regenerated idle: warm skin and bronze trim match the other sheets; one arm in guard, pinned sleeve",
+    "image": "3c8baa8432bc"
   },
   "rook_walk_forward_01.png#1": {
     "pass": true,

@@ -282,11 +282,13 @@ export function defringe(img: Rgba, ring = 2): Rgba {
 }
 
 /**
- * Floor lines: image models often draw a thin near-black ground line under each figure. From the
- * figure's bottom upward, a row is part of the line while it spans at least 50% of the figure's
- * width and at least 85% of its pixels are near-black or grey (the line and its anti-aliased
- * edges); boot rows are too narrow and coat rows too red, so the first of those stops it.
- * Returns the number of rows removed.
+ * Floor lines: image models often draw a near-black ground line or shadow band under the figures
+ * (sometimes one band joining all of them). Within `maxRows` of the figure's bottom, a row is
+ * line-like when it spans at least 50% of the figure's width, at least 85% of its pixels are
+ * near-black or grey, and it covers 1.5 times the width of the row 8% of the figure's height above
+ * (only feet touch the floor; a body lying there is as wide higher up); ragged rows are allowed (scanning stops after 3 rows in a row
+ * that aren't line-like). From the highest line-like row down, the near-black and grey pixels
+ * leave the mask (boot colours stay). Returns the number of rows cleared.
  */
 export function stripFloorLine(img: Rgba, mask: Uint8Array, fig: Figure, maxRows: number): number {
   const { x0, x1, y0, y1 } = fig.box;
@@ -296,21 +298,57 @@ export function stripFloorLine(img: Rgba, mask: Uint8Array, fig: Figure, maxRows
     const b = img.data[i * 4 + 2]!;
     return Math.max(r, g, b) <= 70 || Math.max(r, g, b) - Math.min(r, g, b) <= 16;
   };
-  let removed = 0;
-  for (let y = y1 - 1; y >= y0 && removed < maxRows; y--) {
+  const coverage = (y: number) => {
     let n = 0;
     let like = 0;
+    let lo = x1;
+    let hi = x0 - 1;
     for (let x = x0; x < x1; x++) {
       const i = y * img.w + x;
       if (!mask[i]) continue;
       n++;
+      lo = Math.min(lo, x);
+      hi = Math.max(hi, x);
       if (lineLike(i)) like++;
     }
-    if (n < (x1 - x0) * 0.5 || like < n * 0.85) break;
-    for (let x = x0; x < x1; x++) mask[y * img.w + x] = 0;
-    removed++;
+    return { n, like, lo, hi };
+  };
+  /** Does row y stick out past everything in the `ref` rows above it (a line drawn wider than the figure)? */
+  const juts = (y: number, lo: number, hi: number) => {
+    let alo = x1;
+    let ahi = x0 - 1;
+    for (let yy = Math.max(y0, y - ref); yy < y; yy++) {
+      const c = coverage(yy);
+      alo = Math.min(alo, c.lo);
+      ahi = Math.max(ahi, c.hi);
+    }
+    const m = Math.max(2, Math.round((x1 - x0) * 0.03));
+    return lo < alo - m || hi > ahi + m;
+  };
+  // A band is much wider than what stands on it (only feet touch the floor); a body lying on the
+  // floor is as wide at its bottom as a little higher up. Ragged rows must show that contrast.
+  const ref = Math.max(2, Math.round((y1 - y0) * 0.08));
+  let top = -1;
+  let misses = 0;
+  for (let y = y1 - 1; y >= Math.max(y0, y1 - maxRows); y--) {
+    const { n, like, lo, hi } = coverage(y);
+    const base = n >= (x1 - x0) * 0.5 && like >= n * 0.85;
+    const wider = base && y - ref >= y0 && (n >= coverage(y - ref).n * 1.5 || juts(y, lo, hi));
+    if (base && wider) {
+      top = y;
+      misses = 0;
+    } else {
+      if (top >= 0 && ++misses >= 3) break;
+      if (top < 0 && y1 - y > 6) break;
+    }
   }
-  return removed;
+  if (top < 0) return 0;
+  for (let y = top; y < y1; y++)
+    for (let x = x0; x < x1; x++) {
+      const i = y * img.w + x;
+      if (mask[i] && lineLike(i)) mask[i] = 0;
+    }
+  return y1 - top;
 }
 
 /**

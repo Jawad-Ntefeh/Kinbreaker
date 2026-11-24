@@ -6,15 +6,15 @@ Canonical rook: 79x108 px; coat 24%, gold 5%, skin 9%, darks 49%, wraps 10%.
 
 ## rook_idle_01.png
 
-Scale 0.2007 (anchor → 108 px). Image `222e6a4d5500` (`rook_idle_01.png`).
+Scale 0.2049 (anchor → 108 px). Image `3c8baa8432bc` (`rook_idle_01.jpeg`).
 
 | # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | anchor | 78x107 | 4.6 / 8.7 | coat 23%, gold 2%, skin 8%, darks 52%, wraps 15% | warning: wraps 15% (reference 10%) | ok | PASS |
-| 2 | idle 0 | 77x108 | 4.6 / 8.8 | coat 22%, gold 2%, skin 7%, darks 52%, wraps 16% | ok | ok | PASS |
-| 3 | idle 1 | 79x107 | 4.6 / 8.7 | coat 23%, gold 2%, skin 7%, darks 52%, wraps 16% | ok | ok | PASS |
-| 4 | idle 2 | 80x110 | 4.7 / 8.9 | coat 23%, gold 1%, skin 7%, darks 52%, wraps 16% | ok | ok | PASS |
-| 5 | idle 3 | 77x108 | 4.6 / 8.6 | coat 23%, gold 1%, skin 7%, darks 52%, wraps 16% | ok | ok | PASS |
+| 1 | anchor | 68x107 | 4.0 / 7.6 | coat 22%, gold 5%, skin 11%, darks 48%, wraps 11% | warning: anchor width 68 px (canonical 79) | ok | PASS |
+| 2 | idle 0 | 61x108 | 4.0 / 7.7 | coat 23%, gold 4%, skin 11%, darks 48%, wraps 11% | ok | ok | PASS |
+| 3 | idle 1 | 62x107 | 4.0 / 7.6 | coat 22%, gold 4%, skin 11%, darks 49%, wraps 11% | ok | ok | PASS |
+| 4 | idle 2 | 62x108 | 4.0 / 7.7 | coat 21%, gold 4%, skin 12%, darks 50%, wraps 10% | ok | ok | PASS |
+| 5 | idle 3 | 65x108 | 4.0 / 7.6 | coat 23%, gold 4%, skin 11%, darks 48%, wraps 11% | ok | ok | PASS |
 
 ## rook_walk_forward_01.png
 

@@ -11,11 +11,11 @@
  * art spec, never from the images, so animations pass the validator by construction.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { loadMoveFiles, type Move } from '../../src/combat/move_data';
 import { validateAnimFile } from '../../src/view/anim_data';
 import { movePoses, STATE_SPECS } from '../../src/view/anim_layout';
-import { colourDrift, colourShares, poseVerdict, sizeDrift, TRACKED, type Canonical, type Verdict } from './consistency';
+import { colourDrift, colourShares, currentVerdict, imageId, poseVerdict, sizeDrift, TRACKED, type Canonical, type Verdict } from './consistency';
 import type { Indexed } from './convert';
 import { Canvas, label, writeGif, writePng } from './io';
 import { convertReference, convertSheet, loadPalette, ROOT, toHex, type ConvertedPose, type ConvertedSheet, type SheetManifest } from './pipeline';
@@ -146,13 +146,16 @@ function buildCharacter(char: string): void {
         notes.push(`${char} ${batch}: ${sh.errors.join('; ')}`);
         continue;
       }
-      lines.push(`Scale ${sh.scale.toFixed(4)} (anchor → ${108} px).`, '', '| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |', '| --- | --- | --- | --- | --- | --- | --- | --- |');
+      const image = imageId(readFileSync(sh.file));
+      let stale = false;
+      lines.push(`Scale ${sh.scale.toFixed(4)} (anchor → ${108} px). Image \`${image}\` (\`${basename(sh.file)}\`).`, '', '| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |', '| --- | --- | --- | --- | --- | --- | --- | --- |');
       sh.poses.forEach((p, i) => {
         const key = `${sh.manifest.sheet}#${i + 1}`;
         const anchor = p.entry.role === 'anchor';
         const shares = colourShares(p.sprite, pal);
         const auto = [...colourDrift(shares, canonical.shares, anchor), ...(anchor ? sizeDrift(p.width, p.height, canonical) : []), ...(p.outside ? [`${p.outside} px outside the cell`] : [])];
-        const v = reviews[key];
+        const v = currentVerdict(reviews[key], image);
+        if (reviews[key] && !v) stale = true;
         const verdict = poseVerdict(auto, v);
         const name = anchor ? 'anchor' : `${p.entry.anim} ${p.entry.index}`;
         lines.push(`| ${i + 1} | ${name} | ${p.width}x${p.height} | ${p.meanError.toFixed(1)} / ${p.p95Error.toFixed(1)} | ${TRACKED.map((c) => `${c} ${pct(shares[c] ?? 0)}`).join(', ')} | ${auto.join('; ') || 'ok'} | ${v ? (v.pass ? 'ok' : `**${v.note ?? 'fail'}**`) : '—'} | ${verdict} |`);
@@ -165,6 +168,10 @@ function buildCharacter(char: string): void {
         }
       });
       lines.push('');
+      if (stale) {
+        lines.push('The image changed since the last visual review: its frames are waiting for a new review.', '');
+        notes.push(`${char} ${batch}: ${sh.manifest.sheet} changed since its review`);
+      }
       problems.push(...sh.errors);
     }
     mkdirSync(REVIEW, { recursive: true });

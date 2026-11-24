@@ -60,7 +60,7 @@ Same character as the attached reference image: Rook, a tall, lean, one-armed wo
 Make ONE image: a single horizontal row of exactly 6 full-body poses of this character, left to right. Side view, facing RIGHT, the same camera angle and the same pixel-art style as the reference. Every pose at exactly the same scale. All feet rest on one shared, straight ground line, apart from a pose described as airborne. Even spacing, with wide white gaps between the figures, so each figure, with its braid and coat tails, stands clearly apart. A plain, pure white background (#FFFFFF) filling the whole image: just the figures on flat white.
 
 Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: southpaw side-on fighting stance, weight on the back foot, her left fist raised in front of her chin, chin down.
-Pose 2: Anticipation, small and quick: the stance from pose 1 with the knees bent a little more and the whole body 2-3 px lower; the front foot just starting to slide forward. The left fist stays in the guard in front of her chin, the elbow lifting slightly away from her ribs.
+Pose 2: Anticipation, small and quick: the stance from pose 1 with the knees bent a little more and the whole body slightly lower; the front foot just starting to slide forward. The left fist stays in the guard in front of her chin, the elbow lifting slightly away from her ribs.
 Pose 3: Launch of a southpaw jab: the left fist shoots straight forward out of the guard along a level line at chest height; the left arm half extended, elbow bent at about 90 degrees and behind the fist, forearm level. The front foot has stepped forward a few pixels; her left shoulder rolls forward and her chin drops behind it.
 Pose 4: IMPACT (the hit), southpaw jab: her left arm fully extended straight forward at chest height (the fist lands 69-82 px above the floor, 64-77% of her height); left shoulder, elbow and fist in one straight horizontal line, knuckles up. Front knee bent over the front foot, back leg straight, back heel lifted; chin tucked behind her left shoulder; her body turned so the pinned near shoulder angles slightly away from the viewer. Coat tails swing back behind her; the braid trails behind her head.
 Pose 5: Recovery: the left fist snapping back along the same level line, elbow bent again, fist halfway between the impact point and her chin; the front foot slides back a little, weight returning to the middle. Coat tails and braid swinging back the other way.
@@ -72,6 +72,40 @@ In every pose: one arm, her left, on the far side of her body, and one fist. Her
 If it goes wrong:
 - A second arm or a fist appears on her near side: reply "Keep her one-armed and southpaw: the punch comes from her left arm on the far side of her body; her near shoulder shows the flat folded sleeve with the round gold pin, with the coat hanging smooth down that side." and regenerate.
 - Still wrong after two tries: attach your idle sheet (rook_idle_01.png, which came out right) as well as the reference, and ask it to edit pose 1 of that sheet into each pose instead of drawing new figures.
+
+### Edit method (recommended for arm attacks)
+
+Instead of drawing new figures, edit a ready-made sheet: [`bases/rook_jab_01_base.png`](bases/rook_jab_01_base.png) (3882x780, the reference stance 6 times on one ground line). In ChatGPT, upload the base and the reference image. Then for each pose below, one at a time: use **Select** to paint over that figure and the empty space in front of it, paste the edit text, and keep the result if it is right (regenerate the edit if it isn't). Figure 1 stays as it is: it is the scale anchor. When all 5 figures are done, download the image and save it as `rook_jab_01.png` (PNG or JPEG).
+
+Figure 2:
+
+```text
+Edit the selected figure (figure 2 of 6, counting from the left) into this pose. Anticipation, small and quick: the stance from pose 1 with the knees bent a little more and the whole body slightly lower; the front foot just starting to slide forward. The left fist stays in the guard in front of her chin, the elbow lifting slightly away from her ribs. Keep everything else about her exactly as in the image: the same face, hair and braid, coat, colours, pixel-art style and size, both feet on the same ground line as the other figures. In every pose: one arm, her left, on the far side of her body, and one fist. Her near shoulder shows the flat folded sleeve with the round gold pin, and the coat hangs smooth down her near side. The rest of the image stays exactly as it is.
+```
+
+Figure 3:
+
+```text
+Edit the selected figure (figure 3 of 6, counting from the left) into this pose. Launch of a southpaw jab: the left fist shoots straight forward out of the guard along a level line at chest height; the left arm half extended, elbow bent at about 90 degrees and behind the fist, forearm level. The front foot has stepped forward a few pixels; her left shoulder rolls forward and her chin drops behind it. Keep everything else about her exactly as in the image: the same face, hair and braid, coat, colours, pixel-art style and size, both feet on the same ground line as the other figures. In every pose: one arm, her left, on the far side of her body, and one fist. Her near shoulder shows the flat folded sleeve with the round gold pin, and the coat hangs smooth down her near side. The rest of the image stays exactly as it is.
+```
+
+Figure 4:
+
+```text
+Edit the selected figure (figure 4 of 6, counting from the left) into this pose. IMPACT (the hit), southpaw jab: her left arm fully extended straight forward at chest height (the fist lands 69-82 px above the floor, 64-77% of her height); left shoulder, elbow and fist in one straight horizontal line, knuckles up. Front knee bent over the front foot, back leg straight, back heel lifted; chin tucked behind her left shoulder; her body turned so the pinned near shoulder angles slightly away from the viewer. Coat tails swing back behind her; the braid trails behind her head. Keep everything else about her exactly as in the image: the same face, hair and braid, coat, colours, pixel-art style and size, both feet on the same ground line as the other figures. In every pose: one arm, her left, on the far side of her body, and one fist. Her near shoulder shows the flat folded sleeve with the round gold pin, and the coat hangs smooth down her near side. The rest of the image stays exactly as it is.
+```
+
+Figure 5:
+
+```text
+Edit the selected figure (figure 5 of 6, counting from the left) into this pose. Recovery: the left fist snapping back along the same level line, elbow bent again, fist halfway between the impact point and her chin; the front foot slides back a little, weight returning to the middle. Coat tails and braid swinging back the other way. Keep everything else about her exactly as in the image: the same face, hair and braid, coat, colours, pixel-art style and size, both feet on the same ground line as the other figures. In every pose: one arm, her left, on the far side of her body, and one fist. Her near shoulder shows the flat folded sleeve with the round gold pin, and the coat hangs smooth down her near side. The rest of the image stays exactly as it is.
+```
+
+Figure 6:
+
+```text
+Edit the selected figure (figure 6 of 6, counting from the left) into this pose. Recovery, nearly back in stance: left fist just in front of her chin again, elbow down by her ribs, weight settling onto the back foot. Almost exactly pose 1; coat tails and braid settling. Keep everything else about her exactly as in the image: the same face, hair and braid, coat, colours, pixel-art style and size, both feet on the same ground line as the other figures. In every pose: one arm, her left, on the far side of her body, and one fist. Her near shoulder shows the flat folded sleeve with the round gold pin, and the coat hangs smooth down her near side. The rest of the image stays exactly as it is.
+```
 
 ## Manifest (already saved)
 

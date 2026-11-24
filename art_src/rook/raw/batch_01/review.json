@@ -1,79 +1,68 @@
 {
-  "_comment": "Visual review (design lock: no right arm/hand, pinned sleeve with gold pin, braid with silver band, wraps, knee-length torn oxblood coat with gold trim, facing right). Colour drift is judged by the automatic checks.",
+  "_comment": "Visual review (design lock: no right arm/hand, pinned sleeve with gold pin, braid with silver band, wraps, knee-length torn oxblood coat with gold trim, facing right). Colour drift is judged by the automatic checks. Each verdict carries the fingerprint of the image it was given for (image); a replaced image needs a new review.",
   "rook_idle_01.png#1": {
     "pass": true,
-    "note": "on model"
+    "note": "on model",
+    "image": "222e6a4d5500"
   },
   "rook_idle_01.png#2": {
     "pass": true,
-    "note": "on model"
+    "note": "on model",
+    "image": "222e6a4d5500"
   },
   "rook_idle_01.png#3": {
     "pass": true,
-    "note": "on model"
+    "note": "on model",
+    "image": "222e6a4d5500"
   },
   "rook_idle_01.png#4": {
     "pass": true,
-    "note": "on model"
+    "note": "on model",
+    "image": "222e6a4d5500"
   },
   "rook_idle_01.png#5": {
     "pass": true,
-    "note": "on model"
+    "note": "on model",
+    "image": "222e6a4d5500"
   },
   "rook_walk_forward_01.png#1": {
     "pass": true,
-    "note": "on model"
+    "note": "on model; stance a little narrower than the reference",
+    "image": "8aa5e715adfb"
   },
   "rook_walk_forward_01.png#2": {
     "pass": true,
-    "note": "on model"
+    "note": "on model; one arm in guard, pinned near sleeve, step reads clearly",
+    "image": "8aa5e715adfb"
   },
   "rook_walk_forward_01.png#3": {
     "pass": true,
-    "note": "on model"
+    "note": "on model; one arm in guard, pinned near sleeve, step reads clearly",
+    "image": "8aa5e715adfb"
   },
   "rook_walk_forward_01.png#4": {
     "pass": true,
-    "note": "on model"
+    "note": "on model; one arm in guard, pinned near sleeve, step reads clearly",
+    "image": "8aa5e715adfb"
   },
   "rook_walk_forward_01.png#5": {
     "pass": true,
-    "note": "on model"
+    "note": "on model; one arm in guard, pinned near sleeve, step reads clearly",
+    "image": "8aa5e715adfb"
   },
   "rook_walk_forward_01.png#6": {
     "pass": true,
-    "note": "on model"
+    "note": "on model; one arm in guard, pinned near sleeve, step reads clearly",
+    "image": "8aa5e715adfb"
   },
   "rook_walk_forward_02.png#1": {
     "pass": true,
-    "note": "on model"
+    "note": "on model; stance a little narrower than the reference",
+    "image": "c33f293e54cb"
   },
   "rook_walk_forward_02.png#2": {
     "pass": true,
-    "note": "on model"
-  },
-  "rook_jab_01.png#1": {
-    "pass": true,
-    "note": "on model"
-  },
-  "rook_jab_01.png#2": {
-    "pass": true,
-    "note": "on model"
-  },
-  "rook_jab_01.png#3": {
-    "pass": true,
-    "note": "on model"
-  },
-  "rook_jab_01.png#4": {
-    "pass": true,
-    "note": "impact: fist inside the hitbox; only the left arm used"
-  },
-  "rook_jab_01.png#5": {
-    "pass": true,
-    "note": "on model"
-  },
-  "rook_jab_01.png#6": {
-    "pass": true,
-    "note": "on model"
+    "note": "on model; one arm in guard, pinned near sleeve, step reads clearly",
+    "image": "c33f293e54cb"
   }
 }

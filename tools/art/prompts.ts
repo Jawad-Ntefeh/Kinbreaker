@@ -7,6 +7,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { join } from 'node:path';
 import { loadMoveFiles, type Move } from '../../src/combat/move_data';
 import { movePoses, STATE_SPECS } from '../../src/view/anim_layout';
+import { writeEditBase } from './bases';
 import type { SheetManifest } from './pipeline';
 
 const ROOT = process.cwd();
@@ -23,6 +24,8 @@ interface Design {
   near_side_rule?: string;
   /** The reference stance, as used for the anchor pose. */
   guard?: string;
+  /** Sheet (relative to art_src/<char>/) whose first figure is used for edit bases. */
+  edit_base?: string;
 }
 
 const SHEET_RULES = (n: number) =>
@@ -38,6 +41,10 @@ const NEGATIVE = /\b(no|not|never|none|nothing|without|don't|doesn't|isn't|avoid
 export function negativeWords(text: string): string[] {
   return text.split(/(?<=[.;:])\s+/).filter((sentence) => NEGATIVE.test(sentence));
 }
+
+/** One edit instruction for figure `k` of an edit base. */
+const EDIT = (k: number, n: number, note: string, d: Design) =>
+  `Edit the selected figure (figure ${k} of ${n}, counting from the left) into this pose. ${note} Keep everything else about her exactly as in the image: the same face, hair and braid, coat, colours, pixel-art style and size, both feet on the same ground line as the other figures.${d.near_side_rule ? ` ${d.near_side_rule}` : ''} The rest of the image stays exactly as it is.`;
 
 const TIPS = [
   'If it goes wrong:',
@@ -195,6 +202,27 @@ for (const char of readdirSync(join(ROOT, 'art_src')).filter((d) => existsSync(j
       if (bad.length) throw new Error(`${s.manifest.sheet}: negative wording in the prompt (image models draw what they read):\n  ${bad.join('\n  ')}`);
       lines.push('```text', design.lock, '', SHEET_RULES(n), '', ANCHOR(design), ...s.notes.map((t, i) => `Pose ${i + 2}: ${t}`), ...(design.near_side_rule ? ['', design.near_side_rule] : []), '```', '');
       if (m && design.arm_words?.[m.limb]) lines.push(TIPS, '');
+      if (m) {
+        // Attacks: an edit base, edited one figure at a time (recommended for arm moves).
+        const hb = m.hitboxes.reduce((r, b) => Math.max(r, (b.x + b.w) / 100), m.throwRange / 100);
+        // The base figure: figure 1 (the reference stance) of an approved sheet drawn by the image
+        // model (design.edit_base), else the reference image.
+        const refDir = join(ROOT, 'art_src', char, 'reference');
+        const ref = design.edit_base ? join(ROOT, 'art_src', char, design.edit_base) : join(refDir, readdirSync(refDir).find((f) => f.endsWith('.png'))!);
+        const baseName = s.manifest.sheet.replace(/\.png$/, '_base.png');
+        mkdirSync(join(ROOT, 'docs/art_requests/bases'), { recursive: true });
+        const size = writeEditBase(ref, join(ROOT, 'docs/art_requests/bases', baseName), n, hb, design.body_height_px);
+        const edits = s.notes.map((t, i) => EDIT(i + 2, n, t, design));
+        const bad = negativeWords(edits.join(' '));
+        if (bad.length) throw new Error(`${s.manifest.sheet}: negative wording in an edit prompt:\n  ${bad.join('\n  ')}`);
+        lines.push(
+          `### Edit method${design.arm_words?.[m.limb] ? ' (recommended for arm attacks)' : ''}`,
+          '',
+          `Instead of drawing new figures, edit a ready-made sheet: [\`bases/${baseName}\`](bases/${baseName}) (${size.w}x${size.h}, the reference stance ${n} times on one ground line). In ChatGPT, upload the base and the reference image. Then for each pose below, one at a time: use **Select** to paint over that figure and the empty space in front of it, paste the edit text, and keep the result if it is right (regenerate the edit if it isn't). Figure 1 stays as it is: it is the scale anchor. When all ${n - 1} figures are done, download the image and save it as \`${s.manifest.sheet}\` (PNG or JPEG).`,
+          '',
+          ...edits.flatMap((e, i) => [`Figure ${i + 2}:`, '', '```text', e, '```', '']),
+        );
+      }
     }
     lines.push('## Manifest (already saved)', '', '```json', JSON.stringify({ sheets: sheets.map((s) => s.manifest) }, null, 2), '```', '');
     mkdirSync(join(ROOT, 'docs/art_requests'), { recursive: true });

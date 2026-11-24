@@ -4,6 +4,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import jpeg from 'jpeg-js';
 import { PNG } from 'pngjs';
 import {
   addOutline,
@@ -38,9 +39,24 @@ export function loadPalette(): Palette {
   return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline') };
 }
 
+/** Read a PNG or JPEG (image models and browsers often save JPEG). */
 export function readPng(path: string): Rgba {
+  if (/\.jpe?g$/i.test(path)) {
+    const jpg = jpeg.decode(readFileSync(path), { useTArray: true, formatAsRGBA: true });
+    return { w: jpg.width, h: jpg.height, data: new Uint8ClampedArray(jpg.data) };
+  }
   const png = PNG.sync.read(readFileSync(path));
   return { w: png.width, h: png.height, data: new Uint8ClampedArray(png.data) };
+}
+
+/** The file for a sheet named in a manifest: the name as given, or the same name saved as JPEG. */
+export function findSheetFile(dir: string, sheet: string): string | null {
+  const base = sheet.replace(/\.(png|jpe?g)$/i, '');
+  for (const ext of [sheet.slice(base.length), '.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG']) {
+    const f = join(dir, base + ext);
+    if (ext && existsSync(f)) return f;
+  }
+  return null;
 }
 
 export interface PoseEntry {
@@ -104,9 +120,10 @@ function convertFigure(img: Rgba, fig: Parameters<typeof cropFigure>[1], scale: 
 
 /** Convert one pose sheet: split, scale from the anchor (pose 1), convert every pose. */
 export function convertSheet(dir: string, manifest: SheetManifest, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number]): ConvertedSheet {
-  const file = join(dir, manifest.sheet);
+  const found = findSheetFile(dir, manifest.sheet);
+  const file = found ?? join(dir, manifest.sheet);
   const errors: string[] = [];
-  if (!existsSync(file)) return { manifest, file, scale: 0, poses: [], errors: [], waiting: true };
+  if (!found) return { manifest, file, scale: 0, poses: [], errors: [], waiting: true };
   const img = readPng(file);
   const figs = splitFigures(foregroundMask(img), img.w, img.h);
   if (figs.length !== manifest.poses.length) {

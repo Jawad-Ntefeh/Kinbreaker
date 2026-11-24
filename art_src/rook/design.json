@@ -11,5 +11,6 @@
     "left_arm": "her left arm (her single arm, on the far side of her body, the arm raised in the guard in the reference)"
   },
   "near_side_rule": "In every pose: one arm, her left, on the far side of her body, and one fist. Her near shoulder shows the flat folded sleeve with the round gold pin, and the coat hangs smooth down her near side.",
-  "guard": "southpaw side-on fighting stance, weight on the back foot, her left fist raised in front of her chin, chin down"
+  "guard": "southpaw side-on fighting stance, weight on the back foot, her left fist raised in front of her chin, chin down",
+  "edit_base": "raw/batch_01/rook_idle_01.png"
 }

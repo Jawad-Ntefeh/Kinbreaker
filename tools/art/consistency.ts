@@ -6,6 +6,7 @@
  *   - size: every sheet's anchor within 3 px of the canonical height and width;
  *   - visual review: verdicts recorded by the reviewer in raw/<batch>/review.json.
  */
+import { createHash } from 'node:crypto';
 import type { Indexed } from './convert';
 import type { Palette } from './pipeline';
 
@@ -80,6 +81,18 @@ export function sizeDrift(w: number, h: number, ref: Canonical, tolerance = 3): 
 export interface Verdict {
   pass: boolean;
   note?: string;
+  /** Fingerprint of the sheet image the verdict was given for (imageId); a replaced image needs a new review. */
+  image?: string;
+}
+
+/** Short fingerprint of an image file's bytes. */
+export function imageId(bytes: Uint8Array): string {
+  return createHash('sha256').update(bytes).digest('hex').slice(0, 12);
+}
+
+/** The recorded verdict, if it was given for this exact image. */
+export function currentVerdict(v: Verdict | undefined, image: string): Verdict | undefined {
+  return v && v.image === image ? v : undefined;
 }
 
 /**

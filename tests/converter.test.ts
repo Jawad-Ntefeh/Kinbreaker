@@ -167,3 +167,16 @@ describe('review gate', () => {
     expect(poseVerdict(['wraps 24% (reference 10%)'], { pass: true })).toBe('FAIL');
   });
 });
+
+describe('review fingerprint', () => {
+  it('a verdict only counts for the exact image it was given for', async () => {
+    const { currentVerdict, imageId } = await import('../tools/art/consistency');
+    const a = imageId(new Uint8Array([1, 2, 3]));
+    const b = imageId(new Uint8Array([1, 2, 4]));
+    expect(a).not.toBe(b);
+    expect(currentVerdict({ pass: true, image: a }, a)).toEqual({ pass: true, image: a });
+    // Regression: a replaced sheet inherited the review of the old image with the same name.
+    expect(currentVerdict({ pass: true, image: a }, b)).toBeUndefined();
+    expect(currentVerdict({ pass: true }, a)).toBeUndefined();
+  });
+});

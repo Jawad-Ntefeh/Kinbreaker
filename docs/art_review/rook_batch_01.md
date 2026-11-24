@@ -6,7 +6,7 @@ Canonical rook: 79x108 px; coat 24%, gold 5%, skin 9%, darks 49%, wraps 10%.
 
 ## rook_idle_01.png
 
-Scale 0.2007 (anchor → 108 px).
+Scale 0.2007 (anchor → 108 px). Image `222e6a4d5500` (`rook_idle_01.png`).
 
 | # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -18,36 +18,27 @@ Scale 0.2007 (anchor → 108 px).
 
 ## rook_walk_forward_01.png
 
-Scale 0.2147 (anchor → 108 px).
+Scale 0.2379 (anchor → 108 px). Image `8aa5e715adfb` (`rook_walk_forward_01.jpeg`).
 
 | # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | anchor | 77x108 | 5.3 / 8.7 | coat 24%, gold 1%, skin 5%, darks 49%, wraps 20% | skin 5% (reference 9%); wraps 20% (reference 10%) | ok | FAIL |
-| 2 | walk_forward 0 | 63x107 | 5.3 / 8.8 | coat 25%, gold 1%, skin 6%, darks 46%, wraps 20% | wraps 20% (reference 10%) | ok | FAIL |
-| 3 | walk_forward 1 | 60x107 | 5.4 / 9.0 | coat 25%, gold 1%, skin 6%, darks 46%, wraps 20% | wraps 20% (reference 10%) | ok | FAIL |
-| 4 | walk_forward 2 | 68x107 | 5.4 / 8.8 | coat 24%, gold 0%, skin 6%, darks 49%, wraps 19% | wraps 19% (reference 10%) | ok | FAIL |
-| 5 | walk_forward 3 | 61x107 | 5.3 / 8.8 | coat 24%, gold 1%, skin 6%, darks 49%, wraps 18% | wraps 18% (reference 10%) | ok | FAIL |
-| 6 | walk_forward 4 | 75x108 | 5.5 / 8.6 | coat 24%, gold 1%, skin 6%, darks 48%, wraps 20% | wraps 20% (reference 10%) | ok | FAIL |
+| 1 | anchor | 71x108 | 4.3 / 8.3 | coat 21%, gold 2%, skin 11%, darks 45%, wraps 17% | wraps 17% (reference 10%); anchor width 71 px (canonical 79) | ok | FAIL |
+| 2 | walk_forward 0 | 52x107 | 4.3 / 8.3 | coat 21%, gold 3%, skin 9%, darks 49%, wraps 14% | ok | ok | PASS |
+| 3 | walk_forward 1 | 53x107 | 4.3 / 8.1 | coat 22%, gold 2%, skin 9%, darks 46%, wraps 17% | ok | ok | PASS |
+| 4 | walk_forward 2 | 71x107 | 4.3 / 8.3 | coat 21%, gold 3%, skin 10%, darks 47%, wraps 16% | ok | ok | PASS |
+| 5 | walk_forward 3 | 51x107 | 4.4 / 8.4 | coat 22%, gold 3%, skin 10%, darks 45%, wraps 15% | ok | ok | PASS |
+| 6 | walk_forward 4 | 62x108 | 4.4 / 8.3 | coat 22%, gold 3%, skin 10%, darks 44%, wraps 18% | ok | ok | PASS |
 
 ## rook_walk_forward_02.png
 
-Scale 0.1394 (anchor → 108 px).
+Scale 0.1256 (anchor → 108 px). Image `c33f293e54cb` (`rook_walk_forward_02.jpeg`).
 
 | # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | anchor | 78x108 | 5.2 / 8.9 | coat 23%, gold 1%, skin 9%, darks 48%, wraps 17% | wraps 17% (reference 10%) | ok | FAIL |
-| 2 | walk_forward 5 | 68x108 | 5.2 / 8.9 | coat 23%, gold 1%, skin 10%, darks 49%, wraps 16% | ok | ok | PASS |
+| 1 | anchor | 77x108 | 4.0 / 7.5 | coat 24%, gold 3%, skin 11%, darks 50%, wraps 11% | ok | ok | PASS |
+| 2 | walk_forward 5 | 63x106 | 4.1 / 7.7 | coat 25%, gold 4%, skin 11%, darks 49%, wraps 9% | ok | ok | PASS |
 
 ## rook_jab_01.png
 
-Scale 0.2236 (anchor → 108 px).
-
-| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | anchor | 77x108 | 5.7 / 10.1 | coat 18%, gold 1%, skin 6%, darks 49%, wraps 24% | wraps 24% (reference 10%) | ok | FAIL |
-| 2 | rook_jab 0 | 67x108 | 5.6 / 9.8 | coat 19%, gold 1%, skin 8%, darks 50%, wraps 21% | wraps 21% (reference 10%) | ok | FAIL |
-| 3 | rook_jab 1 | 67x108 | 5.6 / 9.7 | coat 19%, gold 2%, skin 7%, darks 51%, wraps 19% | wraps 19% (reference 10%) | ok | FAIL |
-| 4 | rook_jab 2 | 89x108 | 5.7 / 10.0 | coat 19%, gold 1%, skin 8%, darks 49%, wraps 21% | wraps 21% (reference 10%) | ok | FAIL |
-| 5 | rook_jab 3 | 67x108 | 5.6 / 9.9 | coat 18%, gold 1%, skin 7%, darks 50%, wraps 22% | wraps 22% (reference 10%) | ok | FAIL |
-| 6 | rook_jab 4 | 72x108 | 5.7 / 10.1 | coat 18%, gold 1%, skin 6%, darks 49%, wraps 25% | wraps 25% (reference 10%) | ok | FAIL |
+Waiting for the image.
 

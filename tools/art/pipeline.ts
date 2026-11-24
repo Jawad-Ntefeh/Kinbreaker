@@ -11,6 +11,8 @@ import {
   addOutline,
   defringe,
   preserveAccents,
+  absorb,
+  type Absorb,
   type Accent,
   anchorScale,
   cleanup,
@@ -51,16 +53,18 @@ export interface Palette {
   tracked: readonly string[];
   /** Small details kept through the downscale (design.json "accents"). */
   accents: readonly Accent[];
+  /** Shading absorbed into its surrounding material (design.json "absorb"). */
+  absorb: readonly Absorb[];
 }
 
 export function loadPalette(char?: string): Palette {
   const ramps = (JSON.parse(readFileSync(join(ROOT, 'art_src/palette.json'), 'utf8')) as { ramps: Record<string, string[]> }).ramps;
   const entries = paletteEntries(ramps);
   const designFile = char ? join(ROOT, 'art_src', char, 'design.json') : '';
-  const design = designFile && existsSync(designFile) ? (JSON.parse(readFileSync(designFile, 'utf8')) as { ramps?: string[]; categories?: Record<string, string>; tracked?: string[]; accents?: Accent[] }) : {};
+  const design = designFile && existsSync(designFile) ? (JSON.parse(readFileSync(designFile, 'utf8')) as { ramps?: string[]; categories?: Record<string, string>; tracked?: string[]; accents?: Accent[]; absorb?: Absorb[] }) : {};
   const used = design.ramps;
   const exclude = new Set(used ? Object.keys(ramps).filter((r) => r !== 'outline' && !used.includes(r)) : []);
-  return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline'), exclude, categories: design.categories ?? CATEGORY, tracked: design.tracked ?? TRACKED, accents: design.accents ?? [] };
+  return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline'), exclude, categories: design.categories ?? CATEGORY, tracked: design.tracked ?? TRACKED, accents: design.accents ?? [], absorb: design.absorb ?? [] };
 }
 
 /** Read a PNG or JPEG (image models and browsers often save JPEG). */
@@ -126,6 +130,7 @@ function convertFigure(img: Rgba, fig: Parameters<typeof cropFigure>[1], scale: 
   preserveAccents(src, small, pal.entries, pal.accents);
   const snap = snapToPalette(small, pal.entries, pal.exclude);
   const keep = new Set(pal.entries.flatMap((e, k) => (pal.accents.some((a) => a.ramp === e.ramp) ? [k] : [])));
+  absorb(snap.sprite, pal.entries, pal.absorb);
   cleanup(snap.sprite, pal.outline, keep);
   const sprite = addOutline(snap.sprite, pal.outline);
   const foot = supportingFoot(sprite, pal.outline);

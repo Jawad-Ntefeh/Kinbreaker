@@ -292,3 +292,18 @@ describe('floor bands', () => {
     expect(mask[27 * 80 + 30]).toBe(1);
   });
 });
+
+describe('absorb', () => {
+  it('wrap-coloured shading inside a face becomes skin; real wraps stay wraps', async () => {
+    const { absorb } = await import('../tools/art/convert');
+    const pal = paletteEntries({ outline: ['#1a1418'], skin: ['#8a5a44', '#b88466'], wraps_warm: ['#6b514c', '#8d6f65'] });
+    const [, skinDark, skinMid, wrapDark, wrapMid] = [0, 1, 2, 3, 4];
+    const s: Indexed = { w: 10, h: 5, px: new Int16Array(50).fill(skinMid) };
+    s.px[2 * 10 + 2] = wrapDark; // a greyish shadow on the face
+    for (let y = 0; y < 5; y++) for (let x = 6; x < 10; x++) s.px[y * 10 + x] = wrapMid; // a wrapped forearm
+    expect(absorb(s, pal, [{ from: ['wraps_warm'], into: 'skin', min_neighbours: 3 }])).toBe(1);
+    expect(s.px[2 * 10 + 2]).toBe(skinDark); // nearest skin tone to the dark wrap colour
+    expect(s.px[2 * 10 + 8]).toBe(wrapMid);
+    expect(s.px[2 * 10 + 6]).toBe(wrapMid); // the wrap edge next to skin stays (more wrap neighbours)
+  });
+});

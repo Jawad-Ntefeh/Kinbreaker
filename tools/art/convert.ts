@@ -413,6 +413,63 @@ export function dropLineFragments(img: Rgba, mask: Uint8Array): number {
   return dropped;
 }
 
+export interface Absorb {
+  /** Ramps whose pixels may really be shading of `into` (e.g. wrap shadows on a face). */
+  from: string[];
+  into: string;
+  /** Of the 8 neighbours, at least this many must be `into` (and more than are `from`). */
+  min_neighbours: number;
+}
+
+/**
+ * Absorb: a pixel snapped to one of `from` whose neighbours are mostly `into` is shading on that
+ * material, not the material `from` (a greyish face shadow lands on the wrap shadow colours, but
+ * a face is skin all around). It takes the nearest `into` colour. A few passes absorb small
+ * patches; real wraps (surrounded by wraps) are untouched. Returns the number of pixels changed.
+ */
+export function absorb(s: Indexed, entries: PaletteEntry[], rules: readonly Absorb[], passes = 3): number {
+  let changed = 0;
+  for (const r of rules) {
+    const into = entries.flatMap((e, k) => (e.ramp === r.into ? [k] : []));
+    const from = new Set(entries.flatMap((e, k) => (r.from.includes(e.ramp) ? [k] : [])));
+    const isInto = new Set(into);
+    for (let pass = 0; pass < passes; pass++) {
+      const copy = new Int16Array(s.px);
+      let n = 0;
+      for (let y = 0; y < s.h; y++)
+        for (let x = 0; x < s.w; x++) {
+          const c = copy[y * s.w + x]!;
+          if (!from.has(c)) continue;
+          let ni = 0;
+          let nf = 0;
+          for (const [dx, dy] of N8) {
+            const xx = x + dx;
+            const yy = y + dy;
+            if (xx < 0 || yy < 0 || xx >= s.w || yy >= s.h) continue;
+            const v = copy[yy * s.w + xx]!;
+            if (isInto.has(v)) ni++;
+            else if (from.has(v)) nf++;
+          }
+          if (ni < r.min_neighbours || ni <= nf) continue;
+          let best = into[0]!;
+          let bd = Infinity;
+          for (const k of into) {
+            const d = deltaE(entries[c]!.lab, entries[k]!.lab);
+            if (d < bd) {
+              bd = d;
+              best = k;
+            }
+          }
+          s.px[y * s.w + x] = best;
+          n++;
+        }
+      changed += n;
+      if (!n) break;
+    }
+  }
+  return changed;
+}
+
 export interface Accent {
   /** Palette ramp of the accent (e.g. "spirit" for an eye glow, "gold" for a band). */
   ramp: string;

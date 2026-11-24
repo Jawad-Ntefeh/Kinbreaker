@@ -24,5 +24,15 @@
     "silver",
     "trousers",
     "leather"
+  ],
+  "absorb": [
+    {
+      "from": [
+        "wraps_warm",
+        "wraps"
+      ],
+      "into": "skin",
+      "min_neighbours": 3
+    }
   ]
 }

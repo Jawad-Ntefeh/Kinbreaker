@@ -1,0 +1,164 @@
+{
+  "sheets": [
+    {
+      "sheet": "rook_b03_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "dash_forward",
+          "index": 0
+        },
+        {
+          "anim": "dash_forward",
+          "index": 1
+        },
+        {
+          "anim": "dash_forward",
+          "index": 2
+        },
+        {
+          "anim": "hitstun_low",
+          "index": 0
+        },
+        {
+          "anim": "hitstun_low",
+          "index": 1
+        }
+      ]
+    },
+    {
+      "sheet": "rook_b03_02.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "backdash",
+          "index": 0
+        },
+        {
+          "anim": "backdash",
+          "index": 1
+        },
+        {
+          "anim": "backdash",
+          "index": 2
+        },
+        {
+          "anim": "blockstun_crouch",
+          "index": 0
+        }
+      ]
+    },
+    {
+      "sheet": "rook_b03_03.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "phase_step",
+          "index": 0
+        },
+        {
+          "anim": "phase_step",
+          "index": 1
+        },
+        {
+          "anim": "phase_step",
+          "index": 2
+        },
+        {
+          "anim": "throw_break",
+          "index": 0
+        },
+        {
+          "anim": "throw_break",
+          "index": 1
+        }
+      ]
+    },
+    {
+      "sheet": "rook_b03_04.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "airborne",
+          "index": 0
+        },
+        {
+          "anim": "airborne",
+          "index": 1
+        },
+        {
+          "anim": "airborne",
+          "index": 2
+        },
+        {
+          "anim": "wall_splat",
+          "index": 0
+        },
+        {
+          "anim": "wall_splat",
+          "index": 1
+        }
+      ]
+    },
+    {
+      "sheet": "rook_stagger_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "stagger",
+          "index": 0
+        },
+        {
+          "anim": "stagger",
+          "index": 1
+        },
+        {
+          "anim": "stagger",
+          "index": 2
+        },
+        {
+          "anim": "stagger",
+          "index": 3
+        }
+      ]
+    },
+    {
+      "sheet": "rook_b03_05.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "guard_break",
+          "index": 0
+        },
+        {
+          "anim": "guard_break",
+          "index": 1
+        },
+        {
+          "anim": "guard_break",
+          "index": 2
+        },
+        {
+          "anim": "thrown",
+          "index": 0
+        },
+        {
+          "anim": "thrown",
+          "index": 1
+        }
+      ]
+    }
+  ]
+}

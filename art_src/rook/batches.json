@@ -22,5 +22,28 @@
     ],
     "wake_up",
     "ko"
+  ],
+  "batch_03": [
+    [
+      "dash_forward",
+      "hitstun_low"
+    ],
+    [
+      "backdash",
+      "blockstun_crouch"
+    ],
+    [
+      "phase_step",
+      "throw_break"
+    ],
+    [
+      "airborne",
+      "wall_splat"
+    ],
+    "stagger",
+    [
+      "guard_break",
+      "thrown"
+    ]
   ]
 }

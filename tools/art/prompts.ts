@@ -26,13 +26,22 @@ interface Design {
 }
 
 const SHEET_RULES = (n: number) =>
-  `Make ONE image: a single horizontal row of exactly ${n} full-body poses of this character, left to right. Side view, facing RIGHT, the same camera angle and the same pixel-art style as the reference. Every pose at exactly the same scale. All feet rest on one shared, straight ground line (except a pose that is described as airborne). Even spacing with clear empty space between the figures so no two figures touch or overlap, including the braid and coat tails. Pure white background (#FFFFFF). No shadows, no floor, no text, no numbers, no labels, no borders, no grid.`;
+  `Make ONE image: a single horizontal row of exactly ${n} full-body poses of this character, left to right. Side view, facing RIGHT, the same camera angle and the same pixel-art style as the reference. Every pose at exactly the same scale. All feet rest on one shared, straight ground line, apart from a pose described as airborne. Even spacing, with wide white gaps between the figures, so each figure, with its braid and coat tails, stands clearly apart. A plain, pure white background (#FFFFFF) filling the whole image: just the figures on flat white.`;
 
-const ANCHOR = (d: Design) => `Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: ${d.guard ?? 'side-on fighting stance, weight on the back foot, left fist forward at chin height, chin down'}.`;
+const ANCHOR = (d: Design) => `Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: ${d.guard ?? 'side-on fighting stance, weight on the back foot, fist raised at chin height, chin down'}.`;
+
+/**
+ * Image models act on every noun they read: "no right arm" draws a right arm. Prompts describe
+ * only what is visible; this rejects negative wording in any text sent to the model.
+ */
+const NEGATIVE = /\b(no|not|never|none|nothing|without|don't|doesn't|isn't|avoid|missing|instead of)\b/i;
+export function negativeWords(text: string): string[] {
+  return text.split(/(?<=[.;:])\s+/).filter((sentence) => NEGATIVE.test(sentence));
+}
 
 const TIPS = [
   'If it goes wrong:',
-  '- A hand or fist appears on the near side (her missing right arm): reply "Wrong arm: she has no right arm. The near shoulder must only show the pinned empty sleeve; the punching arm is the far arm, the one raised in the guard in the reference." and regenerate.',
+  '- A second arm or a fist appears on her near side: reply "Keep her one-armed and southpaw: the punch comes from her left arm on the far side of her body; her near shoulder shows the flat folded sleeve with the round gold pin, with the coat hanging smooth down that side." and regenerate.',
   '- Still wrong after two tries: attach your idle sheet (rook_idle_01.png, which came out right) as well as the reference, and ask it to edit pose 1 of that sheet into each pose instead of drawing new figures.',
 ].join('\n');
 
@@ -83,7 +92,7 @@ function movePoseNotes(m: Move, d: Design): string[] {
       return s === 1 && startups > 1
         ? big
           ? `Wind-up: the ${L.limb}${intro} draws back to load the strike, ${L.end} close to the body; weight shifts onto the back foot; the guard stays tight. Coat tails and braid still settle from the stance.`
-          : `Anticipation (small, not a big wind-up): the stance with the knees bent a little more, body slightly lower; the ${L.limb}${intro} stays in the guard and does not pull back behind the body.`
+          : `Anticipation, small and quick: the stance with the knees bent a little more, body slightly lower; the ${L.limb}${intro} stays in the guard in front of the chin.`
         : `Wind-up, about to strike: the ${L.limb}${s === 1 ? intro : ''} starts moving toward the target ${arc}; shoulders and hips begin to turn into the blow; weight moving forward. The braid lags slightly behind the head.`;
     }
     if (p.phase === 'smear') return `Smear frame: the ${L.limb} whipping through mid-swing, stretched and slightly blurred along its path ${arc}; the body nearly at full extension. The coat tails flare behind her.`;
@@ -114,9 +123,9 @@ const STATE_NOTES: Record<string, (i: number, n: number) => string> = {
   walk_forward: (i) =>
     [
       'Walk 1 (start of a forward shuffle step): the stance, weight shifting onto the back foot, front foot about to lift.',
-      'Walk 2: the front (left) foot lifts and slides forward a short step, toes low; guard stays up; coat tails swing back.',
+      'Walk 2: the front foot lifts and slides forward a short step, toes low; guard stays up; coat tails swing back.',
       'Walk 3: the front foot plants further forward; feet at their widest; weight moving forward, body lowered slightly.',
-      'Walk 4: the back (right) foot lifts and slides forward toward the front foot; coat tails swing back the other way.',
+      'Walk 4: the back foot lifts and slides forward toward the front foot; coat tails swing back the other way.',
       'Walk 5: the back foot plants; feet back to stance width; body rising.',
       'Walk 6: settling into the stance again, weight on the back foot, ready to repeat.',
     ][i] ?? 'Walk.',
@@ -181,6 +190,9 @@ for (const char of readdirSync(join(ROOT, 'art_src')).filter((d) => existsSync(j
       const n = s.manifest.poses.length;
       lines.push(`## \`${s.manifest.sheet}\`: ${s.anim}${s.parts > 1 ? ` (part ${s.part} of ${s.parts})` : ''}`, '');
       if (m) lines.push(`Frame data: startup ${m.startup}, active ${m.active}, recovery ${m.recovery} (${m.total} frames); ${m.height} / ${m.path}; limb: ${m.limb.replace('_', ' ')}.`, '');
+      const prompt = [design.lock, SHEET_RULES(n), ANCHOR(design), ...s.notes, design.near_side_rule ?? ''].join(' ');
+      const bad = negativeWords(prompt);
+      if (bad.length) throw new Error(`${s.manifest.sheet}: negative wording in the prompt (image models draw what they read):\n  ${bad.join('\n  ')}`);
       lines.push('```text', design.lock, '', SHEET_RULES(n), '', ANCHOR(design), ...s.notes.map((t, i) => `Pose ${i + 2}: ${t}`), ...(design.near_side_rule ? ['', design.near_side_rule] : []), '```', '');
       if (m && design.arm_words?.[m.limb]) lines.push(TIPS, '');
     }

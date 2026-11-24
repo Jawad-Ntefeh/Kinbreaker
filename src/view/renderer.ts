@@ -63,6 +63,8 @@ export class Renderer {
   spriteMode: SpriteMode = 'normal';
   /** Scene poses (boss intro, victory) per fighter. */
   pose: ScenePose[] = [null, null];
+  /** Clock for scene poses (intro, victory), set by the scene: the sim is frozen while they play. */
+  poseTime = 0;
   /** 0..1: fade of everything except the fighters (KO). */
   koFade = 0;
   readonly lastDrawn: (SpriteInfo | null)[] = [null, null];
@@ -148,7 +150,8 @@ export class Renderer {
     const sprites = this.bank.get(f.config.id ?? 'rook');
     const file = sprites.file;
     const track = this.tracks[f.index]!;
-    const picked = pickFrame(f, file, this.pose[f.index] ?? null, track, sim.frame);
+    const pose = this.pose[f.index] ?? null;
+    const picked = pickFrame(f, file, pose, track, pose ? this.poseTime : sim.frame);
     const info: SpriteInfo = { anim: '', cell: -1, label: '', x: 0, y: 0, cellW: file.cell[0], cellH: file.cell[1], pivot: file.pivot, facing: f.facing };
     this.lastDrawn[f.index] = info;
     if (!picked) return;

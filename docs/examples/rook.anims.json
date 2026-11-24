@@ -2,7 +2,7 @@
   "sheet": "art/characters/rook.png",
   "cell": [136,128],
   "pivot": [53,123],
-  "sheet_cells": [8,17],
+  "sheet_cells": [8,16],
   "anims": {
     "idle": {"loop":true,"frames":[{"cell":0,"dur":10},{"cell":1,"dur":10},{"cell":2,"dur":10},{"cell":3,"dur":10}]},
     "walk_forward": {"loop":true,"frames":[{"cell":4,"dur":6},{"cell":5,"dur":6},{"cell":6,"dur":6},{"cell":7,"dur":6},{"cell":8,"dur":6},{"cell":9,"dur":6}]},
@@ -27,17 +27,17 @@
     "stagger": {"loop":true,"frames":[{"cell":51,"dur":8},{"cell":52,"dur":8},{"cell":53,"dur":8},{"cell":54,"dur":8}]},
     "guard_break": {"frames":[{"cell":55,"dur":8},{"cell":56,"dur":8},{"cell":57,"dur":8}]},
     "ko": {"frames":[{"cell":58,"dur":8},{"cell":59,"dur":8},{"cell":60,"dur":8}]},
-    "intro": {"frames":[{"cell":61,"dur":10},{"cell":62,"dur":10},{"cell":63,"dur":10},{"cell":64,"dur":10},{"cell":65,"dur":10},{"cell":66,"dur":10}]},
-    "victory": {"frames":[{"cell":67,"dur":10},{"cell":68,"dur":10},{"cell":69,"dur":10},{"cell":70,"dur":10},{"cell":71,"dur":10},{"cell":72,"dur":10}]},
-    "rook_cross": {"move":"rook_cross","frames":[{"cell":73,"dur":6},{"cell":74,"dur":5},{"cell":75,"dur":2,"impact":true},{"cell":76,"dur":9},{"cell":77,"dur":9}]},
-    "rook_high_kick": {"move":"rook_high_kick","frames":[{"cell":78,"dur":7},{"cell":79,"dur":6},{"cell":80,"dur":3,"impact":true},{"cell":81,"dur":8},{"cell":82,"dur":8},{"cell":83,"dur":8}]},
-    "rook_jab": {"move":"rook_jab","frames":[{"cell":84,"dur":5},{"cell":85,"dur":4},{"cell":86,"dur":2,"impact":true},{"cell":87,"dur":7},{"cell":88,"dur":6}]},
-    "rook_jab_2": {"move":"rook_jab_2","frames":[{"cell":89,"dur":5},{"cell":90,"dur":4},{"cell":91,"dur":2,"impact":true},{"cell":92,"dur":8},{"cell":93,"dur":8}]},
-    "rook_knee": {"move":"rook_knee","frames":[{"cell":94,"dur":6},{"cell":95,"dur":6},{"cell":96,"dur":3,"impact":true},{"cell":97,"dur":10},{"cell":98,"dur":10}]},
-    "rook_low_jab": {"move":"rook_low_jab","frames":[{"cell":99,"dur":5},{"cell":100,"dur":4},{"cell":101,"dur":2,"impact":true},{"cell":102,"dur":7},{"cell":103,"dur":7}]},
-    "rook_palm": {"move":"rook_palm","frames":[{"cell":104,"dur":7},{"cell":105,"dur":6},{"cell":106,"dur":3,"impact":true},{"cell":107,"dur":8},{"cell":108,"dur":7},{"cell":109,"dur":7}]},
-    "rook_rising_kick": {"move":"rook_rising_kick","frames":[{"cell":110,"dur":6},{"cell":111,"dur":6},{"cell":112,"dur":2},{"cell":113,"dur":3,"impact":true},{"cell":114,"dur":9},{"cell":115,"dur":9}]},
-    "rook_sweep": {"move":"rook_sweep","frames":[{"cell":116,"dur":5},{"cell":117,"dur":5},{"cell":118,"dur":5},{"cell":119,"dur":3,"impact":true},{"cell":120,"dur":10},{"cell":121,"dur":9},{"cell":122,"dur":9}]},
-    "rook_throw": {"move":"rook_throw","frames":[{"cell":123,"dur":5},{"cell":124,"dur":4},{"cell":125,"dur":2},{"cell":126,"dur":2,"impact":true},{"cell":127,"dur":10},{"cell":128,"dur":9},{"cell":129,"dur":9}]}
+    "intro": {"frames":[{"cell":61,"dur":15},{"cell":62,"dur":15},{"cell":63,"dur":15},{"cell":64,"dur":15}]},
+    "victory": {"frames":[{"cell":65,"dur":10},{"cell":66,"dur":10},{"cell":67,"dur":10},{"cell":68,"dur":10},{"cell":69,"dur":10},{"cell":70,"dur":10}]},
+    "rook_cross": {"move":"rook_cross","frames":[{"cell":71,"dur":6},{"cell":72,"dur":5},{"cell":73,"dur":2,"impact":true},{"cell":74,"dur":9},{"cell":75,"dur":9}]},
+    "rook_high_kick": {"move":"rook_high_kick","frames":[{"cell":76,"dur":7},{"cell":77,"dur":6},{"cell":78,"dur":3,"impact":true},{"cell":79,"dur":8},{"cell":80,"dur":8},{"cell":81,"dur":8}]},
+    "rook_jab": {"move":"rook_jab","frames":[{"cell":82,"dur":5},{"cell":83,"dur":4},{"cell":84,"dur":2,"impact":true},{"cell":85,"dur":7},{"cell":86,"dur":6}]},
+    "rook_jab_2": {"move":"rook_jab_2","frames":[{"cell":87,"dur":5},{"cell":88,"dur":4},{"cell":89,"dur":2,"impact":true},{"cell":90,"dur":8},{"cell":91,"dur":8}]},
+    "rook_knee": {"move":"rook_knee","frames":[{"cell":92,"dur":6},{"cell":93,"dur":6},{"cell":94,"dur":3,"impact":true},{"cell":95,"dur":10},{"cell":96,"dur":10}]},
+    "rook_low_jab": {"move":"rook_low_jab","frames":[{"cell":97,"dur":5},{"cell":98,"dur":4},{"cell":99,"dur":2,"impact":true},{"cell":100,"dur":7},{"cell":101,"dur":7}]},
+    "rook_palm": {"move":"rook_palm","frames":[{"cell":102,"dur":7},{"cell":103,"dur":6},{"cell":104,"dur":3,"impact":true},{"cell":105,"dur":8},{"cell":106,"dur":7},{"cell":107,"dur":7}]},
+    "rook_rising_kick": {"move":"rook_rising_kick","frames":[{"cell":108,"dur":6},{"cell":109,"dur":6},{"cell":110,"dur":2},{"cell":111,"dur":3,"impact":true},{"cell":112,"dur":9},{"cell":113,"dur":9}]},
+    "rook_sweep": {"move":"rook_sweep","frames":[{"cell":114,"dur":5},{"cell":115,"dur":5},{"cell":116,"dur":5},{"cell":117,"dur":3,"impact":true},{"cell":118,"dur":10},{"cell":119,"dur":9},{"cell":120,"dur":9}]},
+    "rook_throw": {"move":"rook_throw","frames":[{"cell":121,"dur":5},{"cell":122,"dur":4},{"cell":123,"dur":2},{"cell":124,"dur":2,"impact":true},{"cell":125,"dur":10},{"cell":126,"dur":9},{"cell":127,"dur":9}]}
   }
 }

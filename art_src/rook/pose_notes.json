@@ -6,5 +6,54 @@
     "IMPACT (the hit), southpaw jab: her left arm fully extended straight forward at chest height (the fist lands 69-82 px above the floor, 64-77% of her height); left shoulder, elbow and fist in one straight horizontal line, knuckles up. Front knee bent over the front foot, back leg straight, back heel lifted; chin tucked behind her left shoulder; her body turned so the pinned near shoulder angles slightly away from the viewer. Coat tails swing back behind her; the braid trails behind her head.",
     "Recovery: the left fist snapping back along the same level line, elbow bent again, fist halfway between the impact point and her chin; the front foot slides back a little, weight returning to the middle. Coat tails and braid swinging back the other way.",
     "Recovery, nearly back in stance: left fist just in front of her chin again, elbow down by her ribs, weight settling onto the back foot. Almost exactly pose 1; coat tails and braid settling."
+  ],
+  "intro": [
+    "Standing upright and relaxed, side-on, facing right, feet close together. Her left hand is raised to her mouth: she grips the loose end of the cloth wrap on her left wrist between her teeth, head tilted down toward it, left elbow pointing forward and down.",
+    "Same upright stance: she pulls the wrap tight with her teeth, head turning slightly back, her left forearm pulling forward and away from her mouth, the cloth end stretched taut between her teeth and her wrist.",
+    "She lowers her left fist from her mouth, the wrap now tight; her front foot steps forward into a wider stance, knees starting to bend, eyes on the opponent.",
+    "Settled into her fighting stance: exactly pose 1, the left fist raised in front of her chin, weight on the back foot."
+  ],
+  "walk_back": [
+    "Start of a backward shuffle step: the stance, weight shifting onto the front foot, the back foot about to lift. The left fist stays up in the guard in front of her chin.",
+    "The back foot lifts and slides backward a short step, toes low; the left fist stays up in the guard; coat tails swing forward slightly.",
+    "The back foot plants further back; feet at their widest; body lowered slightly, weight moving back; left fist in the guard.",
+    "The front foot lifts and slides back toward the back foot; coat tails swing back the other way; left fist in the guard.",
+    "The front foot plants; feet back to stance width; body rising; left fist in the guard.",
+    "Settling into the stance again, weight on the back foot, left fist in front of her chin, ready to repeat."
+  ],
+  "crouch": [
+    "Going down into a crouch: knees bending, body lowered about a third of the way, the left fist up in the guard in front of her chin, coat tails starting to pool.",
+    "Full crouch (held): knees fully bent, weight low on both feet, back straight, her head at about two thirds of her standing height. The left fist up in the guard in front of her chin. The coat tails rest on the floor behind her."
+  ],
+  "block_crouch": [
+    "Crouching block: the full crouch, her left forearm raised upright in front of her face and chest as a shield, fist at forehead height, chin tucked behind the forearm."
+  ],
+  "block_stand": [
+    "Standing block: the fighting stance, her left forearm raised upright in front of her face as a shield, fist at forehead height, elbow down in front of her ribs, chin tucked behind the forearm, weight on the back foot."
+  ],
+  "blockstun_stand": [
+    "Absorbing a blocked hit: the standing block pushed back, her left forearm still upright in front of her face, shoulders pressed back, front foot sliding back, knees bent; braid and coat tails swing forward from the impact."
+  ],
+  "hitstun_high": [
+    "Hit in the face: her head snaps back hard, chin up, face turned toward the sky, shoulders jerked back, back arched; her left fist flung up and outward from the guard at shoulder height; weight on the back foot; the braid swings forward over her shoulder.",
+    "Recovering from the head hit: head coming back down, chin still raised, back still a little arched, the left fist drifting back toward the guard."
+  ],
+  "hitstun_mid": [
+    "Hit in the stomach: her torso folds forward sharply at the waist, back rounded, head dropped forward and down, her left forearm curled in against her stomach, knees bent, both feet planted; the braid falls forward past her face.",
+    "Recovering from the stomach hit: torso still bent forward but rising, head coming up, the left fist rising back toward the guard."
+  ],
+  "knockdown": [
+    "Knocked off her feet: falling backward through the air, body tilted back about 45 degrees, feet leaving the floor in front of her, her left arm flung out behind her, head thrown back; coat tails and braid flying up.",
+    "Lying flat on her back on the floor (held): her head on the left, her boots on the right, body straight along the ground line, her left arm on the floor beside her, eyes closed, the coat spread under her. A long, flat figure touching the ground line along its whole length."
+  ],
+  "wake_up": [
+    "Getting up from lying on her back: she rolls onto her side and plants her left palm flat on the floor beside her hip, pushing her upper body up off the ground; knees bending; head and shoulders rising.",
+    "Pushing up onto one knee: her left palm pushes off the floor, torso upright, the back knee on the floor and the front foot planted in front of her.",
+    "Rising into the stance: standing up, knees still bent, the left fist coming back up toward the guard in front of her chin."
+  ],
+  "ko": [
+    "The final blow lands: her body jolts, head dropping, shoulders slumping forward, her left arm hanging loose at her side, knees giving way.",
+    "Down on one knee: the back knee on the floor, the front foot planted, torso slumped forward, head hanging, her left hand resting loosely on her front knee.",
+    "Fallen forward (held): lying face down on the floor, head on the right, boots on the left, her left arm stretched along the floor beside her head, the coat draped over her, the braid lying across her back. A long, flat figure along the ground line."
   ]
 }

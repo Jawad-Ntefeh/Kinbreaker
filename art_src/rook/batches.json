@@ -1,4 +1,27 @@
 {
   "_comment": "Which animations each art batch covers (prompts: npm run art-requests).",
-  "batch_01": ["idle", "walk_forward", "rook_jab"]
+  "batch_01": [
+    "idle",
+    "walk_forward",
+    "rook_jab"
+  ],
+  "batch_02": [
+    "intro",
+    "walk_back",
+    [
+      "crouch",
+      "block_crouch"
+    ],
+    [
+      "block_stand",
+      "blockstun_stand",
+      "hitstun_high"
+    ],
+    [
+      "hitstun_mid",
+      "knockdown"
+    ],
+    "wake_up",
+    "ko"
+  ]
 }

@@ -82,7 +82,7 @@ export const STATE_SPECS: readonly StateSpec[] = [
   { name: 'stagger', poses: 4, dur: 8, loop: true, required: true, note: 'poise broken' },
   { name: 'guard_break', poses: 3, dur: 8, loop: false, required: true, note: '' },
   { name: 'ko', poses: 3, dur: 8, loop: false, required: true, note: 'last pose is held' },
-  { name: 'intro', poses: 6, dur: 10, loop: false, required: true, note: 'boss intro banner' },
+  { name: 'intro', poses: 4, dur: 15, loop: false, required: true, note: 'fight intro (60 frames, both fighters); Rook tightens her wrap with her teeth, then drops into her stance' },
   { name: 'victory', poses: 6, dur: 10, loop: false, required: false, note: '' },
   { name: 'phase_transition', poses: 6, dur: 15, loop: false, required: true, bossOnly: true, note: '90 frames, invulnerable' },
 ];

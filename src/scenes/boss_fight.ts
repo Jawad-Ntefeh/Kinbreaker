@@ -115,7 +115,8 @@ export class BossFightScene extends SimScene {
     const ctx = screen.ctx;
     const ko = this.fx.koFrames;
     this.renderer.koFade = ko === null ? 0 : Math.min(1, ko / 30);
-    this.renderer.pose = this.stage === 'intro' ? [null, 'intro'] : this.stage === 'victory' ? (this.sim.winner === 0 ? ['victory', null] : [null, 'victory']) : this.stage === 'defeat' ? [null, 'victory'] : [null, null];
+    this.renderer.poseTime = this.t;
+    this.renderer.pose = this.stage === 'intro' ? ['intro', 'intro'] : this.stage === 'victory' ? (this.sim.winner === 0 ? ['victory', null] : [null, 'victory']) : this.stage === 'defeat' ? [null, 'victory'] : [null, null];
     this.renderer.draw(ctx, this.sim, this.fx);
     this.hud.draw(ctx, this.sim);
     this.overlay.drawBoxes(ctx, this.sim, this.renderer);

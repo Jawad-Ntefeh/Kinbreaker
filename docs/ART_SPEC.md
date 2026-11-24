@@ -30,10 +30,10 @@
 
 - Cell **136x128**, pivot **(53, 123)**, colour: tarnished gold. Hurtbox 32x107 px (crouching 67).
 - Cell width: 53 px behind the pivot + furthest reach 66 px + 11 px = 130, rounded up to 136 (83 px in front of the pivot).
-- Suggested sheet: **8 columns x 17 rows** (130 cells) at `public/art/characters/rook.png`, 1088x2176 px.
+- Suggested sheet: **8 columns x 16 rows** (128 cells) at `public/art/characters/rook.png`, 1088x2048 px.
 - Rook is missing her **right arm** (the back arm when facing right): draw it absent in every pose. `rook_cross` (right arm) is used by the training dummy and later by the Iron Wrist relic.
 - The training dummy (`dummy`) uses this sheet, shifted to greys.
-- **35 animations, 130 drawn frames** (19 required state animations + 10 moves; the rest are optional).
+- **35 animations, 128 drawn frames** (19 required state animations + 10 moves; the rest are optional).
 
 ### State animations
 
@@ -62,7 +62,7 @@
 | `stagger` | yes | 4 | 8 | yes | poise broken |
 | `guard_break` | yes | 3 | 8 | no |  |
 | `ko` | yes | 3 | 8 | no | last pose is held |
-| `intro` | yes | 6 | 10 | no | boss intro banner |
+| `intro` | yes | 4 | 15 | no | fight intro (60 frames, both fighters); Rook tightens her wrap with her teeth, then drops into her stance |
 | `victory` | optional | 6 | 10 | no |  |
 
 ### Move animations
@@ -86,8 +86,8 @@ The impact pose must start on the frame in **bold** (the first active frame). "P
 
 - Cell **144x139**, pivot **(53, 133)**, colour: iron grey (skin and wrist bands), rust-brown leather (secondary). Hurtbox 43x117 px (crouching 73).
 - Cell width: 53 px behind the pivot + furthest reach 75 px + 11 px = 139, rounded up to 144 (91 px in front of the pivot).
-- Suggested sheet: **8 columns x 21 rows** (164 cells) at `public/art/characters/corvane.png`, 1152x2919 px.
-- **41 animations, 164 drawn frames** (20 required state animations + 15 moves; the rest are optional).
+- Suggested sheet: **8 columns x 21 rows** (162 cells) at `public/art/characters/corvane.png`, 1152x2919 px.
+- **41 animations, 162 drawn frames** (20 required state animations + 15 moves; the rest are optional).
 
 ### State animations
 
@@ -116,7 +116,7 @@ The impact pose must start on the frame in **bold** (the first active frame). "P
 | `stagger` | yes | 4 | 8 | yes | poise broken |
 | `guard_break` | yes | 3 | 8 | no |  |
 | `ko` | yes | 3 | 8 | no | last pose is held |
-| `intro` | yes | 6 | 10 | no | boss intro banner |
+| `intro` | yes | 4 | 15 | no | fight intro (60 frames, both fighters); Rook tightens her wrap with her teeth, then drops into her stance |
 | `victory` | optional | 6 | 10 | no |  |
 | `phase_transition` | yes | 6 | 15 | no | 90 frames, invulnerable |
 
@@ -146,6 +146,6 @@ The impact pose must start on the frame in **bold** (the first active frame). "P
 
 | Character | Animations | Drawn frames | Required animations |
 | --- | --- | --- | --- |
-| rook | 35 | 130 | 29 |
-| corvane | 41 | 164 | 35 |
+| rook | 35 | 128 | 29 |
+| corvane | 41 | 162 | 35 |
 

@@ -1,0 +1,176 @@
+{
+  "sheets": [
+    {
+      "sheet": "rook_intro_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "intro",
+          "index": 0
+        },
+        {
+          "anim": "intro",
+          "index": 1
+        },
+        {
+          "anim": "intro",
+          "index": 2
+        },
+        {
+          "anim": "intro",
+          "index": 3
+        }
+      ]
+    },
+    {
+      "sheet": "rook_walk_back_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "walk_back",
+          "index": 0
+        },
+        {
+          "anim": "walk_back",
+          "index": 1
+        },
+        {
+          "anim": "walk_back",
+          "index": 2
+        },
+        {
+          "anim": "walk_back",
+          "index": 3
+        },
+        {
+          "anim": "walk_back",
+          "index": 4
+        }
+      ]
+    },
+    {
+      "sheet": "rook_walk_back_02.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "walk_back",
+          "index": 5
+        }
+      ]
+    },
+    {
+      "sheet": "rook_b02_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "crouch",
+          "index": 0
+        },
+        {
+          "anim": "crouch",
+          "index": 1
+        },
+        {
+          "anim": "block_crouch",
+          "index": 0
+        }
+      ]
+    },
+    {
+      "sheet": "rook_b02_02.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "block_stand",
+          "index": 0
+        },
+        {
+          "anim": "blockstun_stand",
+          "index": 0
+        },
+        {
+          "anim": "hitstun_high",
+          "index": 0
+        },
+        {
+          "anim": "hitstun_high",
+          "index": 1
+        }
+      ]
+    },
+    {
+      "sheet": "rook_b02_03.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "hitstun_mid",
+          "index": 0
+        },
+        {
+          "anim": "hitstun_mid",
+          "index": 1
+        },
+        {
+          "anim": "knockdown",
+          "index": 0
+        },
+        {
+          "anim": "knockdown",
+          "index": 1
+        }
+      ]
+    },
+    {
+      "sheet": "rook_wake_up_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "wake_up",
+          "index": 0
+        },
+        {
+          "anim": "wake_up",
+          "index": 1
+        },
+        {
+          "anim": "wake_up",
+          "index": 2
+        }
+      ]
+    },
+    {
+      "sheet": "rook_ko_01.png",
+      "poses": [
+        {
+          "role": "anchor"
+        },
+        {
+          "anim": "ko",
+          "index": 0
+        },
+        {
+          "anim": "ko",
+          "index": 1
+        },
+        {
+          "anim": "ko",
+          "index": 2
+        }
+      ]
+    }
+  ]
+}

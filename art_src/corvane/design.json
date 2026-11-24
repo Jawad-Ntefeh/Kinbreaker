@@ -36,5 +36,10 @@
       "max_de": 14,
       "min_share": 0.25
     }
-  ]
+  ],
+  "lock": "Same character as the attached reference image: Corvane, the Iron Wrist, a huge, heavily muscled undead fighter with ash-grey skin crossed by dark red cracks, a bald head with a long white topknot and loose white strands, and pale blue glowing eyes. His near arm, his right arm, is a different, living arm: younger, leaner and warm tan, with a bright, polished gold band around the wrist that shines clearly against the tan skin. His far arm, his left, is encased in a heavy studded iron gauntlet from the fist to the elbow. A wide studded leather band around his near upper arm. A large gold championship belt with a crown emblem. Rust-brown knee-length fighting shorts, torn at the hem, rust-brown wraps around his ankles, and bare grey feet. Same colours as the reference, exactly: ash-grey skin, rust-brown shorts and wraps, a dark iron gauntlet, a warm tan right arm, and bright polished gold on the wrist band and the belt plate.",
+  "guard": "side-on fighting stance, weight on the back foot, the iron gauntlet raised in front of his face, the warm right fist held low at his belt",
+  "_decisions": {
+    "wrist_band": "Prompt 05: the reference draws the band tarnished bronze, too close to the warm skin to read at 117 px. Decision (user): ask for a bright, polished gold band in his prompts; the converter stays faithful to the art."
+  }
 }

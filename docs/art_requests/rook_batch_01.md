@@ -75,7 +75,7 @@ If it goes wrong:
 
 ### Edit method (recommended for arm attacks)
 
-Instead of drawing new figures, edit a ready-made sheet: [`bases/rook_jab_01_base.png`](bases/rook_jab_01_base.png) (3882x780, the reference stance 6 times on one ground line). In ChatGPT, upload the base and the reference image. Then for each pose below, one at a time: use **Select** to paint over that figure and the empty space in front of it, paste the edit text, and keep the result if it is right (regenerate the edit if it isn't). Figure 1 stays as it is: it is the scale anchor. When all 5 figures are done, download the image and save it as `rook_jab_01.png` (PNG or JPEG).
+Instead of drawing new figures, edit a ready-made sheet: [`bases/rook_jab_01_base.png`](bases/rook_jab_01_base.png) (3864x780, the reference stance 6 times on one ground line). In ChatGPT, upload the base and the reference image. Then for each pose below, one at a time: use **Select** to paint over that figure and the empty space in front of it, paste the edit text, and keep the result if it is right (regenerate the edit if it isn't). Figure 1 stays as it is: it is the scale anchor. When all 5 figures are done, download the image and save it as `rook_jab_01.png` (PNG or JPEG).
 
 Figure 2:
 

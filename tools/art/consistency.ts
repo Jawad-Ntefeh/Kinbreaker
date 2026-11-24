@@ -81,3 +81,13 @@ export interface Verdict {
   pass: boolean;
   note?: string;
 }
+
+/**
+ * A pose's verdict: it passes only when the automatic checks found nothing AND a reviewer has
+ * recorded a visual pass. No verdict yet = pending; pending or failed frames keep their
+ * animation out of the game.
+ */
+export function poseVerdict(auto: readonly string[], v: Verdict | undefined): 'PASS' | 'FAIL' | 'pending review' {
+  if (auto.length || v?.pass === false) return 'FAIL';
+  return v ? 'PASS' : 'pending review';
+}

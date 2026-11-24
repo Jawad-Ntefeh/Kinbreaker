@@ -155,3 +155,15 @@ describe('cleanup, outline and placement', () => {
     expect(moved.px[7 * 10 + 4]).toBe(1);
   });
 });
+
+describe('review gate', () => {
+  it('only a frame with clean automatic checks and a recorded visual pass goes into the game', async () => {
+    const { poseVerdict } = await import('../tools/art/consistency');
+    expect(poseVerdict([], { pass: true })).toBe('PASS');
+    expect(poseVerdict([], undefined)).toBe('pending review');
+    expect(poseVerdict([], { pass: false, note: 'right hand visible' })).toBe('FAIL');
+    // Regression: automatic failures used to be ignored until a reviewer had added a verdict.
+    expect(poseVerdict(['wraps 24% (reference 10%)'], undefined)).toBe('FAIL');
+    expect(poseVerdict(['wraps 24% (reference 10%)'], { pass: true })).toBe('FAIL');
+  });
+});

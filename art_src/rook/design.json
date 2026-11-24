@@ -1,8 +1,10 @@
 {
   "_comment": "Design lock repeated in every image prompt for this character.",
   "name": "Rook",
-  "lock": "Same character as the attached reference image: Rook, a tall, lean woman in her mid-twenties with sharp features and a pale scar along her jaw. Same long dark hair in a braid with a silver band, hanging behind her head. Same knee-length oxblood fighting coat with gold embroidery at the collar, cuffs and hem, torn and patched, the coat tails split at the back. Same brown leather belt with a gold buckle, dark trousers, dark boots, and cloth wraps on her hand and shins. She has NO right arm and NO right hand in any pose: the empty right sleeve is pinned up at the shoulder with a gold pin. Same colours as the reference.",
+  "lock": "Same character as the attached reference image: Rook, a tall, lean woman in her mid-twenties with sharp features and a pale scar along her jaw. Same long dark hair in a braid with a silver band, hanging behind her head. Same knee-length oxblood fighting coat with gold embroidery at the collar, cuffs and hem, torn and patched, the coat tails split at the back. Same brown leather belt with a gold buckle, dark trousers, dark boots, and cloth wraps on her hand and shins. She has NO right arm and NO right hand in any pose: the empty right sleeve is pinned up at the shoulder with a gold pin. Same colours as the reference, exactly: the coat is a deep muted oxblood red-brown; the embroidery and trim are a dark tarnished bronze-gold, clearly darker and more orange than her skin, never pale tan or bright yellow; her skin is a warm tan; her trousers and boots are warm brown-black, never blue or purple; the wraps are a dull warm grey-beige.",
   "body_height_px": 107,
   "front_arm": "left",
-  "missing": ["right_arm"]
+  "missing": [
+    "right_arm"
+  ]
 }

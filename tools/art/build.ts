@@ -15,7 +15,7 @@ import { join } from 'node:path';
 import { loadMoveFiles, type Move } from '../../src/combat/move_data';
 import { validateAnimFile } from '../../src/view/anim_data';
 import { movePoses, STATE_SPECS } from '../../src/view/anim_layout';
-import { colourDrift, colourShares, sizeDrift, TRACKED, type Canonical, type Verdict } from './consistency';
+import { colourDrift, colourShares, poseVerdict, sizeDrift, TRACKED, type Canonical, type Verdict } from './consistency';
 import type { Indexed } from './convert';
 import { Canvas, label, writeGif, writePng } from './io';
 import { convertReference, convertSheet, loadPalette, ROOT, toHex, type ConvertedPose, type ConvertedSheet, type SheetManifest } from './pipeline';
@@ -127,7 +127,7 @@ function buildCharacter(char: string): void {
   // Batches.
   const rawDir = join(ROOT, 'art_src', char, 'raw');
   const byAnim = new Map<string, Map<number, ConvertedPose>>();
-  const failed = new Set<string>();
+  const blocked = new Map<string, string>();
   for (const batch of existsSync(rawDir) ? readdirSync(rawDir).filter((d) => existsSync(join(rawDir, d, 'manifest.json'))).sort() : []) {
     const dir = join(rawDir, batch);
     const reviews: Record<string, Verdict> = existsSync(join(dir, 'review.json')) ? JSON.parse(readFileSync(join(dir, 'review.json'), 'utf8')) : {};
@@ -153,12 +153,12 @@ function buildCharacter(char: string): void {
         const shares = colourShares(p.sprite, pal);
         const auto = [...colourDrift(shares, canonical.shares, anchor), ...(anchor ? sizeDrift(p.width, p.height, canonical) : []), ...(p.outside ? [`${p.outside} px outside the cell`] : [])];
         const v = reviews[key];
-        const pass = auto.length === 0 && v?.pass !== false;
-        const verdict = v === undefined ? (auto.length ? 'FAIL' : 'pending review') : pass ? 'PASS' : 'FAIL';
+        const verdict = poseVerdict(auto, v);
         const name = anchor ? 'anchor' : `${p.entry.anim} ${p.entry.index}`;
         lines.push(`| ${i + 1} | ${name} | ${p.width}x${p.height} | ${p.meanError.toFixed(1)} / ${p.p95Error.toFixed(1)} | ${TRACKED.map((c) => `${c} ${pct(shares[c] ?? 0)}`).join(', ')} | ${auto.join('; ') || 'ok'} | ${v ? (v.pass ? 'ok' : `**${v.note ?? 'fail'}**`) : '—'} | ${verdict} |`);
         if (!anchor && p.entry.anim !== undefined && p.entry.index !== undefined) {
-          if (!pass && v !== undefined) failed.add(p.entry.anim);
+          if (verdict === 'FAIL') blocked.set(p.entry.anim, 'a frame failed review');
+          else if (verdict !== 'PASS' && !blocked.has(p.entry.anim)) blocked.set(p.entry.anim, 'frames still waiting for visual review');
           const m = byAnim.get(p.entry.anim) ?? new Map();
           m.set(p.entry.index, p);
           byAnim.set(p.entry.anim, m);
@@ -175,8 +175,8 @@ function buildCharacter(char: string): void {
   const moves = loadMoves(char);
   const anims: BuiltAnim[] = [];
   for (const [name, frames] of [...byAnim].sort()) {
-    if (failed.has(name)) {
-      notes.push(`${char} ${name}: not built (a frame failed review)`);
+    if (blocked.has(name)) {
+      notes.push(`${char} ${name}: not built (${blocked.get(name)})`);
       continue;
     }
     const move = moves.get(name) ?? null;

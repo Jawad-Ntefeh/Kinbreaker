@@ -1,0 +1,79 @@
+{
+  "_comment": "Visual review (design lock: no right arm/hand, pinned sleeve with gold pin, braid with silver band, wraps, knee-length torn oxblood coat with gold trim, facing right). Colour drift is judged by the automatic checks.",
+  "rook_idle_01.png#1": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_idle_01.png#2": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_idle_01.png#3": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_idle_01.png#4": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_idle_01.png#5": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_walk_forward_01.png#1": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_walk_forward_01.png#2": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_walk_forward_01.png#3": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_walk_forward_01.png#4": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_walk_forward_01.png#5": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_walk_forward_01.png#6": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_walk_forward_02.png#1": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_walk_forward_02.png#2": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_jab_01.png#1": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_jab_01.png#2": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_jab_01.png#3": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_jab_01.png#4": {
+    "pass": true,
+    "note": "impact: fist inside the hitbox; only the left arm used"
+  },
+  "rook_jab_01.png#5": {
+    "pass": true,
+    "note": "on model"
+  },
+  "rook_jab_01.png#6": {
+    "pass": true,
+    "note": "on model"
+  }
+}

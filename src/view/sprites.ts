@@ -4,7 +4,7 @@
  * The dummy uses Rook's sheet shifted to greys. Also keeps white and tinted silhouette copies of
  * each sheet for hit flashes and afterimages.
  */
-import artFiles from 'virtual:art-manifest';
+import artFiles, { artUrl } from 'virtual:art-manifest';
 import { getCharacter } from '../combat/character_data';
 import { getMoveSet } from '../combat/move_data';
 import { loadAnimFiles, validateAnimFile, type AnimFile } from './anim_data';
@@ -115,7 +115,7 @@ export class SpriteBank {
       sprites.placeholder = false;
       sprites.silhouettes.clear();
     });
-    img.src = real.sheet;
+    img.src = artUrl(real.sheet);
     return sprites;
   }
 

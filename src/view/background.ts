@@ -3,7 +3,7 @@
  * exists in public/art/ (art manifest), otherwise a placeholder generated here, in whole pixels
  * with a few flat colours (no gradients). View only.
  */
-import artFiles from 'virtual:art-manifest';
+import artFiles, { artUrl } from 'virtual:art-manifest';
 import type { ArenaDef } from '../combat/arena_data';
 import type { CombatSim } from '../combat/combat_sim';
 import type { Camera } from './camera';
@@ -148,7 +148,7 @@ export class Backgrounds {
     if (ART.has(path)) {
       const real = new Image();
       real.addEventListener('load', () => this.images.set(path, real));
-      real.src = path;
+      real.src = artUrl(path);
     }
     if (img) this.images.set(path, img);
     return img ?? null;

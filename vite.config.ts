@@ -1,4 +1,5 @@
-import { cpSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { defineConfig, type Plugin } from 'vitest/config';
 
@@ -20,7 +21,14 @@ function artManifest(): Plugin {
   return {
     name: 'art-manifest',
     resolveId: (source) => (source === id ? resolved : null),
-    load: (source) => (source === resolved ? `export default ${JSON.stringify(list(join(root, 'art')))};` : null),
+    load: (source) => {
+      if (source !== resolved) return null;
+      const files = list(join(root, 'art'));
+      // Content fingerprints: art URLs carry ?v=<hash>, so a regenerated sheet is never served
+      // from a stale browser or CDN cache under the same name.
+      const versions = Object.fromEntries(files.map((f) => [f, createHash('sha256').update(readFileSync(join(root, f))).digest('hex').slice(0, 10)]));
+      return `export default ${JSON.stringify(files)};\nexport const versions = ${JSON.stringify(versions)};\nexport const artUrl = (f) => versions[f] ? f + '?v=' + versions[f] : f;`;
+    },
     configureServer(server) {
       server.watcher.add(join(root, 'art'));
       server.watcher.on('all', (_e, file) => {

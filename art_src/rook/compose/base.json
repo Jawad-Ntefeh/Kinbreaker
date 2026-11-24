@@ -1,0 +1,267 @@
+{
+  "_comment": "The single compose base for Rook (Prompt 05): figure 1 of a corrected walk sheet (bronze trim). Coordinates are in that figure`s pixels (its bounding box, 612x860; about 8 px per sprite px). Composed moves (art_src/rook/compose/*.json) cut and move its own pixels. If the image changes, its fingerprint no longer matches and npm run art-compose stops.",
+  "source": "raw/batch_01/rook_walk_forward_02.jpeg",
+  "figure": 0,
+  "image": "c33f293e54cb",
+  "waist_y": 345,
+  "waist_blend": 60,
+  "neck_y": 145,
+  "head": [
+    [
+      225,
+      0
+    ],
+    [
+      400,
+      0
+    ],
+    [
+      400,
+      118
+    ],
+    [
+      356,
+      142
+    ],
+    [
+      322,
+      156
+    ],
+    [
+      285,
+      150
+    ],
+    [
+      250,
+      125
+    ],
+    [
+      225,
+      100
+    ]
+  ],
+  "lag": {
+    "braid": {
+      "polygon": [
+        [
+          20,
+          240
+        ],
+        [
+          95,
+          150
+        ],
+        [
+          160,
+          105
+        ],
+        [
+          232,
+          78
+        ],
+        [
+          246,
+          112
+        ],
+        [
+          205,
+          140
+        ],
+        [
+          160,
+          175
+        ],
+        [
+          120,
+          235
+        ],
+        [
+          108,
+          300
+        ],
+        [
+          112,
+          400
+        ],
+        [
+          20,
+          400
+        ]
+      ],
+      "root": [
+        240,
+        95
+      ],
+      "tip": [
+        60,
+        360
+      ],
+      "follows": "head"
+    },
+    "coat_tail": {
+      "polygon": [
+        [
+          150,
+          465
+        ],
+        [
+          160,
+          520
+        ],
+        [
+          135,
+          600
+        ],
+        [
+          70,
+          640
+        ],
+        [
+          0,
+          672
+        ],
+        [
+          0,
+          555
+        ],
+        [
+          55,
+          515
+        ],
+        [
+          110,
+          470
+        ]
+      ],
+      "root": [
+        140,
+        480
+      ],
+      "tip": [
+        5,
+        660
+      ],
+      "follows": "none"
+    }
+  },
+  "arm": {
+    "upper": {
+      "polygon": [
+        [
+          340,
+          165
+        ],
+        [
+          372,
+          170
+        ],
+        [
+          386,
+          184
+        ],
+        [
+          428,
+          222
+        ],
+        [
+          448,
+          282
+        ],
+        [
+          452,
+          332
+        ],
+        [
+          420,
+          338
+        ],
+        [
+          386,
+          282
+        ],
+        [
+          350,
+          215
+        ],
+        [
+          336,
+          190
+        ]
+      ],
+      "pivot": [
+        368,
+        175
+      ],
+      "end": [
+        448,
+        318
+      ],
+      "remove": false
+    },
+    "fore": {
+      "polygon": [
+        [
+          396,
+          140
+        ],
+        [
+          462,
+          136
+        ],
+        [
+          488,
+          200
+        ],
+        [
+          496,
+          262
+        ],
+        [
+          499,
+          302
+        ],
+        [
+          492,
+          340
+        ],
+        [
+          438,
+          346
+        ],
+        [
+          402,
+          338
+        ],
+        [
+          398,
+          300
+        ],
+        [
+          420,
+          262
+        ],
+        [
+          424,
+          215
+        ],
+        [
+          410,
+          204
+        ],
+        [
+          398,
+          190
+        ]
+      ],
+      "pivot": [
+        448,
+        318
+      ],
+      "end": [
+        428,
+        175
+      ],
+      "remove": true
+    }
+  }
+}

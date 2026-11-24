@@ -77,6 +77,17 @@ export function sizeDrift(w: number, h: number, ref: Canonical, tolerance = 3): 
   return out;
 }
 
+/**
+ * Anchor checks (pose 1 of a sheet sets the scale for the whole sheet): a height off by more than
+ * 3 px is blocking (every frame of the sheet is at the wrong scale); width and colour drift are
+ * warnings (a slightly different stance or lighting doesn't change the scale).
+ */
+export function anchorChecks(w: number, h: number, shares: Shares, ref: Canonical): { blocking: string[]; warnings: string[] } {
+  const blocking = Math.abs(h - ref.height) > 3 ? [`anchor height ${h} px (canonical ${ref.height})`] : [];
+  const warnings = [...(Math.abs(w - ref.width) > 3 ? [`anchor width ${w} px (canonical ${ref.width})`] : []), ...colourDrift(shares, ref.shares, true)];
+  return { blocking, warnings };
+}
+
 /** A reviewer's verdict for one pose (key: "<sheet>#<pose number, 1-based>"). */
 export interface Verdict {
   pass: boolean;

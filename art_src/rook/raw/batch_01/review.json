@@ -67,32 +67,32 @@
   },
   "rook_jab_01.png#1": {
     "pass": true,
-    "note": "anchor: untouched idle figure (composed sheet)",
-    "image": "c29ddc9399b2"
+    "note": "anchor: untouched compose base (walk_forward_02 figure 1)",
+    "image": "3c66ffcb33c2"
   },
   "rook_jab_01.png#2": {
     "pass": true,
-    "note": "anticipation: elbow lifts, guard kept; one arm, pinned near sleeve visible",
-    "image": "c29ddc9399b2"
+    "note": "anticipation: body dips 1 px, elbow lifts; one arm, pinned near sleeve visible",
+    "image": "3c66ffcb33c2"
   },
   "rook_jab_01.png#3": {
     "pass": true,
-    "note": "launch: far arm half extended, elbow bent",
-    "image": "c29ddc9399b2"
+    "note": "launch: far arm half extended, body 1 px forward",
+    "image": "3c66ffcb33c2"
   },
   "rook_jab_01.png#4": {
     "pass": true,
-    "note": "impact: far arm straight at chest height, fist inside the hitbox; sleeve, cuff, wraps and fist all model-drawn pixels",
-    "image": "c29ddc9399b2"
+    "note": "impact: body leans 3 px into the hit, head dips 1 px, fist inside the hitbox; braid trails",
+    "image": "3c66ffcb33c2"
   },
   "rook_jab_01.png#5": {
     "pass": true,
-    "note": "recovery: fist pulling back halfway",
-    "image": "c29ddc9399b2"
+    "note": "recoil: arm pulling back, body 1 px past neutral",
+    "image": "3c66ffcb33c2"
   },
   "rook_jab_01.png#6": {
     "pass": true,
-    "note": "settle: nearly back in guard",
-    "image": "c29ddc9399b2"
+    "note": "settle: back in guard; braid swings through late (2-frame lag)",
+    "image": "3c66ffcb33c2"
   }
 }

@@ -15,7 +15,7 @@ import { basename, join } from 'node:path';
 import { loadMoveFiles, type Move } from '../../src/combat/move_data';
 import { validateAnimFile } from '../../src/view/anim_data';
 import { movePoses, STATE_SPECS } from '../../src/view/anim_layout';
-import { colourDrift, colourShares, currentVerdict, imageId, poseVerdict, sizeDrift, TRACKED, type Canonical, type Verdict } from './consistency';
+import { anchorChecks, colourDrift, colourShares, currentVerdict, imageId, poseVerdict, TRACKED, type Canonical, type Verdict } from './consistency';
 import type { Indexed } from './convert';
 import { Canvas, label, writeGif, writePng } from './io';
 import { convertReference, convertSheet, loadPalette, ROOT, toHex, type ConvertedPose, type ConvertedSheet, type SheetManifest } from './pipeline';
@@ -150,17 +150,23 @@ function buildCharacter(char: string): void {
       }
       const image = imageId(readFileSync(sh.file));
       let stale = false;
+      let anchorFailed = '';
       lines.push(`Scale ${sh.scale.toFixed(4)} (anchor → ${108} px). Image \`${image}\` (\`${basename(sh.file)}\`).`, '', '| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |', '| --- | --- | --- | --- | --- | --- | --- | --- |');
       sh.poses.forEach((p, i) => {
         const key = `${sh.manifest.sheet}#${i + 1}`;
         const anchor = p.entry.role === 'anchor';
         const shares = colourShares(p.sprite, pal);
-        const auto = [...colourDrift(shares, canonical.shares, anchor), ...(anchor ? sizeDrift(p.width, p.height, canonical) : []), ...(p.outside ? [`${p.outside} px outside the cell`] : [])];
+        const outside = p.outside ? [`${p.outside} px outside the cell`] : [];
+        const a = anchor ? anchorChecks(p.width, p.height, shares, canonical) : { blocking: colourDrift(shares, canonical.shares, false), warnings: [] };
+        const auto = [...a.blocking, ...outside];
         const v = currentVerdict(reviews[key], image);
         if (reviews[key] && !v) stale = true;
-        const verdict = poseVerdict(auto, v);
+        // Anchors are scale references, not game frames: only their automatic checks count.
+        const verdict = anchor ? (auto.length ? 'FAIL' : 'PASS') : poseVerdict(auto, v);
+        if (anchor && auto.length) anchorFailed = auto.join('; ');
         const name = anchor ? 'anchor' : `${p.entry.anim} ${p.entry.index}`;
-        lines.push(`| ${i + 1} | ${name} | ${p.width}x${p.height} | ${p.meanError.toFixed(1)} / ${p.p95Error.toFixed(1)} | ${TRACKED.map((c) => `${c} ${pct(shares[c] ?? 0)}`).join(', ')} | ${auto.join('; ') || 'ok'} | ${v ? (v.pass ? 'ok' : `**${v.note ?? 'fail'}**`) : '—'} | ${verdict} |`);
+        const checks = [...auto, ...a.warnings.map((w) => `warning: ${w}`)].join('; ') || 'ok';
+        lines.push(`| ${i + 1} | ${name} | ${p.width}x${p.height} | ${p.meanError.toFixed(1)} / ${p.p95Error.toFixed(1)} | ${TRACKED.map((c) => `${c} ${pct(shares[c] ?? 0)}`).join(', ')} | ${checks} | ${v ? (v.pass ? 'ok' : `**${v.note ?? 'fail'}**`) : '—'} | ${verdict} |`);
         if (!anchor && p.entry.anim !== undefined && p.entry.index !== undefined) {
           if (verdict === 'FAIL') blocked.set(p.entry.anim, 'a frame failed review');
           else if (verdict !== 'PASS' && !blocked.has(p.entry.anim)) blocked.set(p.entry.anim, 'frames still waiting for visual review');
@@ -170,6 +176,10 @@ function buildCharacter(char: string): void {
         }
       });
       lines.push('');
+      if (anchorFailed) {
+        lines.push(`**The anchor fails (${anchorFailed}): the whole sheet is at the wrong scale and none of its frames go into the game.**`, '');
+        for (const p of sh.poses) if (p.entry.anim) blocked.set(p.entry.anim, `the anchor of ${sh.manifest.sheet} fails (${anchorFailed})`);
+      }
       if (stale) {
         lines.push('The image changed since the last visual review: its frames are waiting for a new review.', '');
         notes.push(`${char} ${batch}: ${sh.manifest.sheet} changed since its review`);

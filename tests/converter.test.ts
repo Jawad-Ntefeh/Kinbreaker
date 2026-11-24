@@ -203,3 +203,16 @@ describe('review fingerprint', () => {
     expect(currentVerdict({ pass: true }, a)).toBeUndefined();
   });
 });
+
+describe('anchor checks', () => {
+  it('anchor height is blocking; width and colour are warnings', async () => {
+    const { anchorChecks } = await import('../tools/art/consistency');
+    const ref = { height: 108, width: 79, shares: { coat: 0.24, gold: 0.05, skin: 0.09, darks: 0.49, wraps: 0.1 } };
+    const ok = anchorChecks(79, 108, ref.shares, ref);
+    expect(ok).toEqual({ blocking: [], warnings: [] });
+    const narrow = anchorChecks(71, 107, { ...ref.shares, wraps: 0.2 }, ref);
+    expect(narrow.blocking).toEqual([]);
+    expect(narrow.warnings.length).toBe(2);
+    expect(anchorChecks(79, 103, ref.shares, ref).blocking).toEqual(['anchor height 103 px (canonical 108)']);
+  });
+});

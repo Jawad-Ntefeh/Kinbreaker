@@ -1,160 +1,47 @@
 {
-  "_comment": "Composed sheet (npm run art-compose): poses built from figure 1 of a model-drawn sheet by moving its own arm pixels. Coordinates are in the source figure's pixels (its bounding box); angles in degrees, 0 = forward (right), positive = downward. Pose 1 is the untouched figure (scale anchor).",
-  "source": "raw/batch_01/rook_idle_01.png",
+  "_comment": "Composed rook_jab (npm run art-compose) from base.json. Angles in degrees (0 = forward, positive = down). body_dx/body_dy/head_dy in sprite pixels (y down). Braid and coat tail lag the body shift by 2 frames.",
+  "base": "base.json",
   "out": "raw/batch_01/rook_jab_01.png",
-  "segments": {
-    "upper": {
-      "polygon": [
-        [
-          220,
-          112
-        ],
-        [
-          242,
-          110
-        ],
-        [
-          260,
-          140
-        ],
-        [
-          270,
-          172
-        ],
-        [
-          266,
-          206
-        ],
-        [
-          250,
-          206
-        ],
-        [
-          234,
-          168
-        ],
-        [
-          222,
-          140
-        ]
-      ],
-      "pivot": [
-        228,
-        125
-      ],
-      "end": [
-        270,
-        200
-      ],
-      "remove": false
-    },
-    "fore": {
-      "polygon": [
-        [
-          238,
-          88
-        ],
-        [
-          288,
-          84
-        ],
-        [
-          300,
-          140
-        ],
-        [
-          306,
-          170
-        ],
-        [
-          310,
-          200
-        ],
-        [
-          304,
-          220
-        ],
-        [
-          260,
-          220
-        ],
-        [
-          248,
-          196
-        ],
-        [
-          250,
-          172
-        ],
-        [
-          256,
-          150
-        ],
-        [
-          244,
-          130
-        ],
-        [
-          238,
-          110
-        ]
-      ],
-      "pivot": [
-        270,
-        200
-      ],
-      "end": [
-        262,
-        108
-      ],
-      "remove": true
-    }
-  },
   "poses": [
     {
       "name": "anticipation",
-      "upper": 46,
-      "fore": -108,
-      "shift": [
-        -2,
-        2
-      ]
+      "upper": 50,
+      "fore": -104,
+      "body_dx": 0,
+      "body_dy": 1,
+      "head_dy": 0
     },
     {
       "name": "launch",
-      "upper": 42,
-      "fore": -28,
-      "shift": [
-        4,
-        2
-      ]
+      "upper": 34,
+      "fore": -20,
+      "body_dx": 1,
+      "body_dy": 0,
+      "head_dy": 0
     },
     {
       "name": "impact",
-      "upper": 11,
-      "fore": 11,
-      "shift": [
-        12,
-        1
-      ]
+      "upper": 15,
+      "fore": 15,
+      "body_dx": 3,
+      "body_dy": 0,
+      "head_dy": 1
     },
     {
       "name": "recovery",
-      "upper": 38,
-      "fore": -55,
-      "shift": [
-        4,
-        1
-      ]
+      "upper": 36,
+      "fore": -50,
+      "body_dx": -1,
+      "body_dy": 0,
+      "head_dy": 0
     },
     {
       "name": "settle",
-      "upper": 55,
-      "fore": -90,
-      "shift": [
-        1,
-        0
-      ]
+      "upper": 54,
+      "fore": -92,
+      "body_dx": 0,
+      "body_dy": 0,
+      "head_dy": 0
     }
   ]
 }

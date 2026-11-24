@@ -5,6 +5,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import jpeg from 'jpeg-js';
+import { CATEGORY, TRACKED } from './consistency';
 import { PNG } from 'pngjs';
 import {
   addOutline,
@@ -30,21 +31,32 @@ import {
 export const ROOT = process.cwd();
 export const CHARACTER_HEIGHT = 108;
 
+/** The character's sprite height in px (design.json "height_px"; Rook 108). */
+export function characterHeight(char: string): number {
+  const f = join(ROOT, 'art_src', char, 'design.json');
+  return (existsSync(f) ? (JSON.parse(readFileSync(f, 'utf8')) as { height_px?: number }).height_px : undefined) ?? CHARACTER_HEIGHT;
+}
+
 export interface Palette {
   ramps: Record<string, string[]>;
   entries: PaletteEntry[];
   outline: number;
   /** Ramps this character never uses (design.json "ramps" lists the ones it does). */
   exclude: Set<string>;
+  /** Ramp → colour category for the consistency checks (design.json "categories", else Rook's). */
+  categories: Record<string, string>;
+  /** Categories whose share is checked against the canonical (design.json "tracked"). */
+  tracked: readonly string[];
 }
 
 export function loadPalette(char?: string): Palette {
   const ramps = (JSON.parse(readFileSync(join(ROOT, 'art_src/palette.json'), 'utf8')) as { ramps: Record<string, string[]> }).ramps;
   const entries = paletteEntries(ramps);
   const designFile = char ? join(ROOT, 'art_src', char, 'design.json') : '';
-  const used = designFile && existsSync(designFile) ? (JSON.parse(readFileSync(designFile, 'utf8')) as { ramps?: string[] }).ramps : undefined;
+  const design = designFile && existsSync(designFile) ? (JSON.parse(readFileSync(designFile, 'utf8')) as { ramps?: string[]; categories?: Record<string, string>; tracked?: string[] }) : {};
+  const used = design.ramps;
   const exclude = new Set(used ? Object.keys(ramps).filter((r) => r !== 'outline' && !used.includes(r)) : []);
-  return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline'), exclude };
+  return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline'), exclude, categories: design.categories ?? CATEGORY, tracked: design.tracked ?? TRACKED };
 }
 
 /** Read a PNG or JPEG (image models and browsers often save JPEG). */
@@ -127,7 +139,7 @@ function convertFigure(img: Rgba, fig: Parameters<typeof cropFigure>[1], scale: 
 }
 
 /** Convert one pose sheet: split, scale from the anchor (pose 1), convert every pose. */
-export function convertSheet(dir: string, manifest: SheetManifest, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number]): ConvertedSheet {
+export function convertSheet(dir: string, manifest: SheetManifest, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number], height = CHARACTER_HEIGHT): ConvertedSheet {
   const found = findSheetFile(dir, manifest.sheet);
   const file = found ?? join(dir, manifest.sheet);
   const errors: string[] = [];
@@ -142,19 +154,19 @@ export function convertSheet(dir: string, manifest: SheetManifest, pal: Palette,
     return { manifest, file, scale: 0, poses: [], errors: [`${manifest.sheet}: found ${figs.length} figures, the manifest lists ${manifest.poses.length} poses`] };
   }
   if (manifest.poses[0]?.role !== 'anchor') errors.push(`${manifest.sheet}: the first pose must be the anchor`);
-  const scale = anchorScale(figs[0]!, CHARACTER_HEIGHT);
+  const scale = anchorScale(figs[0]!, height);
   const poses = figs.map((f, i) => convertFigure(img, f, scale, pal, cell, pivot, manifest.poses[i]!));
   for (const p of poses) if (p.outside) errors.push(`${manifest.sheet}: ${p.entry.anim ?? 'anchor'} #${p.entry.index ?? 0}: ${p.outside} pixels outside the ${cell[0]}x${cell[1]} cell`);
   return { manifest, file, scale, poses, errors };
 }
 
 /** Convert the approved reference image (a single figure) into the canonical sprite. */
-export function convertReference(file: string, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number]): ConvertedPose {
+export function convertReference(file: string, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number], height = CHARACTER_HEIGHT): ConvertedPose {
   const img = readPng(file);
   const figs = splitFigures(foregroundMask(img), img.w, img.h);
   if (!figs.length) throw new Error(`${file}: no figure found`);
   const main = figs.reduce((a, b) => (b.pixels.length > a.pixels.length ? b : a));
-  return convertFigure(img, main, anchorScale(main, CHARACTER_HEIGHT), pal, cell, pivot, { role: 'anchor' });
+  return convertFigure(img, main, anchorScale(main, height), pal, cell, pivot, { role: 'anchor' });
 }
 
 /** Indexed sprite → hex canvas rows (for io.ts). */

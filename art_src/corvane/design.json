@@ -1,0 +1,33 @@
+{
+  "_comment": "Corvane: design lock and colours (Prompt 05). His right arm is Rook`s arm: younger, leaner, warm-skinned (Rook`s skin ramp) with a gold band at the wrist; it must read differently from his grey body in every frame.",
+  "name": "Corvane",
+  "height_px": 117,
+  "ramps": [
+    "ash",
+    "rust",
+    "leather",
+    "gold",
+    "bronze",
+    "skin",
+    "spirit",
+    "silver",
+    "iron"
+  ],
+  "categories": {
+    "ash": "ash skin",
+    "rust": "rust",
+    "leather": "leather",
+    "gold": "gold",
+    "bronze": "gold",
+    "skin": "Rook arm",
+    "spirit": "spirit",
+    "silver": "hair",
+    "iron": "iron"
+  },
+  "tracked": [
+    "ash skin",
+    "rust",
+    "gold",
+    "Rook arm"
+  ]
+}

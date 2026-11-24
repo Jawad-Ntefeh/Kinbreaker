@@ -37,12 +37,12 @@ export function colourShares(s: Indexed, pal: Palette): Shares {
   let total = 0;
   for (const k of s.px) {
     if (k < 0 || k === pal.outline) continue;
-    const cat = CATEGORY[pal.entries[k]!.ramp] ?? 'other';
+    const cat = (pal.categories ?? CATEGORY)[pal.entries[k]!.ramp] ?? 'other';
     counts[cat] = (counts[cat] ?? 0) + 1;
     total++;
   }
   const out: Shares = {};
-  for (const c of [...TRACKED, 'other']) out[c] = total ? (counts[c] ?? 0) / total : 0;
+  for (const c of [...(pal.tracked ?? TRACKED), 'other']) out[c] = total ? (counts[c] ?? 0) / total : 0;
   for (const [c, n] of Object.entries(counts)) if (!(c in out)) out[c] = n / total;
   return out;
 }
@@ -57,10 +57,10 @@ export interface Canonical {
  * Colour drift: a category may move by an absolute amount or a relative amount, whichever is
  * larger; action poses get twice the tolerance (limbs move in and out of view).
  */
-export function colourDrift(shares: Shares, ref: Shares, anchor: boolean): string[] {
+export function colourDrift(shares: Shares, ref: Shares, anchor: boolean, tracked: readonly string[] = TRACKED): string[] {
   const k = anchor ? 1 : 2;
   const out: string[] = [];
-  for (const c of TRACKED) {
+  for (const c of tracked) {
     const a = shares[c] ?? 0;
     const b = ref[c] ?? 0;
     const tol = Math.max(0.04 * k, b * 0.35 * k);
@@ -82,9 +82,9 @@ export function sizeDrift(w: number, h: number, ref: Canonical, tolerance = 3): 
  * 3 px is blocking (every frame of the sheet is at the wrong scale); width and colour drift are
  * warnings (a slightly different stance or lighting doesn't change the scale).
  */
-export function anchorChecks(w: number, h: number, shares: Shares, ref: Canonical): { blocking: string[]; warnings: string[] } {
+export function anchorChecks(w: number, h: number, shares: Shares, ref: Canonical, tracked: readonly string[] = TRACKED): { blocking: string[]; warnings: string[] } {
   const blocking = Math.abs(h - ref.height) > 3 ? [`anchor height ${h} px (canonical ${ref.height})`] : [];
-  const warnings = [...(Math.abs(w - ref.width) > 3 ? [`anchor width ${w} px (canonical ${ref.width})`] : []), ...colourDrift(shares, ref.shares, true)];
+  const warnings = [...(Math.abs(w - ref.width) > 3 ? [`anchor width ${w} px (canonical ${ref.width})`] : []), ...colourDrift(shares, ref.shares, true, tracked)];
   return { blocking, warnings };
 }
 

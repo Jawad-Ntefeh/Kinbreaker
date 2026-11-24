@@ -68,31 +68,31 @@
   "rook_jab_01.png#1": {
     "pass": true,
     "note": "anchor: untouched idle figure (composed sheet)",
-    "image": "74d084f19729"
+    "image": "c29ddc9399b2"
   },
   "rook_jab_01.png#2": {
     "pass": true,
     "note": "anticipation: elbow lifts, guard kept; one arm, pinned near sleeve visible",
-    "image": "74d084f19729"
+    "image": "c29ddc9399b2"
   },
   "rook_jab_01.png#3": {
     "pass": true,
     "note": "launch: far arm half extended, elbow bent",
-    "image": "74d084f19729"
+    "image": "c29ddc9399b2"
   },
   "rook_jab_01.png#4": {
     "pass": true,
     "note": "impact: far arm straight at chest height, fist inside the hitbox; sleeve, cuff, wraps and fist all model-drawn pixels",
-    "image": "74d084f19729"
+    "image": "c29ddc9399b2"
   },
   "rook_jab_01.png#5": {
     "pass": true,
     "note": "recovery: fist pulling back halfway",
-    "image": "74d084f19729"
+    "image": "c29ddc9399b2"
   },
   "rook_jab_01.png#6": {
     "pass": true,
     "note": "settle: nearly back in guard",
-    "image": "74d084f19729"
+    "image": "c29ddc9399b2"
   }
 }

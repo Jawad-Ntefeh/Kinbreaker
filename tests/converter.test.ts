@@ -4,6 +4,7 @@ import {
   anchorScale,
   cleanup,
   cropFigure,
+  defringe,
   deltaE,
   downscale,
   foregroundMask,
@@ -35,13 +36,13 @@ function whiteSheet(w: number, h: number): Rgba {
 }
 
 describe('background removal', () => {
-  it('flood-fills near-white from the edges but keeps white areas inside the character', () => {
+  it('flood-fills near-white from the edges but keeps pale areas inside the character', () => {
     const img = whiteSheet(40, 40);
     rect(img, 10, 5, 20, 30, [80, 20, 30]); // coat
-    rect(img, 15, 15, 6, 6, [250, 250, 248]); // white wrap inside the figure
+    rect(img, 15, 15, 6, 6, [228, 222, 210]); // pale cloth wrap inside the figure (pure-white gaps are holes)
     const m = foregroundMask(img);
     expect(m[0]).toBe(0);
-    expect(m[18 * 40 + 18]).toBe(1); // inner white kept
+    expect(m[18 * 40 + 18]).toBe(1); // inner pale cloth kept
     expect(m[6 * 40 + 12]).toBe(1);
   });
   it('removes soft grey floor shadows connected to the background', () => {
@@ -51,6 +52,28 @@ describe('background removal', () => {
     const m = foregroundMask(img);
     expect(m[31 * 40 + 10]).toBe(0);
     expect(m[20 * 40 + 20]).toBe(1);
+  });
+  it('treats large enclosed white gaps as background (the gap between a fist and the chin)', () => {
+    const img = whiteSheet(60, 60);
+    rect(img, 10, 5, 40, 50, [80, 20, 30]);
+    rect(img, 20, 15, 12, 12, [255, 255, 255]); // enclosed gap, 144 px
+    rect(img, 38, 40, 2, 2, [255, 255, 255]); // eye glint, 4 px
+    const m = foregroundMask(img);
+    expect(m[20 * 60 + 25]).toBe(0);
+    expect(m[40 * 60 + 38]).toBe(1);
+  });
+  it('defringe: rim pixels blended with the white background take the colour from deeper inside', () => {
+    const img = rgba(20, 20);
+    rect(img, 4, 4, 12, 12, [80, 20, 30]);
+    // A light 1 px rim (anti-aliasing against white) around the figure.
+    for (let i = 4; i < 16; i++) for (const [x, y] of [[i, 4], [i, 15], [4, i], [15, i]] as const) {
+      const k = (y * 20 + x) * 4;
+      img.data.set([200, 170, 175, 255], k);
+    }
+    const out = defringe(img);
+    expect([...out.data.slice((4 * 20 + 10) * 4, (4 * 20 + 10) * 4 + 4)]).toEqual([80, 20, 30, 255]);
+    expect(out.data[(0 * 20 + 0) * 4 + 3]).toBe(0); // the silhouette keeps its shape
+    expect(out.data[(4 * 20 + 4) * 4 + 3]).toBe(255);
   });
   it('uses the alpha channel when the background is transparent', () => {
     const img = rgba(20, 20);

@@ -102,6 +102,8 @@ function pct(n: number): string {
 }
 
 function buildCharacter(char: string): void {
+  // The character's own colours only (design.json "ramps").
+  const pal = loadPalette(char);
   const refDir = join(ROOT, 'art_src', char, 'reference');
   const refFile = existsSync(refDir) ? readdirSync(refDir).find((f) => f.endsWith('.png')) : undefined;
   if (!refFile) return;

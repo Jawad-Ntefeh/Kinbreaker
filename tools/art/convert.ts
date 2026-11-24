@@ -32,9 +32,11 @@ export interface BackgroundOptions {
   whiteTolerance: number;
   /** Pale, low-saturation greys connected to the background below the feet count as shadow. */
   shadowTolerance: number;
+  /** Enclosed near-white regions at least this many pixels are background holes. */
+  minHole: number;
 }
 
-export const DEFAULT_BG: BackgroundOptions = { whiteTolerance: 28, shadowTolerance: 70 };
+export const DEFAULT_BG: BackgroundOptions = { whiteTolerance: 28, shadowTolerance: 70, minHole: 12 };
 
 /** True if the image uses its alpha channel for the background (any clearly transparent edge pixel). */
 export function hasAlphaBackground(img: Rgba): boolean {
@@ -103,6 +105,26 @@ export function foregroundMask(img: Rgba, opts: BackgroundOptions = DEFAULT_BG):
     if (x < w - 1) visit(i + 1);
     if (y > 0) visit(i - w);
     if (y < h - 1) visit(i + w);
+  }
+  // Enclosed background: white gaps the edge fill can't reach (between a fist and the chin, a
+  // braid and the shoulder). Pure-white regions larger than a speck are background; tiny ones
+  // (eye glints) and pale cloth (never this close to white) stay.
+  const seen = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    if (seen[i] || mask[i] === 0 || !nearWhite(i, opts.whiteTolerance)) continue;
+    const region: number[] = [i];
+    seen[i] = 1;
+    for (let k = 0; k < region.length; k++) {
+      const j = region[k]!;
+      const x = j % w;
+      const y = (j / w) | 0;
+      for (const n of [x > 0 ? j - 1 : -1, x < w - 1 ? j + 1 : -1, y > 0 ? j - w : -1, y < h - 1 ? j + w : -1]) {
+        if (n < 0 || seen[n] || mask[n] === 0 || !nearWhite(n, opts.whiteTolerance)) continue;
+        seen[n] = 1;
+        region.push(n);
+      }
+    }
+    if (region.length >= opts.minHole) for (const j of region) mask[j] = 0;
   }
   // Soft floor shadows: pale grey pixels touching the background, grown from the background.
   const grow: number[] = [];
@@ -203,6 +225,58 @@ export function cropFigure(img: Rgba, fig: Figure): Rgba {
     out.data[o + 1] = img.data[i * 4 + 1]!;
     out.data[o + 2] = img.data[i * 4 + 2]!;
     out.data[o + 3] = img.data[i * 4 + 3]!;
+  }
+  return out;
+}
+
+/**
+ * Defringe: image-model edges are blended into the white background, so the outer rim of a
+ * figure is lighter than the figure (a pale halo after downscaling). Pixels within `ring` pixels
+ * of the background take the colour of the nearest pixel deeper inside; the silhouette keeps its
+ * shape. Thin parts with no deeper pixel keep their colour.
+ */
+export function defringe(img: Rgba, ring = 2): Rgba {
+  const { w, h, data } = img;
+  const out: Rgba = { w, h, data: new Uint8ClampedArray(data) };
+  const opaque = (i: number) => data[i * 4 + 3]! >= 128;
+  const nbrs = (i: number) => {
+    const x = i % w;
+    const y = (i / w) | 0;
+    return [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1];
+  };
+  // Distance (4-connected steps) from the background; the image border counts as background.
+  const dist = new Int32Array(w * h).fill(-1);
+  const queue: number[] = [];
+  for (let i = 0; i < w * h; i++) {
+    if (!opaque(i)) dist[i] = 0;
+    else if (nbrs(i).includes(-1)) dist[i] = 1;
+    else continue;
+    queue.push(i);
+  }
+  for (let k = 0; k < queue.length; k++) {
+    const i = queue[k]!;
+    if (dist[i]! > ring) continue;
+    for (const n of nbrs(i)) if (n >= 0 && dist[n] === -1) {
+      dist[n] = dist[i]! + 1;
+      queue.push(n);
+    }
+  }
+  // Bleed colours outward from the first pixels deeper than the ring.
+  let src: number[] = [];
+  for (let i = 0; i < w * h; i++) if (opaque(i) && (dist[i] === -1 || dist[i]! > ring)) src.push(i);
+  const done = new Uint8Array(w * h);
+  for (const i of src) done[i] = 1;
+  while (src.length) {
+    const next: number[] = [];
+    for (const i of src) for (const n of nbrs(i)) {
+      if (n < 0 || done[n] || !opaque(n)) continue;
+      done[n] = 1;
+      out.data[n * 4] = out.data[i * 4]!;
+      out.data[n * 4 + 1] = out.data[i * 4 + 1]!;
+      out.data[n * 4 + 2] = out.data[i * 4 + 2]!;
+      next.push(n);
+    }
+    src = next;
   }
   return out;
 }

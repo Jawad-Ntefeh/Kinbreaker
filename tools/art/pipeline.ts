@@ -8,6 +8,7 @@ import jpeg from 'jpeg-js';
 import { PNG } from 'pngjs';
 import {
   addOutline,
+  defringe,
   anchorScale,
   cleanup,
   cropFigure,
@@ -31,12 +32,17 @@ export interface Palette {
   ramps: Record<string, string[]>;
   entries: PaletteEntry[];
   outline: number;
+  /** Ramps this character never uses (design.json "ramps" lists the ones it does). */
+  exclude: Set<string>;
 }
 
-export function loadPalette(): Palette {
+export function loadPalette(char?: string): Palette {
   const ramps = (JSON.parse(readFileSync(join(ROOT, 'art_src/palette.json'), 'utf8')) as { ramps: Record<string, string[]> }).ramps;
   const entries = paletteEntries(ramps);
-  return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline') };
+  const designFile = char ? join(ROOT, 'art_src', char, 'design.json') : '';
+  const used = designFile && existsSync(designFile) ? (JSON.parse(readFileSync(designFile, 'utf8')) as { ramps?: string[] }).ramps : undefined;
+  const exclude = new Set(used ? Object.keys(ramps).filter((r) => r !== 'outline' && !used.includes(r)) : []);
+  return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline'), exclude };
 }
 
 /** Read a PNG or JPEG (image models and browsers often save JPEG). */
@@ -97,8 +103,8 @@ export interface ConvertedSheet {
 }
 
 function convertFigure(img: Rgba, fig: Parameters<typeof cropFigure>[1], scale: number, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number], entry: PoseEntry): ConvertedPose {
-  const small = downscale(cropFigure(img, fig), scale);
-  const snap = snapToPalette(small, pal.entries);
+  const small = downscale(defringe(cropFigure(img, fig)), scale);
+  const snap = snapToPalette(small, pal.entries, pal.exclude);
   cleanup(snap.sprite, pal.outline);
   const sprite = addOutline(snap.sprite, pal.outline);
   const foot = supportingFoot(sprite, pal.outline);

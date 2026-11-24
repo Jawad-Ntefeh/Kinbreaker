@@ -12,7 +12,8 @@
     "art-spec": "ART_SPEC_WRITE=cells vitest run tests/art_spec.test.ts && ART_SPEC_WRITE=docs vitest run tests/art_spec.test.ts",
     "art": "tsx tools/art/build.ts",
     "art:legacy": "tsx tools/art/legacy/build.ts",
-    "art-requests": "tsx tools/art/prompts.ts"
+    "art-requests": "tsx tools/art/prompts.ts",
+    "art-compose": "tsx tools/art/compose.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

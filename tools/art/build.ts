@@ -182,10 +182,6 @@ function buildCharacter(char: string): void {
   const moves = loadMoves(char);
   const anims: BuiltAnim[] = [];
   for (const [name, frames] of [...byAnim].sort()) {
-    if (blocked.has(name)) {
-      notes.push(`${char} ${name}: not built (${blocked.get(name)})`);
-      continue;
-    }
     const move = moves.get(name) ?? null;
     const timing = move
       ? movePoses(move).map((p) => ({ dur: p.dur, impact: p.phase === 'impact', phase: p.phase }))
@@ -202,7 +198,15 @@ function buildCharacter(char: string): void {
       continue;
     }
     const st = STATE_SPECS.find((s) => s.name === name);
-    anims.push({ name, loop: !!st?.loop, move, frames: timing.map((t, i) => ({ ...t, pose: frames.get(i)! })) });
+    const anim: BuiltAnim = { name, loop: !!st?.loop, move, frames: timing.map((t, i) => ({ ...t, pose: frames.get(i)! })) };
+    // Review images for every complete animation, including ones still waiting for review.
+    writeGif(join(REVIEW, `${char}_${name}_${SCALE}x.gif`), anim.frames.map((f) => ({ canvas: preview(f.pose.frame, pivot).scaled(SCALE), dur: f.dur })), BG);
+    writePng(join(REVIEW, `${char}_${name}_sheet_${SCALE}x.png`), contactSheet(anim, pivot).scaled(SCALE));
+    if (blocked.has(name)) {
+      notes.push(`${char} ${name}: not built (${blocked.get(name)})`);
+      continue;
+    }
+    anims.push(anim);
   }
 
   const sheetFile = join(ROOT, 'public/art/characters', `${char}.png`);
@@ -227,8 +231,6 @@ function buildCharacter(char: string): void {
         return f.impact ? { cell: n++, dur: f.dur, impact: true } : { cell: n++, dur: f.dur };
       }),
     };
-    writeGif(join(REVIEW, `${char}_${a.name}_${SCALE}x.gif`), a.frames.map((f) => ({ canvas: preview(f.pose.frame, pivot).scaled(SCALE), dur: f.dur })), BG);
-    writePng(join(REVIEW, `${char}_${a.name}_sheet_${SCALE}x.png`), contactSheet(a, pivot).scaled(SCALE));
   }
   writePng(sheetFile, sheet);
   mkdirSync(join(ROOT, 'data/anims'), { recursive: true });

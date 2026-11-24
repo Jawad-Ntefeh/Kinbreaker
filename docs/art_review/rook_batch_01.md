@@ -40,5 +40,14 @@ Scale 0.1256 (anchor → 108 px). Image `c33f293e54cb` (`rook_walk_forward_02.jp
 
 ## rook_jab_01.png
 
-Waiting for the image.
+Scale 0.2007 (anchor → 108 px). Image `74d084f19729` (`rook_jab_01.png`).
+
+| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | anchor | 78x107 | 4.7 / 8.7 | coat 21%, gold 1%, skin 7%, darks 52%, wraps 16% | wraps 16% (reference 10%) | ok | FAIL |
+| 2 | rook_jab 0 | 78x107 | 4.7 / 8.7 | coat 21%, gold 1%, skin 7%, darks 52%, wraps 16% | ok | ok | PASS |
+| 3 | rook_jab 1 | 78x107 | 4.7 / 8.7 | coat 21%, gold 1%, skin 7%, darks 52%, wraps 16% | ok | ok | PASS |
+| 4 | rook_jab 2 | 85x107 | 4.7 / 8.7 | coat 22%, gold 1%, skin 7%, darks 51%, wraps 16% | ok | ok | PASS |
+| 5 | rook_jab 3 | 78x107 | 4.7 / 8.7 | coat 21%, gold 1%, skin 7%, darks 52%, wraps 16% | ok | ok | PASS |
+| 6 | rook_jab 4 | 78x107 | 4.7 / 8.7 | coat 21%, gold 1%, skin 7%, darks 52%, wraps 16% | ok | ok | PASS |
 

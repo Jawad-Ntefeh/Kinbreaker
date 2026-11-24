@@ -6,6 +6,7 @@
   "sheet_cells": [8,2],
   "anims": {
     "idle": {"loop":true,"frames":[{"cell":0,"dur":10},{"cell":1,"dur":10},{"cell":2,"dur":10},{"cell":3,"dur":10}]},
-    "walk_forward": {"loop":true,"frames":[{"cell":4,"dur":6},{"cell":5,"dur":6},{"cell":6,"dur":6},{"cell":7,"dur":6},{"cell":8,"dur":6},{"cell":9,"dur":6}]}
+    "rook_jab": {"move":"rook_jab","frames":[{"cell":4,"dur":5},{"cell":5,"dur":4},{"cell":6,"dur":2,"impact":true},{"cell":7,"dur":7},{"cell":8,"dur":6}]},
+    "walk_forward": {"loop":true,"frames":[{"cell":9,"dur":6},{"cell":10,"dur":6},{"cell":11,"dur":6},{"cell":12,"dur":6},{"cell":13,"dur":6},{"cell":14,"dur":6}]}
   }
 }

@@ -247,3 +247,23 @@ describe('floor lines and line fragments', () => {
     expect(mask[40 * 100 + 40]).toBe(1);
   });
 });
+
+describe('accents', () => {
+  it('a small bright detail survives the downscale and the island cleanup', async () => {
+    const { preserveAccents } = await import('../tools/art/convert');
+    const img = rgba(40, 40);
+    rect(img, 0, 0, 40, 40, [112, 96, 102]); // grey face
+    rect(img, 13, 13, 4, 4, [207, 230, 255]); // eye glow: 16 of a 10x10 block's 100 px
+    const pal = paletteEntries({ outline: ['#1a1418'], ash: ['#706066'], spirit: ['#cfe6ff'] });
+    const plain = downscale(img, 0.1);
+    const snapPlain = snapToPalette(plain, pal);
+    expect(pal[snapPlain.sprite.px[1 * 4 + 1]!]!.ramp).toBe('ash'); // averaged away
+    const kept = downscale(img, 0.1);
+    expect(preserveAccents(img, kept, pal, [{ ramp: 'spirit', max_de: 14, min_share: 0.15 }])).toBe(1);
+    const s = snapToPalette(kept, pal).sprite;
+    const eye = s.px[1 * 4 + 1]!;
+    expect(pal[eye]!.ramp).toBe('spirit');
+    cleanup(s, 0, new Set([eye]));
+    expect(s.px[1 * 4 + 1]).toBe(eye);
+  });
+});

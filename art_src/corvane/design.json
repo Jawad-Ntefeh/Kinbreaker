@@ -29,5 +29,12 @@
     "rust",
     "gold",
     "Rook arm"
+  ],
+  "accents": [
+    {
+      "ramp": "spirit",
+      "max_de": 14,
+      "min_share": 0.25
+    }
   ]
 }

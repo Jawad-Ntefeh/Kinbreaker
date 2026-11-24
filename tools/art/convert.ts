@@ -375,6 +375,76 @@ export function dropLineFragments(img: Rgba, mask: Uint8Array): number {
   return dropped;
 }
 
+export interface Accent {
+  /** Palette ramp of the accent (e.g. "spirit" for an eye glow, "gold" for a band). */
+  ramp: string;
+  /** Source pixels within this ΔE of the ramp count as the accent. */
+  max_de: number;
+  /** A sprite pixel whose source block is at least this share accent takes the accent colour. */
+  min_share: number;
+}
+
+/**
+ * Feature-preserving downscale for accents: area averaging dilutes small high-contrast details (a
+ * one-pixel eye glow averages into the face, a thin gold band into the skin). After `downscale`,
+ * every output pixel whose source block holds at least `min_share` accent pixels takes the mean
+ * colour of those accent pixels instead of the block average. Everything else stays averaged.
+ */
+export function preserveAccents(src: Rgba, small: Rgba, entries: PaletteEntry[], accents: readonly Accent[]): number {
+  if (!accents.length) return 0;
+  const sx = src.w / small.w;
+  const sy = src.h / small.h;
+  const cache = new Map<number, number>();
+  /** Which accent a source pixel belongs to (index), or -1. */
+  const accentOf = (i: number): number => {
+    const r = src.data[i * 4]!;
+    const g = src.data[i * 4 + 1]!;
+    const b = src.data[i * 4 + 2]!;
+    const key = (r << 16) | (g << 8) | b;
+    let hit = cache.get(key);
+    if (hit === undefined) {
+      const lab = rgbToLab(r, g, b);
+      hit = accents.findIndex((a) => entries.some((e) => e.ramp === a.ramp && deltaE(lab, e.lab) <= a.max_de));
+      cache.set(key, hit);
+    }
+    return hit;
+  };
+  let changed = 0;
+  for (let oy = 0; oy < small.h; oy++)
+    for (let ox = 0; ox < small.w; ox++) {
+      const o = (oy * small.w + ox) * 4;
+      if (small.data[o + 3]! < 128) continue;
+      const sums = accents.map(() => [0, 0, 0, 0]);
+      let opaque = 0;
+      for (let y = Math.floor(oy * sy); y < Math.min(src.h, Math.ceil((oy + 1) * sy)); y++)
+        for (let x = Math.floor(ox * sx); x < Math.min(src.w, Math.ceil((ox + 1) * sx)); x++) {
+          const i = y * src.w + x;
+          if (src.data[i * 4 + 3]! < 128) continue;
+          opaque++;
+          const a = accentOf(i);
+          if (a < 0) continue;
+          const t = sums[a]!;
+          t[0] += src.data[i * 4]!;
+          t[1] += src.data[i * 4 + 1]!;
+          t[2] += src.data[i * 4 + 2]!;
+          t[3]!++;
+        }
+      // The accent with the largest share wins, if it reaches its threshold.
+      let best = -1;
+      accents.forEach((a, k) => {
+        const n = sums[k]![3]!;
+        if (opaque && n / opaque >= a.min_share && (best < 0 || n > sums[best]![3]!)) best = k;
+      });
+      if (best < 0) continue;
+      const t = sums[best]!;
+      small.data[o] = Math.round(t[0]! / t[3]!);
+      small.data[o + 1] = Math.round(t[1]! / t[3]!);
+      small.data[o + 2] = Math.round(t[2]! / t[3]!);
+      changed++;
+    }
+  return changed;
+}
+
 // ---------------------------------------------------------------- 3-4. scale
 
 /** One factor per sheet: the anchor figure's height becomes `targetHeight`. */
@@ -531,7 +601,8 @@ function at(s: Indexed, x: number, y: number): number {
 }
 
 /** Remove single pixels with no 4-neighbours, and recolour tiny islands of colour to their surroundings. */
-export function cleanup(s: Indexed, outline: number): { orphans: number; islands: number } {
+/** `keep`: palette indices never replaced as one-pixel islands (accents such as an eye glow). */
+export function cleanup(s: Indexed, outline: number, keep: ReadonlySet<number> = new Set()): { orphans: number; islands: number } {
   let orphans = 0;
   let islands = 0;
   for (let y = 0; y < s.h; y++) {
@@ -548,7 +619,7 @@ export function cleanup(s: Indexed, outline: number): { orphans: number; islands
   for (let y = 0; y < s.h; y++) {
     for (let x = 0; x < s.w; x++) {
       const c = copy[y * s.w + x]!;
-      if (c < 0 || c === outline) continue;
+      if (c < 0 || c === outline || keep.has(c)) continue;
       const ns = N8.map(([dx, dy]) => (x + dx < 0 || y + dy < 0 || x + dx >= s.w || y + dy >= s.h ? -1 : copy[(y + dy) * s.w + x + dx]!));
       if (ns.some((n) => n === c)) continue;
       // A one-pixel island: take the most common neighbouring colour (ignoring transparency).

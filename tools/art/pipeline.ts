@@ -10,6 +10,8 @@ import { PNG } from 'pngjs';
 import {
   addOutline,
   defringe,
+  preserveAccents,
+  type Accent,
   anchorScale,
   cleanup,
   cropFigure,
@@ -47,16 +49,18 @@ export interface Palette {
   categories: Record<string, string>;
   /** Categories whose share is checked against the canonical (design.json "tracked"). */
   tracked: readonly string[];
+  /** Small details kept through the downscale (design.json "accents"). */
+  accents: readonly Accent[];
 }
 
 export function loadPalette(char?: string): Palette {
   const ramps = (JSON.parse(readFileSync(join(ROOT, 'art_src/palette.json'), 'utf8')) as { ramps: Record<string, string[]> }).ramps;
   const entries = paletteEntries(ramps);
   const designFile = char ? join(ROOT, 'art_src', char, 'design.json') : '';
-  const design = designFile && existsSync(designFile) ? (JSON.parse(readFileSync(designFile, 'utf8')) as { ramps?: string[]; categories?: Record<string, string>; tracked?: string[] }) : {};
+  const design = designFile && existsSync(designFile) ? (JSON.parse(readFileSync(designFile, 'utf8')) as { ramps?: string[]; categories?: Record<string, string>; tracked?: string[]; accents?: Accent[] }) : {};
   const used = design.ramps;
   const exclude = new Set(used ? Object.keys(ramps).filter((r) => r !== 'outline' && !used.includes(r)) : []);
-  return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline'), exclude, categories: design.categories ?? CATEGORY, tracked: design.tracked ?? TRACKED };
+  return { ramps, entries, outline: entries.findIndex((e) => e.ramp === 'outline'), exclude, categories: design.categories ?? CATEGORY, tracked: design.tracked ?? TRACKED, accents: design.accents ?? [] };
 }
 
 /** Read a PNG or JPEG (image models and browsers often save JPEG). */
@@ -117,9 +121,12 @@ export interface ConvertedSheet {
 }
 
 function convertFigure(img: Rgba, fig: Parameters<typeof cropFigure>[1], scale: number, pal: Palette, cell: readonly [number, number], pivot: readonly [number, number], entry: PoseEntry): ConvertedPose {
-  const small = downscale(defringe(cropFigure(img, fig)), scale);
+  const src = defringe(cropFigure(img, fig));
+  const small = downscale(src, scale);
+  preserveAccents(src, small, pal.entries, pal.accents);
   const snap = snapToPalette(small, pal.entries, pal.exclude);
-  cleanup(snap.sprite, pal.outline);
+  const keep = new Set(pal.entries.flatMap((e, k) => (pal.accents.some((a) => a.ramp === e.ramp) ? [k] : [])));
+  cleanup(snap.sprite, pal.outline, keep);
   const sprite = addOutline(snap.sprite, pal.outline);
   const foot = supportingFoot(sprite, pal.outline);
   const pivotX = entry.pivot_x ?? foot.x;

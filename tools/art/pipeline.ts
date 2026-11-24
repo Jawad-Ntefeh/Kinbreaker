@@ -19,6 +19,8 @@ import {
   place,
   snapToPalette,
   splitFigures,
+  stripFloorLine,
+  dropLineFragments,
   supportingFoot,
   type Indexed,
   type PaletteEntry,
@@ -131,7 +133,11 @@ export function convertSheet(dir: string, manifest: SheetManifest, pal: Palette,
   const errors: string[] = [];
   if (!found) return { manifest, file, scale: 0, poses: [], errors: [], waiting: true };
   const img = readPng(file);
-  const figs = splitFigures(foregroundMask(img), img.w, img.h);
+  const mask = foregroundMask(img);
+  // Floor lines under the figures go first (at most 3% of the image height per figure).
+  for (const f of splitFigures(mask, img.w, img.h)) stripFloorLine(img, mask, f, Math.ceil(img.h * 0.03));
+  dropLineFragments(img, mask);
+  const figs = splitFigures(mask, img.w, img.h);
   if (figs.length !== manifest.poses.length) {
     return { manifest, file, scale: 0, poses: [], errors: [`${manifest.sheet}: found ${figs.length} figures, the manifest lists ${manifest.poses.length} poses`] };
   }

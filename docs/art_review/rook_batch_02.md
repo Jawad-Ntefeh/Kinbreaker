@@ -6,25 +6,70 @@ Canonical rook: 79x108 px; coat 24%, gold 5%, skin 9%, darks 49%, wraps 10%.
 
 ## rook_intro_01.png
 
-Waiting for the image.
+Scale 0.2134 (anchor → 108 px). Image `3e3a404f8f4a` (`rook_intro_01.jpeg`).
+
+| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | anchor | 82x108 | 4.0 / 7.6 | coat 24%, gold 3%, skin 11%, darks 49%, wraps 10% | ok | ok | PASS |
+| 2 | intro 0 | 47x112 | 4.1 / 8.2 | coat 29%, gold 3%, skin 11%, darks 42%, wraps 13% | ok | ok | PASS |
+| 3 | intro 1 | 56x112 | 4.1 / 8.1 | coat 29%, gold 4%, skin 11%, darks 41%, wraps 12% | ok | ok | PASS |
+| 4 | intro 2 | 65x104 | 4.0 / 7.8 | coat 25%, gold 3%, skin 10%, darks 50%, wraps 10% | ok | ok | PASS |
+| 5 | intro 3 | 75x108 | 4.0 / 7.7 | coat 26%, gold 4%, skin 11%, darks 48%, wraps 10% | ok | ok | PASS |
 
 ## rook_b02_01.png
 
-Waiting for the image.
+Scale 0.1971 (anchor → 108 px). Image `d7f6a12ce2aa` (`rook_b02_01.jpeg`).
+
+| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | anchor | 80x108 | 4.2 / 7.8 | coat 24%, gold 4%, skin 11%, darks 44%, wraps 12% | ok | ok | PASS |
+| 2 | crouch 0 | 65x87 | 4.2 / 8.1 | coat 24%, gold 3%, skin 11%, darks 47%, wraps 11% | ok | ok | PASS |
+| 3 | crouch 1 | 67x73 | 4.1 / 8.1 | coat 25%, gold 3%, skin 9%, darks 52%, wraps 8% | ok | ok | PASS |
+| 4 | block_crouch 0 | 64x72 | 4.2 / 8.1 | coat 24%, gold 2%, skin 9%, darks 52%, wraps 9% | ok | ok | PASS |
 
 ## rook_b02_02.png
 
-Waiting for the image.
+Scale 0.2333 (anchor → 108 px). Image `10d4827a9627` (`rook_b02_02.jpeg`).
+
+| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | anchor | 76x108 | 4.0 / 7.7 | coat 23%, gold 4%, skin 10%, darks 50%, wraps 11% | ok | ok | PASS |
+| 2 | block_stand 0 | 70x106 | 4.0 / 7.7 | coat 22%, gold 3%, skin 11%, darks 50%, wraps 11% | ok | ok | PASS |
+| 3 | blockstun_stand 0 | 65x102 | 4.0 / 7.8 | coat 25%, gold 2%, skin 10%, darks 49%, wraps 12% | ok | ok | PASS |
+| 4 | hitstun_high 0 | 70x102 | 4.2 / 8.3 | coat 25%, gold 3%, skin 12%, darks 48%, wraps 10% | ok | ok | PASS |
+| 5 | hitstun_high 1 | 65x105 | 4.1 / 7.9 | coat 24%, gold 4%, skin 11%, darks 48%, wraps 10% | ok | ok | PASS |
 
 ## rook_b02_03.png
 
-Waiting for the image.
+Scale 0.2517 (anchor → 108 px). Image `0904d151a45c` (`rook_b02_03.png`).
+
+| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | anchor | 76x108 | 4.3 / 7.7 | coat 23%, gold 4%, skin 10%, darks 50%, wraps 11% | ok | ok | PASS |
+| 2 | hitstun_mid 0 | 57x85 | 4.3 / 8.3 | coat 19%, gold 1%, skin 6%, darks 60%, wraps 14% | ok | ok | PASS |
+| 3 | hitstun_mid 1 | 74x101 | 4.2 / 7.6 | coat 22%, gold 3%, skin 9%, darks 52%, wraps 12% | ok | ok | PASS |
+| 4 | knockdown 0 | 91x101 | 4.1 / 7.7 | coat 23%, gold 4%, skin 8%, darks 53%, wraps 10% | ok | ok | PASS |
+| 5 | knockdown 1 | 101x24 | 4.1 / 8.0 | coat 20%, gold 3%, skin 9%, darks 50%, wraps 15% | ok | ok | PASS |
 
 ## rook_wake_up_01.png
 
-Waiting for the image.
+Scale 0.2204 (anchor → 108 px). Image `2b1567359bca` (`rook_wake_up_01.jpeg`).
+
+| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | anchor | 82x108 | 4.5 / 8.1 | coat 31%, gold 4%, skin 10%, darks 44%, wraps 9% | ok | ok | PASS |
+| 2 | wake_up 0 | 79x66 | 4.5 / 8.2 | coat 31%, gold 2%, skin 8%, darks 47%, wraps 9% | ok | ok | PASS |
+| 3 | wake_up 1 | 70x80 | 4.2 / 7.9 | coat 28%, gold 3%, skin 7%, darks 51%, wraps 8% | ok | ok | PASS |
+| 4 | wake_up 2 | 69x100 | 4.5 / 8.2 | coat 30%, gold 4%, skin 10%, darks 45%, wraps 9% | ok | ok | PASS |
 
 ## rook_ko_01.png
 
-Waiting for the image.
+Scale 0.2318 (anchor → 108 px). Image `4a86415aa92f` (`rook_ko_01.jpeg`).
+
+| # | Pose | Size | Colour error (mean / p95 ΔE) | Colours | Checks | Visual | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | anchor | 77x107 | 4.2 / 7.9 | coat 26%, gold 3%, skin 11%, darks 49%, wraps 10% | ok | ok | PASS |
+| 2 | ko 0 | 62x98 | 4.3 / 8.3 | coat 29%, gold 2%, skin 10%, darks 47%, wraps 10% | ok | ok | PASS |
+| 3 | ko 1 | 71x72 | 4.1 / 7.9 | coat 26%, gold 2%, skin 8%, darks 53%, wraps 8% | ok | ok | PASS |
+| 4 | ko 2 | 120x26 | 4.4 / 7.9 | coat 41%, gold 1%, skin 5%, darks 39%, wraps 12% | ok | ok | PASS |
 

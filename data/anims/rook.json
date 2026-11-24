@@ -3,11 +3,21 @@
   "sheet": "art/characters/rook.png",
   "cell": [136,128],
   "pivot": [53,123],
-  "sheet_cells": [8,2],
+  "sheet_cells": [8,5],
   "anims": {
-    "idle": {"loop":true,"frames":[{"cell":0,"dur":10},{"cell":1,"dur":10},{"cell":2,"dur":10},{"cell":3,"dur":10}]},
-    "rook_jab": {"move":"rook_jab","frames":[{"cell":4,"dur":5},{"cell":5,"dur":4},{"cell":6,"dur":2,"impact":true},{"cell":7,"dur":7},{"cell":8,"dur":6}]},
-    "walk_forward": {"loop":true,"frames":[{"cell":9,"dur":6},{"cell":10,"dur":6},{"cell":11,"dur":6},{"cell":12,"dur":6},{"cell":13,"dur":6},{"cell":14,"dur":6}]},
-    "walk_back": {"loop":true,"frames":[{"cell":14,"dur":6},{"cell":13,"dur":6},{"cell":12,"dur":6},{"cell":11,"dur":6},{"cell":10,"dur":6},{"cell":9,"dur":6}]}
+    "block_crouch": {"frames":[{"cell":0,"dur":8}]},
+    "block_stand": {"frames":[{"cell":1,"dur":8}]},
+    "blockstun_stand": {"frames":[{"cell":2,"dur":8}]},
+    "crouch": {"frames":[{"cell":3,"dur":4},{"cell":4,"dur":4}]},
+    "hitstun_high": {"frames":[{"cell":5,"dur":6},{"cell":6,"dur":6}]},
+    "hitstun_mid": {"frames":[{"cell":7,"dur":6},{"cell":8,"dur":6}]},
+    "idle": {"loop":true,"frames":[{"cell":9,"dur":10},{"cell":10,"dur":10},{"cell":11,"dur":10},{"cell":12,"dur":10}]},
+    "intro": {"frames":[{"cell":13,"dur":15},{"cell":14,"dur":15},{"cell":15,"dur":15},{"cell":16,"dur":15}]},
+    "knockdown": {"frames":[{"cell":17,"dur":6},{"cell":18,"dur":6}]},
+    "ko": {"frames":[{"cell":19,"dur":8},{"cell":20,"dur":8},{"cell":21,"dur":8}]},
+    "rook_jab": {"move":"rook_jab","frames":[{"cell":22,"dur":5},{"cell":23,"dur":4},{"cell":24,"dur":2,"impact":true},{"cell":25,"dur":7},{"cell":26,"dur":6}]},
+    "wake_up": {"frames":[{"cell":27,"dur":7},{"cell":28,"dur":7},{"cell":29,"dur":7}]},
+    "walk_forward": {"loop":true,"frames":[{"cell":30,"dur":6},{"cell":31,"dur":6},{"cell":32,"dur":6},{"cell":33,"dur":6},{"cell":34,"dur":6},{"cell":35,"dur":6}]},
+    "walk_back": {"loop":true,"frames":[{"cell":35,"dur":6},{"cell":34,"dur":6},{"cell":33,"dur":6},{"cell":32,"dur":6},{"cell":31,"dur":6},{"cell":30,"dur":6}]}
   }
 }

@@ -252,6 +252,13 @@ for (const char of readdirSync(join(ROOT, 'art_src')).filter((d) => existsSync(j
     writeFileSync(join(ROOT, 'docs/art_requests', `${char}_${batch}.md`), lines.join('\n'));
     const dir = join(ROOT, 'art_src', char, 'raw', batch);
     mkdirSync(dir, { recursive: true });
+    // Keep hand-set pivot overrides (pivot_x) from the existing manifest.
+    const prev = existsSync(join(dir, 'manifest.json')) ? (JSON.parse(readFileSync(join(dir, 'manifest.json'), 'utf8')) as { sheets?: SheetManifest[] }).sheets ?? [] : [];
+    for (const s of sheets)
+      s.manifest.poses.forEach((p, i) => {
+        const old = prev.find((m) => m.sheet === s.manifest.sheet)?.poses[i];
+        if (old?.pivot_x !== undefined && old.anim === p.anim && old.index === p.index) p.pivot_x = old.pivot_x;
+      });
     writeFileSync(join(dir, 'manifest.json'), JSON.stringify({ sheets: sheets.map((s) => s.manifest) }, null, 2) + '\n');
     console.log(`docs/art_requests/${char}_${batch}.md: ${sheets.length} sheets (${sheets.map((s) => s.manifest.sheet).join(', ')})`);
   }

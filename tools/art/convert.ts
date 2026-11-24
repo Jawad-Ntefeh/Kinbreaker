@@ -281,6 +281,100 @@ export function defringe(img: Rgba, ring = 2): Rgba {
   return out;
 }
 
+/**
+ * Floor lines: image models often draw a thin near-black ground line under each figure. From the
+ * figure's bottom upward, a row is part of the line while it spans at least 50% of the figure's
+ * width and at least 85% of its pixels are near-black or grey (the line and its anti-aliased
+ * edges); boot rows are too narrow and coat rows too red, so the first of those stops it.
+ * Returns the number of rows removed.
+ */
+export function stripFloorLine(img: Rgba, mask: Uint8Array, fig: Figure, maxRows: number): number {
+  const { x0, x1, y0, y1 } = fig.box;
+  const lineLike = (i: number) => {
+    const r = img.data[i * 4]!;
+    const g = img.data[i * 4 + 1]!;
+    const b = img.data[i * 4 + 2]!;
+    return Math.max(r, g, b) <= 70 || Math.max(r, g, b) - Math.min(r, g, b) <= 16;
+  };
+  let removed = 0;
+  for (let y = y1 - 1; y >= y0 && removed < maxRows; y--) {
+    let n = 0;
+    let like = 0;
+    for (let x = x0; x < x1; x++) {
+      const i = y * img.w + x;
+      if (!mask[i]) continue;
+      n++;
+      if (lineLike(i)) like++;
+    }
+    if (n < (x1 - x0) * 0.5 || like < n * 0.85) break;
+    for (let x = x0; x < x1; x++) mask[y * img.w + x] = 0;
+    removed++;
+  }
+  return removed;
+}
+
+/**
+ * Line fragments: small detached marks the image model adds (dashes of a floor line under an
+ * airborne figure, motion lines by a snapping head). A detached piece with at least 85% of its
+ * pixels near-black or grey is dropped when it is smaller than 1% of the largest piece, or a thin
+ * strip (at most 2% of the image tall, at least 4 times as wide). Returns the count.
+ */
+export function dropLineFragments(img: Rgba, mask: Uint8Array): number {
+  const { w, h } = img;
+  const label = new Int32Array(w * h).fill(-1);
+  const comps: number[][] = [];
+  for (let i = 0; i < w * h; i++) {
+    if (!mask[i] || label[i] !== -1) continue;
+    const c: number[] = [i];
+    label[i] = comps.length;
+    for (let k = 0; k < c.length; k++) {
+      const j = c[k]!;
+      const x = j % w;
+      const y = (j / w) | 0;
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          const n = ny * w + nx;
+          if (mask[n] && label[n] === -1) {
+            label[n] = comps.length;
+            c.push(n);
+          }
+        }
+    }
+    comps.push(c);
+  }
+  const largest = Math.max(0, ...comps.map((c) => c.length));
+  let dropped = 0;
+  for (const c of comps) {
+    let x0 = w;
+    let x1 = 0;
+    let y0 = h;
+    let y1 = 0;
+    for (const i of c) {
+      const x = i % w;
+      const y = (i / w) | 0;
+      x0 = Math.min(x0, x);
+      x1 = Math.max(x1, x);
+      y0 = Math.min(y0, y);
+      y1 = Math.max(y1, y);
+    }
+    const strip = y1 - y0 + 1 <= h * 0.02 && x1 - x0 + 1 >= (y1 - y0 + 1) * 4;
+    if (c.length >= largest * 0.01 && !strip) continue;
+    const like = c.filter((i) => {
+      const r = img.data[i * 4]!;
+      const g = img.data[i * 4 + 1]!;
+      const b = img.data[i * 4 + 2]!;
+      return Math.max(r, g, b) <= 70 || Math.max(r, g, b) - Math.min(r, g, b) <= 16;
+    }).length;
+    if (like < c.length * 0.85) continue;
+    for (const i of c) mask[i] = 0;
+    dropped++;
+  }
+  return dropped;
+}
+
 // ---------------------------------------------------------------- 3-4. scale
 
 /** One factor per sheet: the anchor figure's height becomes `targetHeight`. */

@@ -5,6 +5,8 @@ import {
   cleanup,
   cropFigure,
   defringe,
+  dropLineFragments,
+  stripFloorLine,
   deltaE,
   downscale,
   foregroundMask,
@@ -214,5 +216,34 @@ describe('anchor checks', () => {
     expect(narrow.blocking).toEqual([]);
     expect(narrow.warnings.length).toBe(2);
     expect(anchorChecks(79, 103, ref.shares, ref).blocking).toEqual(['anchor height 103 px (canonical 108)']);
+  });
+});
+
+describe('floor lines and line fragments', () => {
+  it('strips a near-black floor line under the feet but keeps the boots', () => {
+    const img = whiteSheet(60, 60);
+    rect(img, 20, 5, 20, 40, [90, 20, 30]); // body
+    rect(img, 18, 45, 6, 6, [60, 40, 30]); // back boot
+    rect(img, 36, 45, 6, 6, [60, 40, 30]); // front boot
+    rect(img, 10, 51, 40, 3, [12, 8, 10]); // floor line
+    rect(img, 10, 54, 40, 1, [150, 148, 149]); // its grey anti-aliased edge
+    const mask = foregroundMask(img);
+    const fig = splitFigures(mask, 60, 60)[0]!;
+    expect(stripFloorLine(img, mask, fig, 10)).toBe(4);
+    expect(mask[52 * 60 + 12]).toBe(0);
+    expect(mask[48 * 60 + 20]).toBe(1); // boot kept
+  });
+  it('drops small detached dark marks and thin dark strips, keeps the figure', () => {
+    const img = whiteSheet(100, 100);
+    rect(img, 30, 10, 30, 70, [90, 20, 30]); // figure
+    rect(img, 20, 15, 2, 2, [20, 15, 18]); // motion mark
+    rect(img, 25, 92, 40, 2, [15, 10, 12]); // floor dashes under an airborne figure
+    rect(img, 70, 40, 3, 3, [200, 150, 120]); // small skin-coloured piece: kept
+    const mask = foregroundMask(img);
+    expect(dropLineFragments(img, mask)).toBe(2);
+    expect(mask[15 * 100 + 20]).toBe(0);
+    expect(mask[92 * 100 + 40]).toBe(0);
+    expect(mask[41 * 100 + 71]).toBe(1);
+    expect(mask[40 * 100 + 40]).toBe(1);
   });
 });

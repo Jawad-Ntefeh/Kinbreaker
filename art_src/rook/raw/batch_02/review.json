@@ -1,0 +1,138 @@
+{
+  "_comment": "Visual review (design lock: one arm, the left, on the far side; pinned near sleeve with the gold pin; braid with silver band; wraps; knee-length torn oxblood coat with bronze trim; facing right). Each verdict carries the image fingerprint.",
+  "rook_intro_01.png#1": {
+    "pass": true,
+    "note": "anchor",
+    "image": "3e3a404f8f4a"
+  },
+  "rook_intro_01.png#2": {
+    "pass": true,
+    "note": "grips the wrap end in her teeth, one arm",
+    "image": "3e3a404f8f4a"
+  },
+  "rook_intro_01.png#3": {
+    "pass": true,
+    "note": "pulls the wrap taut between teeth and wrist",
+    "image": "3e3a404f8f4a"
+  },
+  "rook_intro_01.png#4": {
+    "pass": true,
+    "note": "fist lowered, stepping into her stance",
+    "image": "3e3a404f8f4a"
+  },
+  "rook_intro_01.png#5": {
+    "pass": true,
+    "note": "in stance",
+    "image": "3e3a404f8f4a"
+  },
+  "rook_b02_01.png#1": {
+    "pass": true,
+    "note": "anchor",
+    "image": "d7f6a12ce2aa"
+  },
+  "rook_b02_01.png#2": {
+    "pass": true,
+    "note": "going down, guard up",
+    "image": "d7f6a12ce2aa"
+  },
+  "rook_b02_01.png#3": {
+    "pass": true,
+    "note": "full crouch, guard up",
+    "image": "d7f6a12ce2aa"
+  },
+  "rook_b02_01.png#4": {
+    "pass": true,
+    "note": "crouching block, forearm up in front of the face",
+    "image": "d7f6a12ce2aa"
+  },
+  "rook_b02_02.png#1": {
+    "pass": true,
+    "note": "anchor",
+    "image": "10d4827a9627"
+  },
+  "rook_b02_02.png#2": {
+    "pass": true,
+    "note": "standing block, forearm up in front of the face",
+    "image": "10d4827a9627"
+  },
+  "rook_b02_02.png#3": {
+    "pass": true,
+    "note": "blockstun: pushed back behind the forearm",
+    "image": "10d4827a9627"
+  },
+  "rook_b02_02.png#4": {
+    "pass": true,
+    "note": "high hit: head snapped back, arm flung up",
+    "image": "10d4827a9627"
+  },
+  "rook_b02_02.png#5": {
+    "pass": true,
+    "note": "recovering, head coming down",
+    "image": "10d4827a9627"
+  },
+  "rook_b02_03.png#1": {
+    "pass": true,
+    "note": "anchor",
+    "image": "0904d151a45c"
+  },
+  "rook_b02_03.png#2": {
+    "pass": true,
+    "note": "mid hit: torso folded, forearm at the stomach (reads clearly apart from the high hit)",
+    "image": "0904d151a45c"
+  },
+  "rook_b02_03.png#3": {
+    "pass": true,
+    "note": "recovering from the fold",
+    "image": "0904d151a45c"
+  },
+  "rook_b02_03.png#4": {
+    "pass": true,
+    "note": "knocked back, falling (pivot set to the hips)",
+    "image": "0904d151a45c"
+  },
+  "rook_b02_03.png#5": {
+    "pass": true,
+    "note": "lying on her back, head left",
+    "image": "0904d151a45c"
+  },
+  "rook_wake_up_01.png#1": {
+    "pass": true,
+    "note": "anchor",
+    "image": "2b1567359bca"
+  },
+  "rook_wake_up_01.png#2": {
+    "pass": true,
+    "note": "palm on the floor, pushing up with her single arm",
+    "image": "2b1567359bca"
+  },
+  "rook_wake_up_01.png#3": {
+    "pass": true,
+    "note": "up on one knee, hand on the knee",
+    "image": "2b1567359bca"
+  },
+  "rook_wake_up_01.png#4": {
+    "pass": true,
+    "note": "rising into stance",
+    "image": "2b1567359bca"
+  },
+  "rook_ko_01.png#1": {
+    "pass": true,
+    "note": "anchor",
+    "image": "4a86415aa92f"
+  },
+  "rook_ko_01.png#2": {
+    "pass": true,
+    "note": "jolted, arm hanging, knees giving",
+    "image": "4a86415aa92f"
+  },
+  "rook_ko_01.png#3": {
+    "pass": true,
+    "note": "down on one knee",
+    "image": "4a86415aa92f"
+  },
+  "rook_ko_01.png#4": {
+    "pass": true,
+    "note": "face down, head right (pivot set to the hips)",
+    "image": "4a86415aa92f"
+  }
+}

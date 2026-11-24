@@ -1,0 +1,4 @@
+{
+  "_comment": "Animations built from another animation's cells (npm run art), no new art: name -> { from, reverse }. A reversed forward shuffle is a correct backward shuffle (back foot first, then front foot).",
+  "walk_back": { "from": "walk_forward", "reverse": true }
+}

@@ -7,7 +7,6 @@
   ],
   "batch_02": [
     "intro",
-    "walk_back",
     [
       "crouch",
       "block_crouch"

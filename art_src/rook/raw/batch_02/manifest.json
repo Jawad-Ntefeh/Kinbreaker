@@ -25,46 +25,6 @@
       ]
     },
     {
-      "sheet": "rook_walk_back_01.png",
-      "poses": [
-        {
-          "role": "anchor"
-        },
-        {
-          "anim": "walk_back",
-          "index": 0
-        },
-        {
-          "anim": "walk_back",
-          "index": 1
-        },
-        {
-          "anim": "walk_back",
-          "index": 2
-        },
-        {
-          "anim": "walk_back",
-          "index": 3
-        },
-        {
-          "anim": "walk_back",
-          "index": 4
-        }
-      ]
-    },
-    {
-      "sheet": "rook_walk_back_02.png",
-      "poses": [
-        {
-          "role": "anchor"
-        },
-        {
-          "anim": "walk_back",
-          "index": 5
-        }
-      ]
-    },
-    {
       "sheet": "rook_b02_01.png",
       "poses": [
         {

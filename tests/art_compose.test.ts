@@ -13,3 +13,12 @@ describe('composed sheets', () => {
     });
   }
 });
+
+describe('derived animations', () => {
+  it('walk_back is walk_forward in reverse, reusing its cells', () => {
+    const file = JSON.parse(readFileSync('data/anims/rook.json', 'utf8')) as { anims: Record<string, { frames: { cell: number }[] }> };
+    const fwd = file.anims.walk_forward?.frames.map((f) => f.cell);
+    if (!fwd) return; // walk_forward not built yet
+    expect(file.anims.walk_back?.frames.map((f) => f.cell)).toEqual([...fwd].reverse());
+  });
+});

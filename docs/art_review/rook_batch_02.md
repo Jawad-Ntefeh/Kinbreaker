@@ -8,14 +8,6 @@ Canonical rook: 79x108 px; coat 24%, gold 5%, skin 9%, darks 49%, wraps 10%.
 
 Waiting for the image.
 
-## rook_walk_back_01.png
-
-Waiting for the image.
-
-## rook_walk_back_02.png
-
-Waiting for the image.
-
 ## rook_b02_01.png
 
 Waiting for the image.

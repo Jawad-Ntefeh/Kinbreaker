@@ -1,0 +1,10 @@
+{
+  "_comment": "Hand-written pose notes that replace the generated ones for a move (npm run art-requests). One note per frame pose, in order; impact heights must match the move's hitbox.",
+  "rook_jab": [
+    "Anticipation (small, NOT a big wind-up): the stance from pose 1 with the knees bent a little more, the whole body 2-3 px lower; the front foot just starting to slide forward. The far-arm fist stays in the guard in front of the chin, the elbow lifts slightly away from the ribs. The arm does NOT pull back behind the body.",
+    "Launch: the far-arm fist shoots straight forward out of the guard along a level line at chest height; the arm is half extended, elbow bent at about 90 degrees and behind the fist, forearm level. The front foot has stepped forward a few pixels; the far shoulder starts to roll forward and the chin drops behind it. The near shoulder with the pinned sleeve turns slightly away from the viewer.",
+    "IMPACT (the hit): the far arm fully extended straight forward at chest height (the fist lands 69-82 px above the floor, 64-77% of her height); shoulder, elbow and fist in one straight horizontal line, the fist turned knuckles-up. Front knee bent over the front foot, back leg straight, back heel lifted; chin tucked behind the far shoulder. The near shoulder with the pinned sleeve is turned away from the viewer. Coat tails swing back behind her; the braid trails behind her head.",
+    "Recovery: the far arm snapping back along the same level line, elbow bent again, fist halfway between the impact point and the chin; the front foot slides back a little, weight returning to the middle. Coat tails and braid swinging back the other way.",
+    "Recovery, nearly back in stance: fist just in front of the chin again, elbow down by the ribs, weight settling onto the back foot. Almost exactly pose 1; coat tails and braid settling."
+  ]
+}

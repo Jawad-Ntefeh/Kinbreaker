@@ -6,5 +6,10 @@
   "front_arm": "left",
   "missing": [
     "right_arm"
-  ]
+  ],
+  "arm_words": {
+    "left_arm": "her only arm, the FAR arm (attached to the far shoulder, on the side away from the viewer: the same arm whose fist is raised in the guard in the reference)"
+  },
+  "near_side_rule": "Arms, in every pose: the NEAR shoulder (the one closest to the viewer) shows only the empty sleeve pinned up with the gold pin; no hand, fist or forearm ever comes out of the near shoulder or the near side of the body. The only arm and the only fist in the whole image belong to the FAR shoulder. Do not mirror or flip the character, and do not give her a second hand.",
+  "guard": "side-on fighting stance, weight on the back foot, her only fist (the far arm) raised in front of her chin, chin down"
 }

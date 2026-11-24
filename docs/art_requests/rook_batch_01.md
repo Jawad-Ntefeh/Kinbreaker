@@ -11,11 +11,13 @@ Same character as the attached reference image: Rook, a tall, lean woman in her 
 
 Make ONE image: a single horizontal row of exactly 5 full-body poses of this character, left to right. Side view, facing RIGHT, the same camera angle and the same pixel-art style as the reference. Every pose at exactly the same scale. All feet rest on one shared, straight ground line (except a pose that is described as airborne). Even spacing with clear empty space between the figures so no two figures touch or overlap, including the braid and coat tails. Pure white background (#FFFFFF). No shadows, no floor, no text, no numbers, no labels, no borders, no grid.
 
-Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, left fist forward at chin height, chin down.
+Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, her only fist (the far arm) raised in front of her chin, chin down.
 Pose 2: Idle 1: the reference stance, breathing out: shoulders relaxed, guard up.
 Pose 3: Idle 2: breathing in: chest and shoulders rise about 1 px, guard rises slightly; the braid sways a little backward.
 Pose 4: Idle 3: fully breathed in: shoulders at their highest, fist a pixel higher; coat tails sway slightly back.
 Pose 5: Idle 4: breathing out again, between poses 2 and 3 and the stance; braid and coat tails swinging back forward.
+
+Arms, in every pose: the NEAR shoulder (the one closest to the viewer) shows only the empty sleeve pinned up with the gold pin; no hand, fist or forearm ever comes out of the near shoulder or the near side of the body. The only arm and the only fist in the whole image belong to the FAR shoulder. Do not mirror or flip the character, and do not give her a second hand.
 ```
 
 ## `rook_walk_forward_01.png`: walk_forward (part 1 of 2)
@@ -25,12 +27,14 @@ Same character as the attached reference image: Rook, a tall, lean woman in her 
 
 Make ONE image: a single horizontal row of exactly 6 full-body poses of this character, left to right. Side view, facing RIGHT, the same camera angle and the same pixel-art style as the reference. Every pose at exactly the same scale. All feet rest on one shared, straight ground line (except a pose that is described as airborne). Even spacing with clear empty space between the figures so no two figures touch or overlap, including the braid and coat tails. Pure white background (#FFFFFF). No shadows, no floor, no text, no numbers, no labels, no borders, no grid.
 
-Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, left fist forward at chin height, chin down.
+Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, her only fist (the far arm) raised in front of her chin, chin down.
 Pose 2: Walk 1 (start of a forward shuffle step): the stance, weight shifting onto the back foot, front foot about to lift.
 Pose 3: Walk 2: the front (left) foot lifts and slides forward a short step, toes low; guard stays up; coat tails swing back.
 Pose 4: Walk 3: the front foot plants further forward; feet at their widest; weight moving forward, body lowered slightly.
 Pose 5: Walk 4: the back (right) foot lifts and slides forward toward the front foot; coat tails swing back the other way.
 Pose 6: Walk 5: the back foot plants; feet back to stance width; body rising.
+
+Arms, in every pose: the NEAR shoulder (the one closest to the viewer) shows only the empty sleeve pinned up with the gold pin; no hand, fist or forearm ever comes out of the near shoulder or the near side of the body. The only arm and the only fist in the whole image belong to the FAR shoulder. Do not mirror or flip the character, and do not give her a second hand.
 ```
 
 ## `rook_walk_forward_02.png`: walk_forward (part 2 of 2)
@@ -40,8 +44,10 @@ Same character as the attached reference image: Rook, a tall, lean woman in her 
 
 Make ONE image: a single horizontal row of exactly 2 full-body poses of this character, left to right. Side view, facing RIGHT, the same camera angle and the same pixel-art style as the reference. Every pose at exactly the same scale. All feet rest on one shared, straight ground line (except a pose that is described as airborne). Even spacing with clear empty space between the figures so no two figures touch or overlap, including the braid and coat tails. Pure white background (#FFFFFF). No shadows, no floor, no text, no numbers, no labels, no borders, no grid.
 
-Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, left fist forward at chin height, chin down.
+Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, her only fist (the far arm) raised in front of her chin, chin down.
 Pose 2: Walk 6: settling into the stance again, weight on the back foot, ready to repeat.
+
+Arms, in every pose: the NEAR shoulder (the one closest to the viewer) shows only the empty sleeve pinned up with the gold pin; no hand, fist or forearm ever comes out of the near shoulder or the near side of the body. The only arm and the only fist in the whole image belong to the FAR shoulder. Do not mirror or flip the character, and do not give her a second hand.
 ```
 
 ## `rook_jab_01.png`: rook_jab
@@ -53,13 +59,19 @@ Same character as the attached reference image: Rook, a tall, lean woman in her 
 
 Make ONE image: a single horizontal row of exactly 6 full-body poses of this character, left to right. Side view, facing RIGHT, the same camera angle and the same pixel-art style as the reference. Every pose at exactly the same scale. All feet rest on one shared, straight ground line (except a pose that is described as airborne). Even spacing with clear empty space between the figures so no two figures touch or overlap, including the braid and coat tails. Pure white background (#FFFFFF). No shadows, no floor, no text, no numbers, no labels, no borders, no grid.
 
-Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, left fist forward at chin height, chin down.
-Pose 2: Wind-up: the left arm draws back to load the strike, fist close to the body; weight shifts onto the back foot; the guard stays tight. Coat tails and braid still settle from the stance.
-Pose 3: Wind-up, about to strike: the left arm starts moving toward the target straight along a line (a linear strike); shoulders and hips begin to turn into the blow; weight moving forward. The braid lags slightly behind the head.
-Pose 4: IMPACT (the hit): the left arm fully extended straight forward at chest height (the hit lands 69–82 px above the floor, 64–77% of her height), the fist in line with the shoulder; weight on the front foot, back heel lifted; chin tucked behind the shoulder. The coat tails swing back behind her and the braid trails behind her head.
-Pose 5: Recovery: the left arm pulling back, halfway between the strike and the guard; weight returning to the middle. Coat tails and braid swinging back the other way.
-Pose 6: Recovery, nearly back in stance: fist almost back in the guard position, weight settling onto the back foot. Coat tails and braid settling.
+Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, her only fist (the far arm) raised in front of her chin, chin down.
+Pose 2: Anticipation (small, NOT a big wind-up): the stance from pose 1 with the knees bent a little more, the whole body 2-3 px lower; the front foot just starting to slide forward. The far-arm fist stays in the guard in front of the chin, the elbow lifts slightly away from the ribs. The arm does NOT pull back behind the body.
+Pose 3: Launch: the far-arm fist shoots straight forward out of the guard along a level line at chest height; the arm is half extended, elbow bent at about 90 degrees and behind the fist, forearm level. The front foot has stepped forward a few pixels; the far shoulder starts to roll forward and the chin drops behind it. The near shoulder with the pinned sleeve turns slightly away from the viewer.
+Pose 4: IMPACT (the hit): the far arm fully extended straight forward at chest height (the fist lands 69-82 px above the floor, 64-77% of her height); shoulder, elbow and fist in one straight horizontal line, the fist turned knuckles-up. Front knee bent over the front foot, back leg straight, back heel lifted; chin tucked behind the far shoulder. The near shoulder with the pinned sleeve is turned away from the viewer. Coat tails swing back behind her; the braid trails behind her head.
+Pose 5: Recovery: the far arm snapping back along the same level line, elbow bent again, fist halfway between the impact point and the chin; the front foot slides back a little, weight returning to the middle. Coat tails and braid swinging back the other way.
+Pose 6: Recovery, nearly back in stance: fist just in front of the chin again, elbow down by the ribs, weight settling onto the back foot. Almost exactly pose 1; coat tails and braid settling.
+
+Arms, in every pose: the NEAR shoulder (the one closest to the viewer) shows only the empty sleeve pinned up with the gold pin; no hand, fist or forearm ever comes out of the near shoulder or the near side of the body. The only arm and the only fist in the whole image belong to the FAR shoulder. Do not mirror or flip the character, and do not give her a second hand.
 ```
+
+If it goes wrong:
+- A hand or fist appears on the near side (her missing right arm): reply "Wrong arm: she has no right arm. The near shoulder must only show the pinned empty sleeve; the punching arm is the far arm, the one raised in the guard in the reference." and regenerate.
+- Still wrong after two tries: attach your idle sheet (rook_idle_01.png, which came out right) as well as the reference, and ask it to edit pose 1 of that sheet into each pose instead of drawing new figures.
 
 ## Manifest (already saved)
 

@@ -17,12 +17,24 @@ interface Design {
   lock: string;
   body_height_px: number;
   front_arm: string;
+  /** How to name each limb in prompts, in viewer terms ("the FAR arm"): models flip left/right. */
+  arm_words?: Record<string, string>;
+  /** Repeated at the end of every prompt (e.g. which side of the body has no arm). */
+  near_side_rule?: string;
+  /** The reference stance, as used for the anchor pose. */
+  guard?: string;
 }
 
 const SHEET_RULES = (n: number) =>
   `Make ONE image: a single horizontal row of exactly ${n} full-body poses of this character, left to right. Side view, facing RIGHT, the same camera angle and the same pixel-art style as the reference. Every pose at exactly the same scale. All feet rest on one shared, straight ground line (except a pose that is described as airborne). Even spacing with clear empty space between the figures so no two figures touch or overlap, including the braid and coat tails. Pure white background (#FFFFFF). No shadows, no floor, no text, no numbers, no labels, no borders, no grid.`;
 
-const ANCHOR = 'Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: side-on fighting stance, weight on the back foot, left fist forward at chin height, chin down.';
+const ANCHOR = (d: Design) => `Pose 1 (scale anchor): exactly the stance from the reference image, unchanged: ${d.guard ?? 'side-on fighting stance, weight on the back foot, left fist forward at chin height, chin down'}.`;
+
+const TIPS = [
+  'If it goes wrong:',
+  '- A hand or fist appears on the near side (her missing right arm): reply "Wrong arm: she has no right arm. The near shoulder must only show the pinned empty sleeve; the punching arm is the far arm, the one raised in the guard in the reference." and regenerate.',
+  '- Still wrong after two tries: attach your idle sheet (rook_idle_01.png, which came out right) as well as the reference, and ask it to edit pose 1 of that sheet into each pose instead of drawing new figures.',
+].join('\n');
 
 /** Body landmark for a height above the floor, for a character `h` px tall. */
 function landmark(y: number, h: number): string {
@@ -48,7 +60,11 @@ const LIMB_WORDS: Record<string, { limb: string; end: string; joint: string }> =
 /** Fighting-game animator notes for each pose of a move, from its data. */
 function movePoseNotes(m: Move, d: Design): string[] {
   const plan = movePoses(m);
-  const L = LIMB_WORDS[m.limb] ?? LIMB_WORDS.core!;
+  const base = LIMB_WORDS[m.limb] ?? LIMB_WORDS.core!;
+  const L = { ...base, limb: d.arm_words?.[m.limb] ? 'far arm' : base.limb };
+  const intro = d.arm_words?.[m.limb] ? ` (${d.arm_words[m.limb]})` : '';
+  // Big strikes load up; quick linear strikes start from the guard without pulling back.
+  const big = m.damage >= 20 || !!m.glint || m.path === 'sweeping';
   const h = d.body_height_px;
   const hb = m.hitboxes[0];
   const lo = hb ? Math.round(hb.y / 100) : 0;
@@ -65,8 +81,10 @@ function movePoseNotes(m: Move, d: Design): string[] {
     if (p.phase === 'startup') {
       s++;
       return s === 1 && startups > 1
-        ? `Wind-up: the ${L.limb} draws back to load the strike, ${L.end} close to the body; weight shifts onto the back foot; the guard stays tight. Coat tails and braid still settle from the stance.`
-        : `Wind-up, about to strike: the ${L.limb} starts moving toward the target ${arc}; shoulders and hips begin to turn into the blow; weight moving forward. The braid lags slightly behind the head.`;
+        ? big
+          ? `Wind-up: the ${L.limb}${intro} draws back to load the strike, ${L.end} close to the body; weight shifts onto the back foot; the guard stays tight. Coat tails and braid still settle from the stance.`
+          : `Anticipation (small, not a big wind-up): the stance with the knees bent a little more, body slightly lower; the ${L.limb}${intro} stays in the guard and does not pull back behind the body.`
+        : `Wind-up, about to strike: the ${L.limb}${s === 1 ? intro : ''} starts moving toward the target ${arc}; shoulders and hips begin to turn into the blow; weight moving forward. The braid lags slightly behind the head.`;
     }
     if (p.phase === 'smear') return `Smear frame: the ${L.limb} whipping through mid-swing, stretched and slightly blurred along its path ${arc}; the body nearly at full extension. The coat tails flare behind her.`;
     if (p.phase === 'impact') {
@@ -109,6 +127,12 @@ function stateNotes(name: string, n: number): string[] {
   return Array.from({ length: n }, (_, i) => (f ? f(i, n) : `${name} ${i + 1}/${n}.`));
 }
 
+/** Hand-written pose notes per move (art_src/<char>/pose_notes.json) replace the generated ones. */
+function loadPoseNotes(char: string): Record<string, string[]> {
+  const f = join(ROOT, 'art_src', char, 'pose_notes.json');
+  return existsSync(f) ? (JSON.parse(readFileSync(f, 'utf8')) as Record<string, string[]>) : {};
+}
+
 function loadMoves(char: string): Map<string, Move> {
   const def = JSON.parse(readFileSync(join(ROOT, 'data/characters', `${char}.json`), 'utf8')) as { moveset: string };
   const dir = join(ROOT, 'data/moves', def.moveset);
@@ -121,12 +145,15 @@ for (const char of readdirSync(join(ROOT, 'art_src')).filter((d) => existsSync(j
   const design = JSON.parse(readFileSync(join(ROOT, 'art_src', char, 'design.json'), 'utf8')) as Design;
   const batches = JSON.parse(readFileSync(join(ROOT, 'art_src', char, 'batches.json'), 'utf8')) as Record<string, string[]>;
   const moves = loadMoves(char);
+  const custom = loadPoseNotes(char);
   for (const [batch, anims] of Object.entries(batches)) {
     if (batch.startsWith('_')) continue;
     const sheets: { manifest: SheetManifest; notes: string[]; anim: string; part: number; parts: number }[] = [];
     for (const anim of anims) {
       const move = moves.get(anim);
-      const notes = move ? movePoseNotes(move, design) : stateNotes(anim, STATE_SPECS.find((s) => s.name === anim)?.poses ?? 1);
+      const generated = move ? movePoseNotes(move, design) : stateNotes(anim, STATE_SPECS.find((s) => s.name === anim)?.poses ?? 1);
+      const notes = custom[anim] ?? generated;
+      if (notes.length !== generated.length) throw new Error(`art_src/${char}/pose_notes.json: ${anim} has ${notes.length} notes, the animation has ${generated.length} poses`);
       const per = MAX_POSES - 1;
       const parts = Math.ceil(notes.length / per);
       for (let p = 0; p < parts; p++) {
@@ -154,7 +181,8 @@ for (const char of readdirSync(join(ROOT, 'art_src')).filter((d) => existsSync(j
       const n = s.manifest.poses.length;
       lines.push(`## \`${s.manifest.sheet}\`: ${s.anim}${s.parts > 1 ? ` (part ${s.part} of ${s.parts})` : ''}`, '');
       if (m) lines.push(`Frame data: startup ${m.startup}, active ${m.active}, recovery ${m.recovery} (${m.total} frames); ${m.height} / ${m.path}; limb: ${m.limb.replace('_', ' ')}.`, '');
-      lines.push('```text', design.lock, '', SHEET_RULES(n), '', ANCHOR, ...s.notes.map((t, i) => `Pose ${i + 2}: ${t}`), '```', '');
+      lines.push('```text', design.lock, '', SHEET_RULES(n), '', ANCHOR(design), ...s.notes.map((t, i) => `Pose ${i + 2}: ${t}`), ...(design.near_side_rule ? ['', design.near_side_rule] : []), '```', '');
+      if (m && design.arm_words?.[m.limb]) lines.push(TIPS, '');
     }
     lines.push('## Manifest (already saved)', '', '```json', JSON.stringify({ sheets: sheets.map((s) => s.manifest) }, null, 2), '```', '');
     mkdirSync(join(ROOT, 'docs/art_requests'), { recursive: true });

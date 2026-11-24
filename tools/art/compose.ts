@@ -59,6 +59,8 @@ export interface ComposePose {
 export interface ComposeSpec {
   base: string;
   out: string;
+  /** A looping animation: the lag wraps around (the first frames lag behind the last ones). */
+  loop?: boolean;
   poses: ComposePose[];
 }
 
@@ -143,13 +145,14 @@ export function composeSheet(char: string, spec: ComposeSpec, write = true): Buf
     const f = blank(fig.w + padR, fig.h + padL);
     const [bx, by] = shifts[i]!;
     const hy = Math.round((pose.head_dy ?? 0) * k);
-    const late = i >= LAG_FRAMES ? shifts[i - LAG_FRAMES]! : ([0, 0] as Pt);
+    const late = i >= LAG_FRAMES ? shifts[i - LAG_FRAMES]! : spec.loop ? shifts[(i - LAG_FRAMES + shifts.length) % shifts.length]! : ([0, 0] as Pt);
     // Far arm, behind everything: chained segments from the shifted shoulder.
     const first = base.arm[armNames[0]!]!;
     let at: Pt = [first.pivot[0] + bx, first.pivot[1] + by];
     for (const n of armNames) {
       const seg = base.arm[n]!;
-      const target = pose[n] as number;
+      // An arm segment without an angle in the pose stays as drawn in the base.
+      const target = (pose[n] as number | undefined) ?? angleOf(seg.pivot, seg.end);
       const rot = deg(-(target - angleOf(seg.pivot, seg.end)));
       const c = Math.cos(rot);
       const s = Math.sin(rot);

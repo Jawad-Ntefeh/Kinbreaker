@@ -2,28 +2,28 @@
   "_comment": "Visual review (design lock: no right arm/hand, pinned sleeve with gold pin, braid with silver band, wraps, knee-length torn oxblood coat with gold trim, facing right). Colour drift is judged by the automatic checks. Each verdict carries the fingerprint of the image it was given for (image); a replaced image needs a new review.",
   "rook_idle_01.png#1": {
     "pass": true,
-    "note": "anchor",
-    "image": "3c8baa8432bc"
+    "note": "composed idle (same face and colours as walk and jab); anchor: untouched compose base",
+    "image": "16befa971b2c"
   },
   "rook_idle_01.png#2": {
     "pass": true,
-    "note": "regenerated idle: warm skin and bronze trim match the other sheets; one arm in guard, pinned sleeve",
-    "image": "3c8baa8432bc"
+    "note": "composed idle (same face and colours as walk and jab); breathing out: the base stance",
+    "image": "16befa971b2c"
   },
   "rook_idle_01.png#3": {
     "pass": true,
-    "note": "regenerated idle: warm skin and bronze trim match the other sheets; one arm in guard, pinned sleeve",
-    "image": "3c8baa8432bc"
+    "note": "composed idle (same face and colours as walk and jab); breathing in: upper body up 1 px",
+    "image": "16befa971b2c"
   },
   "rook_idle_01.png#4": {
     "pass": true,
-    "note": "regenerated idle: warm skin and bronze trim match the other sheets; one arm in guard, pinned sleeve",
-    "image": "3c8baa8432bc"
+    "note": "composed idle (same face and colours as walk and jab); fully in: upper body up 1 px, braid catching up",
+    "image": "16befa971b2c"
   },
   "rook_idle_01.png#5": {
     "pass": true,
-    "note": "regenerated idle: warm skin and bronze trim match the other sheets; one arm in guard, pinned sleeve",
-    "image": "3c8baa8432bc"
+    "note": "composed idle (same face and colours as walk and jab); breathing out: back to the stance",
+    "image": "16befa971b2c"
   },
   "rook_walk_forward_01.png#1": {
     "pass": true,

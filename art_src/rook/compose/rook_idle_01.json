@@ -1,0 +1,28 @@
+{
+  "_comment": "Composed idle (npm run art-compose) from base.json, so her face and colours match walk and jab exactly: breathing as 1 px shifts of the upper body and head, the arm in the guard as drawn (no angles = as drawn). Loops, so the braid and coat-tail lag wraps around.",
+  "base": "base.json",
+  "out": "raw/batch_01/rook_idle_01.png",
+  "loop": true,
+  "poses": [
+    {
+      "name": "breathing out",
+      "body_dy": 0,
+      "head_dy": 0
+    },
+    {
+      "name": "breathing in",
+      "body_dy": -1,
+      "head_dy": 0
+    },
+    {
+      "name": "fully in",
+      "body_dy": -1,
+      "head_dy": 0
+    },
+    {
+      "name": "breathing out again",
+      "body_dy": 0,
+      "head_dy": 0
+    }
+  ]
+}
